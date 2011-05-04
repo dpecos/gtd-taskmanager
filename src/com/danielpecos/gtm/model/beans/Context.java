@@ -14,8 +14,8 @@ public class Context extends TaskContainer {
 		this.name = name;
 	}
 
-	public Project createProject(String name) {
-		Project project = new Project(name);
+	public Project createProject(String name, String description) {
+		Project project = new Project(name, description);
 		this.projects.put(name, project);
 		return project;
 	}
