@@ -39,6 +39,12 @@ public class TaskManager {
 			context.deleteProject(project);
 		}
 	}
+
+	public Project elementAt(int contextPosition, int projectPosition) {
+		Context ctx = (Context) this.getContexts().toArray()[contextPosition];
+		Project prj = (Project) ctx.getProjects().toArray()[projectPosition];
+		return prj;
+	}
 	
 	
 }

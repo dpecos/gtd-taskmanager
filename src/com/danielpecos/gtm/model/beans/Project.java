@@ -1,7 +1,9 @@
 package com.danielpecos.gtm.model.beans;
 
+import java.io.Serializable;
 
-public class Project extends TaskContainer {
+
+public class Project extends TaskContainer implements Serializable {
 	int id;
 	String name;
 	String description;
