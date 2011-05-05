@@ -6,15 +6,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.model.beans.Project;
 
-public class ProjectView extends View {
+public class ProjectViewHolder extends View {
 	private View mRow;
 	private TextView project_name = null;
 	private TextView project_description = null;
 	private ImageView project_status_icon = null;
 	private TextView project_status_text = null;
 
-	public ProjectView(Context context, View row) {
+	public ProjectViewHolder(Context context, View row) {
 		super(context);
 		mRow = row;
 	}
@@ -43,4 +44,28 @@ public class ProjectView extends View {
 		return project_status_text;
 	} 
 	
+	public void updateView(Project project) {
+		int completedTasks = project.getCompletedTasksCount();
+		int totalTasks = project.getTasksCount();
+		float percent = completedTasks / (float)totalTasks * 100;
+		
+		this.getName().setText(project.getName());
+		this.getDescription().setText(project.getDescription());
+		this.getStatusText().setText(completedTasks + "/" + totalTasks);
+		
+		int imageResource = R.drawable.stat_sys_signal_0;
+		if (percent == 0) {
+			imageResource = R.drawable.stat_sys_signal_0;
+		} else if (percent > 0 && percent < 37.5) {
+			imageResource = R.drawable.stat_sys_signal_1;
+		} else if (percent >= 37.5 && percent < 62.5) {
+			imageResource = R.drawable.stat_sys_signal_2;
+		} else if (percent >= 62.5 && percent < 87.5) {
+			imageResource = R.drawable.stat_sys_signal_3;
+		} else if (percent >= 87.5 && percent <= 100) {
+			imageResource = R.drawable.stat_sys_signal_4;
+		}
+		
+		this.getStatusIcon().setImageResource(imageResource);
+	}
 }

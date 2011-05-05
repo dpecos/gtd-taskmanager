@@ -1,5 +1,7 @@
 package com.danielpecos.gtm.model.beans;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -22,6 +24,24 @@ public abstract class TaskContainer implements Iterable<Task>{
 	
 	public Task getTask(int id) {
 		return this.tasks.get(id);
+	}
+	
+	public Collection<Task> getTasks() {
+		return this.tasks.values();
+	}
+	
+	public int getTasksCount() {
+		return this.tasks.size();
+	}
+	
+	public int getCompletedTasksCount() {
+		int count = 0;
+		for (Task task : this.tasks.values()) {
+			if (task.getStatus() == Task.Status.Complete) {
+				count ++;
+			}
+		}
+		return count;
 	}
 	
 	@Override

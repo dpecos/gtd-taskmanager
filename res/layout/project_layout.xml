@@ -4,9 +4,16 @@
     android:layout_height="fill_parent"
     android:background="#ffffffff"
     android:orientation="vertical">
-	<ExpandableListView
+    <LinearLayout
+    	android:id="@+id/header"
+    	android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="5dip"
+		android:paddingBottom="5dip"
+		android:background="#ff8EBADE"/>
+	<ListView
 		android:id="@android:id/list"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="fill_parent"
 		/>
 </LinearLayout>

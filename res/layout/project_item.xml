@@ -5,41 +5,49 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<TextView 
 		android:id="@+id/project_name"
-		android:layout_height="25dip"
-		android:layout_width="fill_parent"
-		android:paddingTop="5dip"  
-		android:paddingLeft="5dip"
-        android:paddingRight="5dip" 
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_marginLeft="7dip" 
+		android:layout_marginTop="5dip"
+		android:layout_marginRight="7dip"
+		android:layout_marginBottom="1dip"
         android:textStyle="bold" 
-        android:textSize="12dip"
+        android:textSize="14dip"
         android:textColor="#ff000000" />	
 	<TextView 
 		android:id="@+id/project_description"
-		android:layout_height="20dip"
-		android:layout_width="fill_parent" 
-		android:layout_below="@+id/project_name"
-		android:layout_alignParentLeft="true"
-		android:paddingLeft="5dip" 
-		android:paddingRight="5dip"
-        android:textColor="#ff777777"      
-        android:textSize="9dip" />
-    <ImageView 
-    	android:id="@+id/project_status_icon"
-    	android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-    	android:paddingTop="5dip" 
-    	android:paddingRight="5dip" 
-    	android:layout_alignParentRight="true"
-    	android:src="@drawable/stat_sys_signal_0" />
-	<TextView 
-		android:id="@+id/project_status_text"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" 
-		android:paddingRight="5dip" 
-		android:layout_below="@+id/project_status_icon"
-		android:layout_alignParentRight="true"
+		android:layout_below="@+id/project_name"
+		android:layout_marginLeft="7dip" 
+		android:layout_marginBottom="7dip"
         android:textColor="#ff777777"      
-        android:textSize="9dip" />    	
+        android:textSize="11dip" />
+    <LinearLayout
+    	android:orientation="vertical"
+    	android:layout_height="wrap_content"
+    	android:layout_width="wrap_content"
+    	android:layout_toLeftOf="@+id/project_add_task"
+    	android:layout_marginTop="7dip"
+    	android:layout_marginRight="5dip"
+    	android:gravity="center">
+	    <ImageView 
+	    	android:id="@+id/project_status_icon"
+	    	android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+	    	android:src="@drawable/stat_sys_signal_0" />
+		<TextView 
+			android:id="@+id/project_status_text"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content" 
+	        android:textColor="#ff777777"      
+	        android:textSize="10dip" />  
+    </LinearLayout>
+    <ImageView 
+    	android:id="@+id/project_add_task"
+    	android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+    	android:layout_marginRight="5dip" 
+    	android:layout_alignParentRight="true"
+    	android:src="@android:drawable/ic_menu_add" />  	
 </RelativeLayout>
-
-

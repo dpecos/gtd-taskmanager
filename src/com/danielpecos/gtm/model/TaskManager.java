@@ -8,9 +8,18 @@ import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 
 public class TaskManager {
+	static TaskManager instance;
+	
 	Hashtable<String, Context> contexts;
 	
-	public TaskManager() {
+	public static TaskManager getInstance() {
+		if (instance == null) {
+			instance = new TaskManager();
+		}
+		return instance;
+	}
+	
+	private TaskManager() {
 		this.contexts = new Hashtable<String, Context>();
 	}
 	
@@ -40,11 +49,12 @@ public class TaskManager {
 		}
 	}
 
-	public Project elementAt(int contextPosition, int projectPosition) {
+	public Context elementAt(int contextPosition) {
 		Context ctx = (Context) this.getContexts().toArray()[contextPosition];
-		Project prj = (Project) ctx.getProjects().toArray()[projectPosition];
-		return prj;
+		return ctx;
 	}
+
+
 	
 	
 }

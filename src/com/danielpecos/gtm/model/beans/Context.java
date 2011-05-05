@@ -7,21 +7,25 @@ public class Context extends TaskContainer {
 	int id;
 	String name;
 
-	Hashtable<String, Project> projects;
+	Hashtable<Long, Project> projects;
 
+	public String getName() {
+		return name;
+	}
+	
 	public Context(String name) {
-		this.projects = new Hashtable<String, Project>();
+		this.projects = new Hashtable<Long, Project>();
 		this.name = name;
 	}
 
 	public Project createProject(String name, String description) {
 		Project project = new Project(name, description);
-		this.projects.put(name, project);
+		this.projects.put(project.getId(), project);
 		return project;
 	}
 
-	public Project getProject(String name) {
-		return this.projects.get(name);
+	public Project getProject(Long id) {
+		return this.projects.get(id);
 	}
 	
 	public Collection<Project> getProjects() {
@@ -35,8 +39,10 @@ public class Context extends TaskContainer {
 		this.projects.remove(name);
 	}
 
-	public String getName() {
-		return name;
+
+	public Project elementAt(int projectPosition) {
+		Project prj = (Project) this.getProjects().toArray()[projectPosition];
+		return prj;
 	}
 
 }
