@@ -8,13 +8,13 @@ public class Task {
 		Normal, Web, Call_SMS, Email, Location 
 	}
 	public enum Status {
-		
+		Pending, Done, Discarded 
 	}
 	public enum Priority {
 		Low, Important, Critical
 	}
 	
-	int id;
+	long id;
 	String name;
 	String description;
 	Status status;
@@ -24,11 +24,18 @@ public class Task {
 	Type type;
 	ArrayList<String> tags;
 	
-	public Task() {
+	public Task(String name, String description, Priority priority) {
+		this.id = (long) Math.random()*10000;
+		this.name = name;
+		this.description = description;
+		this.priority = priority;
+		
+		this.status = Status.Pending;
+		this.type = Type.Normal;
 		this.tags = new ArrayList<String>();
 	}
 	
-	public int getId() {
+	public long getId() {
 		return this.id;
 	}
 }

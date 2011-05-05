@@ -20,7 +20,7 @@ public class NewTask extends Activity {
     }
     
     private void createTask() {
-    	Task task = new Task();
+    	//Task task = new Task();
     	/*
     	//TODO: recuperar contexto apropiado
     	Context context = taskManager.getContext(ctxName);

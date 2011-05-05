@@ -4,14 +4,16 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 public abstract class TaskContainer implements Iterable<Task>{
-	Hashtable<Integer, Task> tasks;
+	Hashtable<Long, Task> tasks;
 	
 	public TaskContainer() {
-		this.tasks = new Hashtable<Integer, Task>();
+		this.tasks = new Hashtable<Long, Task>();
 	}
 	
-	public void createTask(Task task) {
+	public Task createTask(String name, String description, Task.Priority priority) {
+		Task task = new Task(name, description, priority);
 		this.tasks.put(task.getId(), task);
+		return task;
 	}
 	
 	public void deleteTask(Task task) {

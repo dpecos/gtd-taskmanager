@@ -17,6 +17,7 @@ import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
+import com.danielpecos.gtm.model.beans.Task;
 
 /**
  * Demonstrates expandable lists using a custom {@link ExpandableListAdapter}
@@ -32,10 +33,12 @@ public class ContextActivity extends ExpandableListActivity {
 
 		setContentView(R.layout.context_layout);
 
+		// Test data
 		this.taskManager = new TaskManager();
-		this.taskManager.createContext("Contexto 1").createProject("Proyecto 1.1", "Descripción de proyecto 1.1");
+		Project prj = this.taskManager.createContext("Contexto 1").createProject("Proyecto 1.1", "Descripción de proyecto 1.1");
 		this.taskManager.createContext("Contexto 2");
 		this.taskManager.createContext("Contexto 3");
+		prj.createTask("Tarea 1", "Tarea num 1.1.1", Task.Priority.Important);
 
 		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
 		ArrayList<ArrayList<HashMap<String, String>>> childrenData =  new ArrayList<ArrayList<HashMap<String, String>>>();
@@ -50,10 +53,11 @@ public class ContextActivity extends ExpandableListActivity {
 			Collection<Project> projects = ctx.getProjects();
 
 			ArrayList<HashMap<String, String>> childData = new ArrayList<HashMap<String,String>>();
-			for (Project prj : projects) {
+			for (Project project : projects) {
 				HashMap<String, String> projectData = new HashMap<String, String>();
-				projectData.put("name", prj.getName());
-				projectData.put("description", prj.getDescription());
+				projectData.put("name", project.getName());
+				projectData.put("description", project.getDescription());
+				projectData.put("status_text", "0/0");
 				childData.add(projectData);
 			}
 			childrenData.add(childData);
@@ -68,8 +72,8 @@ public class ContextActivity extends ExpandableListActivity {
 				new int[] {R.id.context_name}, 
 				childrenData, 
 				R.layout.project_item, 
-				new String[] {"name", "description"},
-				new int[] {R.id.project_name, R.id.project_description}
+				new String[] {"name", "description", "status_text"},
+				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text}
 			)
 		);
 		

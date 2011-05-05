@@ -23,5 +23,23 @@
 		android:paddingRight="5dip"
         android:textColor="#ff777777"      
         android:textSize="9dip" />
+    <ImageView 
+    	android:id="@+id/project_status_icon"
+    	android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+    	android:paddingTop="5dip" 
+    	android:paddingRight="5dip" 
+    	android:layout_alignParentRight="true"
+    	android:src="@drawable/stat_sys_signal_0" />
+	<TextView 
+		android:id="@+id/project_status_text"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" 
+		android:paddingRight="5dip" 
+		android:layout_below="@+id/project_status_icon"
+		android:layout_alignParentRight="true"
+        android:textColor="#ff777777"      
+        android:textSize="9dip" />    	
 </RelativeLayout>
+
 
