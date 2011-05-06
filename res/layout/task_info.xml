@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
 	android:id="@+id/relativeLayout1"
 	android:layout_width="fill_parent" 
-	android:layout_height="fill_parent">
+	android:layout_height="fill_parent"
+	android:background="#ffffffff">
 	<CheckBox
 		android:id="@+id/task_status"
 		android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
 	<TextView 
 		android:id="@+id/task_name" 
 		android:layout_height="wrap_content"
-		android:layout_width="wrap_content" 
+		android:layout_width="fill_parent" 
 		android:layout_toRightOf="@+id/task_status"
 		android:paddingTop="5dip"  
 		android:paddingLeft="5dip"
@@ -23,10 +24,10 @@
         android:textColor="#ff000000" />
 	<TextView 
 		android:id="@+id/task_description"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content" 
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent" 
 		android:layout_toRightOf="@+id/task_status"
-		android:layout_below="@+id/task_name" 
+		android:layout_below="@+id/task_status" 
 		android:paddingLeft="5dip" 
 		android:paddingRight="5dip"
         android:textColor="#ff777777"      

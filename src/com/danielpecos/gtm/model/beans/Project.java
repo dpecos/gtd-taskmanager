@@ -1,6 +1,5 @@
 package com.danielpecos.gtm.model.beans;
 
-import java.io.Serializable;
 
 
 public class Project extends TaskContainer {
@@ -26,4 +25,8 @@ public class Project extends TaskContainer {
 		return description;
 	}
 
+	public Task elementAt(int position) {
+		Task task = (Task) this.tasks.values().toArray()[position];
+		return task;
+	}
 }

@@ -1,20 +1,20 @@
 package com.danielpecos.gtm.model.beans;
 
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class Context extends TaskContainer {
 	int id;
 	String name;
 
-	Hashtable<Long, Project> projects;
+	LinkedHashMap<Long, Project> projects;
 
 	public String getName() {
 		return name;
 	}
 	
 	public Context(String name) {
-		this.projects = new Hashtable<Long, Project>();
+		this.projects = new LinkedHashMap<Long, Project>();
 		this.name = name;
 	}
 
@@ -38,7 +38,6 @@ public class Context extends TaskContainer {
 		}
 		this.projects.remove(name);
 	}
-
 
 	public Project elementAt(int projectPosition) {
 		Project prj = (Project) this.getProjects().toArray()[projectPosition];

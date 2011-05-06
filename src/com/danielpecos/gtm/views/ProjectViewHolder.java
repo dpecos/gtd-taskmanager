@@ -43,29 +43,31 @@ public class ProjectViewHolder extends View {
 		}
 		return project_status_text;
 	} 
-	
+
 	public void updateView(Project project) {
-		int completedTasks = project.getCompletedTasksCount();
-		int totalTasks = project.getTasksCount();
-		float percent = completedTasks / (float)totalTasks * 100;
-		
-		this.getName().setText(project.getName());
-		this.getDescription().setText(project.getDescription());
-		this.getStatusText().setText(completedTasks + "/" + totalTasks);
-		
-		int imageResource = R.drawable.stat_sys_signal_0;
-		if (percent == 0) {
-			imageResource = R.drawable.stat_sys_signal_0;
-		} else if (percent > 0 && percent < 37.5) {
-			imageResource = R.drawable.stat_sys_signal_1;
-		} else if (percent >= 37.5 && percent < 62.5) {
-			imageResource = R.drawable.stat_sys_signal_2;
-		} else if (percent >= 62.5 && percent < 87.5) {
-			imageResource = R.drawable.stat_sys_signal_3;
-		} else if (percent >= 87.5 && percent <= 100) {
-			imageResource = R.drawable.stat_sys_signal_4;
+		if (project != null) {
+			int completedTasks = project.getCompletedTasksCount();
+			int totalTasks = project.getTasksCount();
+			float percent = completedTasks / (float)totalTasks * 100;
+
+			this.getName().setText(project.getName());
+			this.getDescription().setText(project.getDescription());
+			this.getStatusText().setText(completedTasks + "/" + totalTasks);
+
+			int imageResource = R.drawable.stat_sys_signal_0;
+			if (percent == 0) {
+				imageResource = R.drawable.stat_sys_signal_0;
+			} else if (percent > 0 && percent < 37.5) {
+				imageResource = R.drawable.stat_sys_signal_1;
+			} else if (percent >= 37.5 && percent < 62.5) {
+				imageResource = R.drawable.stat_sys_signal_2;
+			} else if (percent >= 62.5 && percent < 87.5) {
+				imageResource = R.drawable.stat_sys_signal_3;
+			} else if (percent >= 87.5 && percent <= 100) {
+				imageResource = R.drawable.stat_sys_signal_4;
+			}
+
+			this.getStatusIcon().setImageResource(imageResource);
 		}
-		
-		this.getStatusIcon().setImageResource(imageResource);
 	}
 }

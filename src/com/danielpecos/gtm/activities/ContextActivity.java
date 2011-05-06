@@ -7,23 +7,19 @@ import java.util.HashMap;
 import android.app.ExpandableListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
-import android.widget.TextView;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 
 public class ContextActivity extends ExpandableListActivity {
-
-	private static final int PROJECT_ACTIVITY = 0;
 
 	private TaskManager taskManager;
 
@@ -80,8 +76,7 @@ public class ContextActivity extends ExpandableListActivity {
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text"},
 				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text}
-		)
-		);
+		));
 
 	}
 
@@ -94,21 +89,14 @@ public class ContextActivity extends ExpandableListActivity {
 
 		Context ctx = taskManager.elementAt(groupPosition);
 		Project prj = ctx.elementAt(childPosition);
-		showProjectActivity(ctx, prj);
+		ActivityUtils.showProjectActivity(this, ctx, prj);
 
 		return result;
 	}
 
-	private void showProjectActivity(Context context, Project project) {
-		Intent intent = new Intent(this, ProjectActivity.class);
-		intent.putExtra("context_name", context.getName());
-		intent.putExtra("project_id", project.getId());
-		startActivityForResult(intent, PROJECT_ACTIVITY);
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == PROJECT_ACTIVITY) {
+		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
 			if (this.triger_view != null) {
 				String context_name = (String) data.getSerializableExtra("context_name");
 				Long project_id = (Long) data.getSerializableExtra("project_id");
@@ -117,7 +105,7 @@ public class ContextActivity extends ExpandableListActivity {
 
 				ProjectViewHolder projectViewHolder = new ProjectViewHolder(this, this.triger_view);
 				projectViewHolder.updateView(project);
-				
+
 				this.triger_view = null;
 			}
 		}

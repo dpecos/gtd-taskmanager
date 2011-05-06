@@ -6,8 +6,9 @@
 
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".activities.ContextActivity"
-                  android:label="@string/app_name">
+        <activity 
+        	android:name=".activities.ContextActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -16,5 +17,8 @@
 
         <activity android:name=".activities.ProjectActivity"/>
 
+		<activity android:name=".activities.TaskActivity" />
+	    <activity android:name=".activities.TaskTabInfoActivity"/>
+	    
     </application>
 </manifest>

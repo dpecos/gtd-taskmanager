@@ -1,15 +1,14 @@
 package com.danielpecos.gtm.model.beans;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 public abstract class TaskContainer implements Iterable<Task>{
-	Hashtable<Long, Task> tasks;
+	LinkedHashMap<Long, Task> tasks;
 	
 	public TaskContainer() {
-		this.tasks = new Hashtable<Long, Task>();
+		this.tasks = new LinkedHashMap<Long, Task>();
 	}
 	
 	public Task createTask(String name, String description, Task.Priority priority) {
@@ -48,4 +47,5 @@ public abstract class TaskContainer implements Iterable<Task>{
 	public Iterator<Task> iterator() {
 		return this.tasks.values().iterator();
 	}
+
 }
