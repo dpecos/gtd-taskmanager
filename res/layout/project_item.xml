@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
 	android:id="@+id/projectLayout"
 	android:layout_width="fill_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	android:background="#bb84A7E8">
 	<TextView 
 		android:id="@+id/project_name"
 		android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
 		android:layout_below="@+id/project_name"
 		android:layout_marginLeft="7dip" 
 		android:layout_marginBottom="7dip"
-        android:textColor="#ff777777"      
+        android:textColor="#ff444444"      
         android:textSize="11dip" />
     <LinearLayout
     	android:orientation="vertical"
@@ -40,7 +41,7 @@
 			android:id="@+id/project_status_text"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content" 
-	        android:textColor="#ff777777"      
+	        android:textColor="#ff444444"      
 	        android:textSize="10dip" />  
     </LinearLayout>
     <ImageView 

@@ -17,14 +17,14 @@ import android.widget.TextView;
 public class SimpleListAdapter extends BaseAdapter {
 	private Context context;
 	
-	private ArrayList<HashMap<String, String>> itemData;
+	private ArrayList<HashMap<String, Object>> itemData;
 	private int item;
 	private String[] itemNames;
 	private int[] itemIds;
 	ArrayList<HashMap<String, Object>> itemEvents;
 	
 	public SimpleListAdapter(Context context,
-			ArrayList<HashMap<String, String>> itemData, int item,
+			ArrayList<HashMap<String, Object>> itemData, int item,
 			String[] itemNames, int[] itemIds, ArrayList<HashMap<String, Object>> itemsEvents) {
 		this.context = context;
 		this.itemData = itemData;
@@ -60,23 +60,23 @@ public class SimpleListAdapter extends BaseAdapter {
 		for (int elemId : this.itemIds) {
 			View v = convertView.findViewById(elemId);
 			String keyName = this.itemNames[i++];
-			String value = this.itemData.get(position).get(keyName);
+			Object value = this.itemData.get(position).get(keyName);
 			Object event = this.itemEvents.get(position).get(keyName);
 			setViewValue(v, value, event);
 		}
 		return convertView;
 	}
 	
-	public static void setViewValue(View v, String value, Object event) {
+	public static void setViewValue(View v, Object value, Object event) {
 		if (v instanceof CheckBox) {
-			((CheckBox) v).setChecked(Boolean.parseBoolean(value));
+			((CheckBox) v).setChecked((Boolean) value);
 			if (event != null) {
 				((CheckBox) v).setOnCheckedChangeListener((OnCheckedChangeListener) event);
 			}
 		} else if (v instanceof ImageView) {
-			((ImageView) v).setImageResource(Integer.parseInt(value));
+			((ImageView) v).setImageResource((Integer)value);
 		} else if (v instanceof TextView) {
-			((TextView)v).setText(value);
+			((TextView)v).setText((String)value);
 		}
 	}
 }

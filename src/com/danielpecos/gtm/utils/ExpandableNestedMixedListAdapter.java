@@ -16,32 +16,33 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 
 	private Context context;
 
-	private ArrayList<HashMap<String, String>> groupData;
+	private ArrayList<HashMap<String, Object>> groupData;
 	private int groupItem;
 	private String[] groupElemNames;
 	private int[] groupElemenIds;
 
-	private ArrayList<ArrayList<HashMap<String, String>>> childrenData1;
+	private ArrayList<ArrayList<HashMap<String, Object>>> childrenData1;
 	private int children1Item;
 	private String[] children1ElemNames;
 	private int[] children1ElemIds;
 	private ArrayList<ArrayList<HashMap<String, Object>>> children1Events;
+	private RowDisplayListener children1Listener;
 
-	private ArrayList<ArrayList<HashMap<String, String>>> childrenData2;
+	private ArrayList<ArrayList<HashMap<String, Object>>> childrenData2;
 	private int children2Item;
 	private String[] children2ElemNames;
 	private int[] children2ElemIds;
 	private ArrayList<ArrayList<HashMap<String, Object>>> children2Events;
-
+	private RowDisplayListener children2Listener;
 
 	public ExpandableNestedMixedListAdapter(
 			Context context,
-			ArrayList<HashMap<String, String>> groupData, 
+			ArrayList<HashMap<String, Object>> groupData, 
 			int groupItem, String[] groupElemNames,	int[] groupElemenIds,
-			ArrayList<ArrayList<HashMap<String, String>>> childrenData1,
-			int children1Item, String[] children1ElemNames, int[] children1ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children1Events,
-			ArrayList<ArrayList<HashMap<String, String>>> childrenData2,
-			int children2Item, String[] children2ElemNames, int[] children2ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children2Events) {
+			ArrayList<ArrayList<HashMap<String, Object>>> childrenData1,
+			int children1Item, String[] children1ElemNames, int[] children1ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children1Events, RowDisplayListener children1Listener,
+			ArrayList<ArrayList<HashMap<String, Object>>> childrenData2,
+			int children2Item, String[] children2ElemNames, int[] children2ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children2Events, RowDisplayListener rowDisplayListener) {
 
 		this.viewsCache = new HashMap<String, View>();
 
@@ -57,12 +58,14 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		this.children1ElemNames = children1ElemNames;
 		this.children1ElemIds = children1ElemIds;
 		this.children1Events = children1Events;
+		this.children1Listener = children1Listener;
 
 		this.childrenData2 = childrenData2;
 		this.children2Item = children2Item;
 		this.children2ElemNames = children2ElemNames;
 		this.children2ElemIds = children2ElemIds;
 		this.children2Events = children2Events;
+		this.children2Listener = rowDisplayListener;
 	}
 
 	public Object getChild(int groupPosition, int childPosition) {
@@ -96,7 +99,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 				int i = 0;
 				for (int elemId : this.children1ElemIds) {
 					String keyName = this.children1ElemNames[i++];
-					String value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
+					Object value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
 					View v = convertView.findViewById(elemId);
 					Object event = null;
 					if (this.children1Events != null && this.children1Events.get(groupPosition) != null && this.children1Events.get(groupPosition).get(childPosition) != null)
@@ -116,7 +119,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 					int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
 
 					String keyName = this.children2ElemNames[i++];
-					String value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
+					Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
 					View v = convertView.findViewById(elemId);
 					Object event = null;
 					if (this.children2Events != null && this.children2Events.get(groupPosition) != null && this.children2Events.get(groupPosition).get(realChildPosition) != null)
@@ -125,6 +128,14 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 				}
 			}
 			this.viewsCache.put(groupPosition + "-" + childPosition, convertView);
+		}
+			
+		if (childPosition < this.childrenData1.get(groupPosition).size()) {
+			if (this.children1Listener != null) 
+				this.children1Listener.onRowDisplay(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+		} else {
+			if (this.children2Listener != null) 
+				this.children2Listener.onRowDisplay(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
 		}
 
 		return convertView;
@@ -155,7 +166,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		int i = 0;
 		for (int elemId : this.groupElemenIds) {
 			String keyName = this.groupElemNames[i++];
-			String value = this.groupData.get(groupPosition).get(keyName);
+			Object value = this.groupData.get(groupPosition).get(keyName);
 			View v = convertView.findViewById(elemId);
 			SimpleListAdapter.setViewValue(v, value, null);
 		}
@@ -176,4 +187,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		return true;
 	}
 
+	public interface RowDisplayListener {
+		public void onRowDisplay(View rowView, HashMap<String, Object> data);
+	}
 }

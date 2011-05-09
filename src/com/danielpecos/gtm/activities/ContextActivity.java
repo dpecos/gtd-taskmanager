@@ -6,9 +6,9 @@ import java.util.HashMap;
 
 import android.app.ExpandableListActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
@@ -20,6 +20,7 @@ import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
+import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
@@ -36,37 +37,38 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		loadTestData();
 
-		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
-		ArrayList<ArrayList<HashMap<String, String>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, String>>>();
-		ArrayList<ArrayList<HashMap<String, String>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, String>>>();
+		ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
+		ArrayList<ArrayList<HashMap<String, Object>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, Object>>>();
+		ArrayList<ArrayList<HashMap<String, Object>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 		ArrayList<ArrayList<HashMap<String, Object>>> childrenEvents_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 
 		Collection<Context> contexts = taskManager.getContexts();
 
 		for (Context ctx : contexts) {
-			HashMap<String, String> contextData = new HashMap<String, String>();
+			HashMap<String, Object> contextData = new HashMap<String, Object>();
 			contextData.put("name", ctx.getName());
 			groupData.add(contextData);
 
-			ArrayList<HashMap<String, String>> childData = new ArrayList<HashMap<String,String>>();
+			ArrayList<HashMap<String, Object>> childData = new ArrayList<HashMap<String,Object>>();
 			
 			for (Project project : ctx.getProjects()) {
-				HashMap<String, String> projectData = new HashMap<String, String>();
+				HashMap<String, Object> projectData = new HashMap<String, Object>();
 				projectData.put("name", project.getName());
 				projectData.put("description", project.getDescription());
 				projectData.put("status_text", project.getCompletedTasksCount() + "/" + project.getTasksCount());
-				projectData.put("status_icon", "" + ProjectViewHolder.getProjectStatusIcon(project.getTasksCount(), project.getCompletedTasksCount()));
+				projectData.put("status_icon", ProjectViewHolder.getProjectStatusIcon(project.getTasksCount(), project.getCompletedTasksCount()));
 				childData.add(projectData);
 			}
 			childrenData_projects.add(childData);
 			
-			childData = new ArrayList<HashMap<String,String>>();
+			childData = new ArrayList<HashMap<String,Object>>();
 			ArrayList<HashMap<String, Object>> childEvents = new ArrayList<HashMap<String,Object>>();
 			for (final Task task : ctx.getTasks()) {
-				HashMap<String, String> taskData = new HashMap<String, String>();
+				HashMap<String, Object> taskData = new HashMap<String, Object>();
 				taskData.put("name", task.getName());
 				taskData.put("description", task.getDescription());
-				taskData.put("status", "" + (task.getStatus() == Task.Status.Complete));
+				taskData.put("status", task.getStatus() == Task.Status.Complete);
+				taskData.put("priority", task.getPriority());
 				childData.add(taskData);
 				
 				HashMap<String, Object> taskEvents = new HashMap<String, Object>();
@@ -74,6 +76,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
 						task.setStatus(isChecked ? Task.Status.Complete : Task.Status.Pending);
+						// this line is required to force the UI to update the checkbox view when using a real device
+						buttonView.requestLayout();
 					}
 				});
 				childEvents.add(taskEvents);
@@ -106,13 +110,33 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text", "status_icon"},
 				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
-				null,
+				null, null,
 				
 				childrenData_tasks, 
 				R.layout.task_item, 
 				new String[] {"name", "description", "status"},
 				new int[] {R.id.task_name, R.id.task_description, R.id.task_status}, 
-				childrenEvents_tasks
+				childrenEvents_tasks, 
+				new RowDisplayListener() {
+					@Override
+					public void onRowDisplay(View rowView, HashMap<String, Object> data) {
+						switch((Task.Priority)data.get("priority")) {
+						case Low: 
+							rowView.setBackgroundColor(Color.parseColor("#bbd7d7d7"));
+							break;
+						case Normal:
+							rowView.setBackgroundColor(Color.parseColor("#ccCAE6CB"));
+							break;
+						case Important: 
+							rowView.setBackgroundColor(Color.parseColor("#ccE6E0CA"));
+							break;
+						case Critical: 
+							rowView.setBackgroundColor(Color.parseColor("#ccE6CACA"));
+							break;
+						}
+						rowView.requestLayout();
+					}
+				}
 		));
 		this.getExpandableListView().setOnChildClickListener(this);
 	}
@@ -130,8 +154,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		prj.createTask("Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
 		
 		ctx.createTask("Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
-		ctx.createTask("Tarea 2", "Tarea num 1.0.2", Task.Priority.Critical).setStatus(Task.Status.Complete);
-		ctx.createTask("Tarea 3", "Tarea num 1.0.3", Task.Priority.Critical);
+		ctx.createTask("Tarea 2", "Tarea num 1.0.2", Task.Priority.Important);
+		ctx.createTask("Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal).setStatus(Task.Status.Complete);
+		ctx.createTask("Tarea 4", "Tarea num 1.0.4", Task.Priority.Low);
 		
 		prj = ctx.createProject("Proyecto 1.2", "Descripción de proyecto 1.2");
 		prj.createTask("Tarea 1", "Tarea num 1.2.1", Task.Priority.Critical);

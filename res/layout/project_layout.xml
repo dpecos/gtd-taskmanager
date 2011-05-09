@@ -9,8 +9,7 @@
     	android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:paddingTop="5dip"
-		android:paddingBottom="5dip"
-		android:background="#ff8EBADE"/>
+		android:paddingBottom="5dip"/>
 	<ListView
 		android:id="@android:id/list"
 		android:layout_width="fill_parent"

@@ -58,13 +58,13 @@ public class ProjectActivity extends ListActivity {
 
 		projectViewHolder.updateView(project);
 
-		ArrayList<HashMap<String, String>> itemsData = new ArrayList<HashMap<String,String>>();
-		ArrayList<HashMap<String, Object>> itemsEvents = new ArrayList<HashMap<String,Object>>();
+		ArrayList<HashMap<String, Object>> itemsData = new ArrayList<HashMap<String, Object>>();
+		ArrayList<HashMap<String, Object>> itemsEvents = new ArrayList<HashMap<String, Object>>();
 		for (final Task task : project.getTasks()) {
-			HashMap<String, String> taskData = new HashMap<String, String>();
+			HashMap<String, Object> taskData = new HashMap<String, Object>();
 			taskData.put("name", task.getName());
 			taskData.put("description", task.getDescription());
-			taskData.put("status", "" + (task.getStatus() == Task.Status.Complete));
+			taskData.put("status", task.getStatus() == Task.Status.Complete);
 			itemsData.add(taskData);
 			
 			HashMap<String, Object> taskEvents = new HashMap<String, Object>();

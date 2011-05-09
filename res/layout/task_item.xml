@@ -30,6 +30,6 @@
 		android:layout_below="@+id/task_name" 
 		android:paddingLeft="5dip" 
 		android:paddingRight="5dip"
-        android:textColor="#ff777777"      
+        android:textColor="#ff444444"      
         android:textSize="11dip" />
 </RelativeLayout>

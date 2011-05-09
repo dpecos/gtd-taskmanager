@@ -14,7 +14,7 @@ public class Task {
 		Pending, Complete, Discarded 
 	}
 	public enum Priority {
-		Low, Important, Critical
+		Low, Normal, Important, Critical
 	}
 	
 	long id;
@@ -57,4 +57,9 @@ public class Task {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
+
+	public Priority getPriority() {
+		return priority;
+	}
+	
 }
