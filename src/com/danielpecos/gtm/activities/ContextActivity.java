@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.SimpleExpandableListAdapter;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -17,6 +16,7 @@ import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 
 public class ContextActivity extends ExpandableListActivity {
@@ -31,19 +31,11 @@ public class ContextActivity extends ExpandableListActivity {
 
 		setContentView(R.layout.context_layout);
 
-		// Test data
-		this.taskManager = TaskManager.getInstance();
-		Project prj = this.taskManager.createContext("Contexto 1").createProject("Proyecto 1.1", "Descripción de proyecto 1.1");
-		this.taskManager.createContext("Contexto 2");
-		this.taskManager.createContext("Contexto 3");
-		prj.createTask("Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);
-		prj.createTask("Tarea 2", "Tarea num 1.1.2", Task.Priority.Important);
-		prj.createTask("Tarea 3", "Tarea num 1.1.3", Task.Priority.Low);
-		prj.createTask("Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
-		prj.createTask("Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
+		loadTestData();
 
 		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
-		ArrayList<ArrayList<HashMap<String, String>>> childrenData =  new ArrayList<ArrayList<HashMap<String, String>>>();
+		ArrayList<ArrayList<HashMap<String, String>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, String>>>();
+		ArrayList<ArrayList<HashMap<String, String>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, String>>>();
 
 		Collection<Context> contexts = taskManager.getContexts();
 
@@ -52,21 +44,30 @@ public class ContextActivity extends ExpandableListActivity {
 			contextData.put("name", ctx.getName());
 			groupData.add(contextData);
 
-			Collection<Project> projects = ctx.getProjects();
-
 			ArrayList<HashMap<String, String>> childData = new ArrayList<HashMap<String,String>>();
-			for (Project project : projects) {
+			for (Project project : ctx.getProjects()) {
 				HashMap<String, String> projectData = new HashMap<String, String>();
 				projectData.put("name", project.getName());
 				projectData.put("description", project.getDescription());
 				projectData.put("status_text", project.getCompletedTasksCount() + "/" + project.getTasksCount());
+				projectData.put("status_icon", "" + ProjectViewHolder.getProjectStatusIcon(project.getTasksCount(), project.getCompletedTasksCount()));
 				childData.add(projectData);
 			}
-			childrenData.add(childData);
+			childrenData_projects.add(childData);
+			
+			childData = new ArrayList<HashMap<String,String>>();
+			for (Task task : ctx.getTasks()) {
+				HashMap<String, String> taskData = new HashMap<String, String>();
+				taskData.put("name", task.getName());
+				taskData.put("description", task.getDescription());
+				taskData.put("status", "" + (task.getStatus() == Task.Status.Complete));
+				childData.add(taskData);
+			}
+			childrenData_tasks.add(childData);
 		}
 
 		// Set up our adapter
-		this.setListAdapter(new SimpleExpandableListAdapter(
+		/*this.setListAdapter(new SimpleExpandableListAdapter(
 				this, 
 				groupData, 
 				R.layout.context_item, 
@@ -76,7 +77,50 @@ public class ContextActivity extends ExpandableListActivity {
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text"},
 				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text}
+		));*/
+		
+		this.setListAdapter(new ExpandableNestedMixedListAdapter(
+				this, 
+				groupData, 
+				R.layout.context_item, 
+				new String[] {"name"}, 
+				new int[] {R.id.context_name}, 
+				childrenData_projects, 
+				R.layout.project_item, 
+				new String[] {"name", "description", "status_text", "status_icon"},
+				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
+				childrenData_tasks, 
+				R.layout.task_item, 
+				new String[] {"name", "description", "status"},
+				new int[] {R.id.task_name, R.id.task_description, R.id.task_status}
 		));
+	}
+
+
+	private void loadTestData() {
+		// Test data
+		this.taskManager = TaskManager.getInstance();
+		Context ctx = this.taskManager.createContext("Contexto 1");
+		Project prj = ctx.createProject("Proyecto 1.1", "Descripción de proyecto 1.1");
+		prj.createTask("Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);
+		prj.createTask("Tarea 2", "Tarea num 1.1.2", Task.Priority.Important).setStatus(Task.Status.Complete);
+		prj.createTask("Tarea 3", "Tarea num 1.1.3", Task.Priority.Low).setStatus(Task.Status.Complete);
+		prj.createTask("Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
+		prj.createTask("Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
+		
+		ctx.createTask("Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
+		ctx.createTask("Tarea 2", "Tarea num 1.0.2", Task.Priority.Critical).setStatus(Task.Status.Complete);
+		ctx.createTask("Tarea 3", "Tarea num 1.0.3", Task.Priority.Critical);
+		
+		prj = ctx.createProject("Proyecto 1.2", "Descripción de proyecto 1.2");
+		prj.createTask("Tarea 1", "Tarea num 1.2.1", Task.Priority.Critical);
+		prj.createTask("Tarea 2", "Tarea num 1.2.2", Task.Priority.Important);
+		prj.createTask("Tarea 3", "Tarea num 1.2.3", Task.Priority.Low);
+		prj.createTask("Tarea 4", "Tarea num 1.2.4", Task.Priority.Important);
+		prj.createTask("Tarea 5", "Tarea num 1.2.5", Task.Priority.Critical);
+		
+		this.taskManager.createContext("Contexto 2");
+		this.taskManager.createContext("Contexto 3");
 
 	}
 
