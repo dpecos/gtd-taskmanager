@@ -122,7 +122,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					public void onRowDisplay(View rowView, HashMap<String, Object> data) {
 						switch((Task.Priority)data.get("priority")) {
 						case Low: 
-							rowView.setBackgroundColor(Color.parseColor("#bbd7d7d7"));
+							rowView.setBackgroundColor(Color.parseColor("#ccd7d7d7"));
 							break;
 						case Normal:
 							rowView.setBackgroundColor(Color.parseColor("#ccCAE6CB"));
