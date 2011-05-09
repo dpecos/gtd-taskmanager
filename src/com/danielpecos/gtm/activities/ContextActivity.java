@@ -8,6 +8,9 @@ import android.app.ExpandableListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 
 import com.danielpecos.gtm.R;
@@ -19,7 +22,7 @@ import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 
-public class ContextActivity extends ExpandableListActivity {
+public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
 
 	private TaskManager taskManager;
 
@@ -36,6 +39,7 @@ public class ContextActivity extends ExpandableListActivity {
 		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
 		ArrayList<ArrayList<HashMap<String, String>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, String>>>();
 		ArrayList<ArrayList<HashMap<String, String>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, String>>>();
+		ArrayList<ArrayList<HashMap<String, Object>>> childrenEvents_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 
 		Collection<Context> contexts = taskManager.getContexts();
 
@@ -45,6 +49,7 @@ public class ContextActivity extends ExpandableListActivity {
 			groupData.add(contextData);
 
 			ArrayList<HashMap<String, String>> childData = new ArrayList<HashMap<String,String>>();
+			
 			for (Project project : ctx.getProjects()) {
 				HashMap<String, String> projectData = new HashMap<String, String>();
 				projectData.put("name", project.getName());
@@ -56,14 +61,25 @@ public class ContextActivity extends ExpandableListActivity {
 			childrenData_projects.add(childData);
 			
 			childData = new ArrayList<HashMap<String,String>>();
-			for (Task task : ctx.getTasks()) {
+			ArrayList<HashMap<String, Object>> childEvents = new ArrayList<HashMap<String,Object>>();
+			for (final Task task : ctx.getTasks()) {
 				HashMap<String, String> taskData = new HashMap<String, String>();
 				taskData.put("name", task.getName());
 				taskData.put("description", task.getDescription());
 				taskData.put("status", "" + (task.getStatus() == Task.Status.Complete));
 				childData.add(taskData);
+				
+				HashMap<String, Object> taskEvents = new HashMap<String, Object>();
+				taskEvents.put("status", new OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+						task.setStatus(isChecked ? Task.Status.Complete : Task.Status.Pending);
+					}
+				});
+				childEvents.add(taskEvents);
 			}
 			childrenData_tasks.add(childData);
+			childrenEvents_tasks.add(childEvents);
 		}
 
 		// Set up our adapter
@@ -73,7 +89,7 @@ public class ContextActivity extends ExpandableListActivity {
 				R.layout.context_item, 
 				new String[] {"name"}, 
 				new int[] {R.id.context_name}, 
-				childrenData, 
+				childrenData_projects, 
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text"},
 				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text}
@@ -85,15 +101,20 @@ public class ContextActivity extends ExpandableListActivity {
 				R.layout.context_item, 
 				new String[] {"name"}, 
 				new int[] {R.id.context_name}, 
+				
 				childrenData_projects, 
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text", "status_icon"},
 				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
+				null,
+				
 				childrenData_tasks, 
 				R.layout.task_item, 
 				new String[] {"name", "description", "status"},
-				new int[] {R.id.task_name, R.id.task_description, R.id.task_status}
+				new int[] {R.id.task_name, R.id.task_description, R.id.task_status}, 
+				childrenEvents_tasks
 		));
+		this.getExpandableListView().setOnChildClickListener(this);
 	}
 
 
@@ -132,11 +153,18 @@ public class ContextActivity extends ExpandableListActivity {
 		this.triger_view = view;
 
 		Context ctx = taskManager.elementAt(groupPosition);
-		Project prj = ctx.elementAt(childPosition);
-		ActivityUtils.showProjectActivity(this, ctx, prj);
+		
+		if (childPosition < ctx.getProjects().size()) {
+			Project prj = ctx.projectAt(childPosition);
+			ActivityUtils.showProjectActivity(this, ctx, prj);
+		} else {
+			Task task = ctx.taskAt(childPosition - ctx.getProjects().size());
+			ActivityUtils.showTaskActivity(this, task);
+		}
 
 		return result;
 	}
+	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

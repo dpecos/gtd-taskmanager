@@ -1,27 +1,25 @@
 package com.danielpecos.gtm.activities;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.SimpleListAdapter;
 import com.danielpecos.gtm.views.ProjectViewHolder;
-import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class ProjectActivity extends ListActivity {
 
@@ -60,60 +58,47 @@ public class ProjectActivity extends ListActivity {
 
 		projectViewHolder.updateView(project);
 
-		TaskItemAdapter adapter = new TaskItemAdapter(this, R.layout.task_item, R.id.task_name, new ArrayList<Task>(project.getTasks()));
+		ArrayList<HashMap<String, String>> itemsData = new ArrayList<HashMap<String,String>>();
+		ArrayList<HashMap<String, Object>> itemsEvents = new ArrayList<HashMap<String,Object>>();
+		for (final Task task : project.getTasks()) {
+			HashMap<String, String> taskData = new HashMap<String, String>();
+			taskData.put("name", task.getName());
+			taskData.put("description", task.getDescription());
+			taskData.put("status", "" + (task.getStatus() == Task.Status.Complete));
+			itemsData.add(taskData);
+			
+			HashMap<String, Object> taskEvents = new HashMap<String, Object>();
+			taskEvents.put("status", new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+					task.setStatus(isChecked ? Task.Status.Complete : Task.Status.Pending);
+					projectViewHolder.updateView(project);
+				}
+			});
+			itemsEvents.add(taskEvents);
+		}
+
+		SimpleListAdapter adapter = new SimpleListAdapter(
+				this,
+				itemsData, 
+				R.layout.task_item, 
+				new String[] {"name", "description", "status"},
+				new int[] {R.id.task_name, R.id.task_description, R.id.task_status},
+				itemsEvents
+		);
+
 		this.setListAdapter(adapter);
-		this.getListView().setTextFilterEnabled(true);
 
 		setResult(RESULT_OK, getIntent());
 	}
 
-	private class TaskItemAdapter extends ArrayAdapter<Task> {
+	@Override
+	public void onListItemClick(ListView parent, View view, int position, long id) {
+		super.onListItemClick(parent, view, position, id);
 
-		public TaskItemAdapter(android.content.Context context, int resource, int textViewResourceId, List<Task> objects) {
-			super(context, resource, textViewResourceId, objects);
-		}
+		this.triger_view = view;
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			TaskViewHolder taskViewHolder = null;
-
-			if (convertView == null) {
-				LayoutInflater mInflater = (LayoutInflater) getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-				convertView = mInflater.inflate(R.layout.task_item, null);
-				taskViewHolder = new TaskViewHolder(this.getContext(), convertView);
-				convertView.setTag(taskViewHolder);
-				
-				convertView.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						triger_view = view;
-
-						//Task task = this.project.elementAt(position);
-						ActivityUtils.showTaskActivity(ProjectActivity.this, null);
-					}
-				});
-
-			}
-
-			final Task task = this.getItem(position);
-
-			taskViewHolder = (TaskViewHolder) convertView.getTag();
-			taskViewHolder.getName().setText(task.getName());
-			taskViewHolder.getDescription().setText(task.getDescription());
-			taskViewHolder.getStatus().setChecked(task.getStatus() == Task.Status.Complete);
-
-
-			taskViewHolder.getStatus().setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
-					task.setStatus(isChecked ? Task.Status.Complete : Task.Status.Pending);
-
-					projectViewHolder.updateView(project);
-				}
-
-			});
-
-			return convertView;
-		}
+		Task task = this.project.elementAt(position);
+		ActivityUtils.showTaskActivity(ProjectActivity.this, task);
 	}
 }

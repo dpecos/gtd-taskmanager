@@ -39,9 +39,14 @@ public class Context extends TaskContainer {
 		this.projects.remove(name);
 	}
 
-	public Project elementAt(int projectPosition) {
+	public Project projectAt(int projectPosition) {
 		Project prj = (Project) this.getProjects().toArray()[projectPosition];
 		return prj;
+	}
+	
+	public Task taskAt(int taskPosition) {
+		Task task = (Task) this.getTasks().toArray()[taskPosition];
+		return task;
 	}
 
 }
