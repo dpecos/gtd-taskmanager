@@ -3,12 +3,14 @@
     <string name="app_name">GTD Task Manager</string>
     <color name="Task_PriorityLow_Background">#ffCAE6CB</color>
     <color name="Task_PriorityLow_Foreground">#ff7BB37D</color>
-    <color name="Task_PriorityNormal_Background">#ffd7d7d7</color>
-    <color name="Task_PriorityNormal_Foreground">#ff999999</color>
+    <color name="Task_PriorityNormal_Background">#ffC2CDED</color>
+    <color name="Task_PriorityNormal_Foreground">#ff7F92C9</color>
     <color name="Task_PriorityImportant_Background">#ffE6E0CA</color>
     <color name="Task_PriorityImportant_Foreground">#ffBFB17C</color>
     <color name="Task_PriorityCritical_Background">#ffE6CACA</color>
     <color name="Task_PriorityCritical_Foreground">#ffE39696</color>
+    <color name="Task_PriorityDiscarded_Background">#ffd7d7d7</color>
+    <color name="Task_PriorityDiscarded_Foreground">#ff999999</color>
     <color name="Context_Item_Foreground">#ff23409E</color>
     <color name="Context_Item_Background">#bbE8E8E8</color>
     <color name="Project_Item_Background">#ffD3D8E8</color>
@@ -18,4 +20,14 @@
     <string name="task_priority_label">Task priority:</string>
     <string name="task_status_discarded">Task discarded</string>
     <string name="task_status_active">Task active</string>
+    <string name="task_duedate_label">Task due date:</string>
+    <string name="task_duedate_button">Change Due date</string>
+    <string name="task_changeName_button">Change Name</string>
+    <string name="task_changeDescription_button">Change Description</string>
+	<string name="textbox_title_name">Set task name</string>
+	<string name="textbox_label_name">Task name:</string>
+	<string name="textbox_title_description">Set task description</string>
+	<string name="textbox_label_description">Task description:</string>
+    <string name="textbox_cancel">Ok</string>
+    <string name="textbox_ok">Cancel</string>
 </resources>

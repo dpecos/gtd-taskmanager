@@ -1,6 +1,8 @@
 package com.danielpecos.gtm.activities;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -15,6 +17,7 @@ import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {
+	public static final int DATE_DIALOG_ID = 0;
 	private TaskManager taskManager;
 	private Context context;
 	private Project project;
@@ -60,10 +63,10 @@ public class TaskActivity extends TabActivity {
                 .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    spec = tabHost.newTabSpec("map").setIndicator(getString(R.string.task_tab_map),
+	    /*spec = tabHost.newTabSpec("map").setIndicator(getString(R.string.task_tab_map),
                 res.getDrawable(android.R.drawable.ic_menu_mapmode))
                 .setContent(intent);
-	    tabHost.addTab(spec);
+	    tabHost.addTab(spec);*/
 	    
 	    spec = tabHost.newTabSpec("reminder").setIndicator(getString(R.string.task_tab_reminder),
                 res.getDrawable(android.R.drawable.ic_popup_reminder))

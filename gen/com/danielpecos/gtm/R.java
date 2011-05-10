@@ -11,11 +11,13 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int Context_Item_Background=0x7f050009;
-        public static final int Context_Item_Foreground=0x7f050008;
-        public static final int Project_Item_Background=0x7f05000a;
+        public static final int Context_Item_Background=0x7f05000b;
+        public static final int Context_Item_Foreground=0x7f05000a;
+        public static final int Project_Item_Background=0x7f05000c;
         public static final int Task_PriorityCritical_Background=0x7f050006;
         public static final int Task_PriorityCritical_Foreground=0x7f050007;
+        public static final int Task_PriorityDiscarded_Background=0x7f050008;
+        public static final int Task_PriorityDiscarded_Foreground=0x7f050009;
         public static final int Task_PriorityImportant_Background=0x7f050004;
         public static final int Task_PriorityImportant_Foreground=0x7f050005;
         public static final int Task_PriorityLow_Background=0x7f050000;
@@ -35,6 +37,7 @@ public final class R {
     public static final class id {
         public static final int context_name=0x7f060000;
         public static final int header=0x7f060007;
+        public static final int layout_date=0x7f060015;
         public static final int projectLayout=0x7f060001;
         public static final int project_add_task=0x7f060004;
         public static final int project_description=0x7f060003;
@@ -43,15 +46,24 @@ public final class R {
         public static final int project_status_text=0x7f060006;
         public static final int relativeLayout1=0x7f06000d;
         public static final int taskLayout=0x7f060008;
+        public static final int task_changeDescription_button=0x7f060011;
+        public static final int task_changeName_button=0x7f060010;
         public static final int task_description=0x7f06000c;
-        public static final int task_discarded=0x7f060010;
+        public static final int task_duedate=0x7f060016;
+        public static final int task_duedate_button=0x7f060017;
+        public static final int task_duedate_label=0x7f060014;
         public static final int task_header=0x7f06000e;
         public static final int task_name=0x7f06000b;
         public static final int task_priority=0x7f06000a;
-        public static final int task_priority_bar=0x7f060012;
-        public static final int task_priority_label=0x7f060011;
+        public static final int task_priority_bar=0x7f060013;
+        public static final int task_priority_label=0x7f060012;
         public static final int task_status_check=0x7f060009;
-        public static final int task_status_discarded=0x7f06000f;
+        public static final int task_status_discarded=0x7f060018;
+        public static final int task_subheader=0x7f06000f;
+        public static final int textbox_cancel_button=0x7f06001b;
+        public static final int textbox_label=0x7f060019;
+        public static final int textbox_ok_button=0x7f06001c;
+        public static final int textbox_text=0x7f06001a;
     }
     public static final class layout {
         public static final int context_item=0x7f030000;
@@ -61,14 +73,25 @@ public final class R {
         public static final int task_item=0x7f030004;
         public static final int task_layout=0x7f030005;
         public static final int task_tab_info=0x7f030006;
+        public static final int textbox_dialog=0x7f030007;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int task_changeDescription_button=0x7f04000a;
+        public static final int task_changeName_button=0x7f040009;
+        public static final int task_duedate_button=0x7f040008;
+        public static final int task_duedate_label=0x7f040007;
         public static final int task_priority_label=0x7f040004;
         public static final int task_status_active=0x7f040006;
         public static final int task_status_discarded=0x7f040005;
         public static final int task_tab_details=0x7f040001;
         public static final int task_tab_map=0x7f040002;
         public static final int task_tab_reminder=0x7f040003;
+        public static final int textbox_cancel=0x7f04000f;
+        public static final int textbox_label_description=0x7f04000e;
+        public static final int textbox_label_name=0x7f04000c;
+        public static final int textbox_ok=0x7f040010;
+        public static final int textbox_title_description=0x7f04000d;
+        public static final int textbox_title_name=0x7f04000b;
     }
 }
