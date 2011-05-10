@@ -21,7 +21,7 @@ public abstract class TaskContainer implements Iterable<Task>{
 		this.tasks.remove(task.getId());
 	}
 	
-	public Task getTask(int id) {
+	public Task getTask(long id) {
 		return this.tasks.get(id);
 	}
 	
@@ -36,7 +36,7 @@ public abstract class TaskContainer implements Iterable<Task>{
 	public int getCompletedTasksCount() {
 		int count = 0;
 		for (Task task : this.tasks.values()) {
-			if (task.getStatus() == Task.Status.Complete) {
+			if (task.getStatus() == Task.Status.Completed) {
 				count ++;
 			}
 		}

@@ -132,10 +132,10 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			
 		if (childPosition < this.childrenData1.get(groupPosition).size()) {
 			if (this.children1Listener != null) 
-				this.children1Listener.onRowDisplay(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+				this.children1Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
 		} else {
 			if (this.children2Listener != null) 
-				this.children2Listener.onRowDisplay(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+				this.children2Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
 		}
 
 		return convertView;
@@ -188,6 +188,6 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 	}
 
 	public interface RowDisplayListener {
-		public void onRowDisplay(View rowView, HashMap<String, Object> data);
+		public void onViewSetUp(View view, HashMap<String, Object> data);
 	}
 }

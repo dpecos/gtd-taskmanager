@@ -3,7 +3,7 @@
 	android:id="@+id/projectLayout"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:background="#ddB0B9D9">
+	android:background="@color/Project_Item_Background">
 	<TextView 
 		android:id="@+id/project_name"
 		android:layout_height="wrap_content"

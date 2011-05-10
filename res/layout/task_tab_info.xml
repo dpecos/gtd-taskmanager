@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:id="@+id/relativeLayout1"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:background="#ffffffff">
+	<LinearLayout
+		android:id="@+id/task_header"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content">
+		<TextView 
+			android:id="@+id/task_priority" 
+			android:layout_height="22dip"
+			android:layout_width="22dip" 
+			android:layout_alignParentLeft="true"
+			android:layout_centerInParent="true"
+	        android:layout_marginLeft="7dip"
+	        android:layout_marginRight="7dip" />
+		<TextView 
+			android:id="@+id/task_name" 
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content" 
+			android:layout_toRightOf="@+id/task_priority"
+			android:layout_centerInParent="true" 
+			android:paddingTop="5dip"  
+			android:paddingLeft="5dip"
+	        android:paddingRight="5dip" 
+	        android:textStyle="bold" 
+	        android:textSize="14dip"
+	        android:textColor="#ff000000" />
+	 	<ToggleButton android:id="@+id/task_status_discarded"
+	        android:layout_width="120dip"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true" 
+	        android:textOn="@string/task_status_discarded"
+	        android:textOff="@string/task_status_active"
+	        android:layout_centerInParent="true"/>	        
+	    <CheckBox
+			android:id="@+id/task_status_check"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"  
+			android:layout_marginLeft="5dip" 
+			android:layout_marginRight="5dip"
+			android:layout_toRightOf="@+id/task_discarded" 
+			android:layout_centerInParent="true" />
+	</LinearLayout>
+	<TextView 
+		android:id="@+id/task_description"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent" 
+		android:layout_below="@+id/task_header" 
+		android:paddingLeft="5dip" 
+		android:paddingRight="5dip"
+        android:textColor="#ff777777"      
+        android:textSize="11dip" />
+	<TextView 
+		android:id="@+id/task_priority_label"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" 
+		android:layout_below="@+id/task_description" 
+		android:paddingLeft="5dip" 
+		android:paddingRight="5dip"
+        android:textSize="11dip" 
+        android:text="@string/task_priority_label"/>        
+	<RatingBar android:id="@+id/task_priority_bar"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/task_priority_label" 
+	    android:numStars="4"
+	    android:stepSize="1.0"/>        
+</RelativeLayout>
+

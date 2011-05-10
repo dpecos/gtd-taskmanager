@@ -1,6 +1,7 @@
 package com.danielpecos.gtm.views;
 
-import android.content.Context;
+import java.util.HashMap;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,56 +9,40 @@ import android.widget.TextView;
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Project;
 
-public class ProjectViewHolder extends View {
-	private View mRow;
-	private TextView project_name = null;
-	private TextView project_description = null;
-	private ImageView project_status_icon = null;
-	private TextView project_status_text = null;
+public class ProjectViewHolder extends ViewHolder {
+	private Project project;
 
-	public ProjectViewHolder(Context context, View row) {
-		super(context);
-		mRow = row;
-	}
-	public TextView getName() {
-		if (project_name == null){
-			project_name = (TextView) mRow.findViewById(R.id.project_name);
-		}
-		return project_name;
-	} 
-	public TextView getDescription() {
-		if (project_description == null){
-			project_description = (TextView) mRow.findViewById(R.id.project_description);
-		}
-		return project_description;
-	} 
-	public ImageView getStatusIcon() {
-		if (project_status_icon == null){
-			project_status_icon = (ImageView) mRow.findViewById(R.id.project_status_icon);
-		}
-		return project_status_icon;
-	} 
-	public TextView getStatusText() {
-		if (project_status_text == null){
-			project_status_text = (TextView) mRow.findViewById(R.id.project_status_text);
-		}
-		return project_status_text;
-	} 
-
-	public void updateView(Project project) {
-		if (project != null) {
-			int completedTasks = project.getCompletedTasksCount();
-			int totalTasks = project.getTasksCount();
-
-			this.getName().setText(project.getName());
-			this.getDescription().setText(project.getDescription());
-			this.getStatusText().setText(completedTasks + "/" + totalTasks);
-
-			this.getStatusIcon().setImageResource(getProjectStatusIcon(totalTasks, completedTasks));
-		}
+	public ProjectViewHolder(View view, Project project) {
+		super(view);
+		this.project = project;
 	}
 	
-	public static int getProjectStatusIcon(int totalTasks, int completedTasks) {
+	@Override
+	public HashMap<String, Object> getListFields() {
+		HashMap<String, Object> projectData = new HashMap<String, Object>();
+		
+		projectData.put("_BASE_", project);
+		projectData.put("name", project.getName());
+		projectData.put("description", project.getDescription());
+		projectData.put("status_text", project.getCompletedTasksCount() + "/" + project.getTasksCount());
+		projectData.put("status_icon", this.getProjectStatusIcon(project.getTasksCount(), project.getCompletedTasksCount()));
+		
+		return projectData;
+	}
+
+	@Override
+	public void updateView() {
+		int completedTasks = project.getCompletedTasksCount();
+		int totalTasks = project.getTasksCount();
+
+		((TextView)getView(R.id.project_name)).setText(project.getName());
+		((TextView)getView(R.id.project_description)).setText(project.getDescription());
+		((TextView)getView(R.id.project_status_text)).setText(completedTasks + "/" + totalTasks);
+
+		((ImageView)getView(R.id.project_status_icon)).setImageResource(this.getProjectStatusIcon(totalTasks, completedTasks));
+	}
+	
+	private int getProjectStatusIcon(int totalTasks, int completedTasks) {
 		float percent = completedTasks / (float)totalTasks * 100;
 		
 		int imageResource = R.drawable.stat_sys_signal_0;
@@ -75,4 +60,10 @@ public class ProjectViewHolder extends View {
 
 		return imageResource;
 	}
+	
+	
+
+	
+
+	
 }

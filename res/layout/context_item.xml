@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
-    android:background="#bbB0B0B0">
+    android:background="@color/Context_Item_Background">
 	<TextView 
 		android:layout_height="55dip"
 		android:layout_width="fill_parent" 
@@ -14,7 +14,7 @@
         android:paddingRight="5dip" 
         android:textStyle="bold" 
         android:textSize="17dip"
-        android:textColor="#ff23409E"
+        android:textColor="@color/Context_Item_Foreground"
         android:gravity="center_vertical"  />
 </LinearLayout>
 

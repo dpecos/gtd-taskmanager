@@ -69,7 +69,7 @@ public class SimpleListAdapter extends BaseAdapter {
 			setViewValue(v, value, event);
 		}
 		if (this.itemListener != null) 
-			this.itemListener.onRowDisplay(convertView, (HashMap<String, Object>)this.getItem(position));
+			this.itemListener.onViewSetUp(convertView, (HashMap<String, Object>)this.getItem(position));
 		return convertView;
 	}
 	

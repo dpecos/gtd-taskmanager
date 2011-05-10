@@ -1,17 +1,14 @@
 package com.danielpecos.gtm.model.beans;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.danielpecos.gtm.model.beans.Task.Status;
 
 public class Task {
 	public enum Type {
 		Normal, Web, Call_SMS, Email, Location 
 	}
 	public enum Status {
-		Pending, Complete, Discarded 
+		Active, Completed, Discarded, Discarded_Completed 
 	}
 	public enum Priority {
 		Low, Normal, Important, Critical
@@ -33,7 +30,7 @@ public class Task {
 		this.description = description;
 		this.priority = priority;
 		
-		this.status = Status.Pending;
+		this.status = Status.Active;
 		this.type = Type.Normal;
 		this.tags = new ArrayList<String>();
 	}
@@ -60,6 +57,10 @@ public class Task {
 
 	public Priority getPriority() {
 		return priority;
+	}
+
+	public void setPriority(Priority priority) {
+		this.priority = priority;
 	}
 	
 }

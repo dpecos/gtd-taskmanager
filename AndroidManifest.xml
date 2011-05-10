@@ -18,7 +18,7 @@
         <activity android:name=".activities.ProjectActivity"/>
 
 		<activity android:name=".activities.TaskActivity" />
-	    <activity android:name=".activities.TaskTabInfoActivity"/>
+	    <activity android:name=".activities.TaskActivity$TaskTabInfoActivity"/>
 	    
     </application>
 </manifest>
