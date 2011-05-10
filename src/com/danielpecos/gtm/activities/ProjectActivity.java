@@ -18,6 +18,7 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
 import com.danielpecos.gtm.utils.SimpleListAdapter;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 
@@ -65,6 +66,7 @@ public class ProjectActivity extends ListActivity {
 			taskData.put("name", task.getName());
 			taskData.put("description", task.getDescription());
 			taskData.put("status", task.getStatus() == Task.Status.Complete);
+			taskData.put("priority", task.getPriority());
 			itemsData.add(taskData);
 			
 			HashMap<String, Object> taskEvents = new HashMap<String, Object>();
@@ -84,7 +86,13 @@ public class ProjectActivity extends ListActivity {
 				R.layout.task_item, 
 				new String[] {"name", "description", "status"},
 				new int[] {R.id.task_name, R.id.task_description, R.id.task_status},
-				itemsEvents
+				itemsEvents,
+				new RowDisplayListener() {
+					@Override
+					public void onRowDisplay(View rowView, HashMap<String, Object> data) {
+						ActivityUtils.onTaskItemDisplay(ProjectActivity.this, rowView, data);
+					}
+				}
 		);
 
 		this.setListAdapter(adapter);

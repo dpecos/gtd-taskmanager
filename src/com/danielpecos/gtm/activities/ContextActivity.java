@@ -6,12 +6,13 @@ import java.util.HashMap;
 
 import android.app.ExpandableListActivity;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -120,21 +121,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				new RowDisplayListener() {
 					@Override
 					public void onRowDisplay(View rowView, HashMap<String, Object> data) {
-						switch((Task.Priority)data.get("priority")) {
-						case Low: 
-							rowView.setBackgroundColor(Color.parseColor("#ccd7d7d7"));
-							break;
-						case Normal:
-							rowView.setBackgroundColor(Color.parseColor("#ccCAE6CB"));
-							break;
-						case Important: 
-							rowView.setBackgroundColor(Color.parseColor("#ccE6E0CA"));
-							break;
-						case Critical: 
-							rowView.setBackgroundColor(Color.parseColor("#ccE6CACA"));
-							break;
-						}
-						rowView.requestLayout();
+						ActivityUtils.onTaskItemDisplay(ContextActivity.this, rowView, data);
 					}
 				}
 		));

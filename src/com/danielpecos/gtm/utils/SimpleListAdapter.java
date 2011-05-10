@@ -14,6 +14,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
+
 public class SimpleListAdapter extends BaseAdapter {
 	private Context context;
 	
@@ -22,16 +24,18 @@ public class SimpleListAdapter extends BaseAdapter {
 	private String[] itemNames;
 	private int[] itemIds;
 	ArrayList<HashMap<String, Object>> itemEvents;
+	private RowDisplayListener itemListener;
 	
 	public SimpleListAdapter(Context context,
 			ArrayList<HashMap<String, Object>> itemData, int item,
-			String[] itemNames, int[] itemIds, ArrayList<HashMap<String, Object>> itemsEvents) {
+			String[] itemNames, int[] itemIds, ArrayList<HashMap<String, Object>> itemsEvents, RowDisplayListener itemListener) {
 		this.context = context;
 		this.itemData = itemData;
 		this.item = item;
 		this.itemNames = itemNames;
 		this.itemIds = itemIds;
 		this.itemEvents = itemsEvents;
+		this.itemListener = itemListener;
 	}
 
 	@Override
@@ -64,6 +68,8 @@ public class SimpleListAdapter extends BaseAdapter {
 			Object event = this.itemEvents.get(position).get(keyName);
 			setViewValue(v, value, event);
 		}
+		if (this.itemListener != null) 
+			this.itemListener.onRowDisplay(convertView, (HashMap<String, Object>)this.getItem(position));
 		return convertView;
 	}
 	
