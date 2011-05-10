@@ -139,41 +139,8 @@ public class TaskViewHolder extends ViewHolder {
 			});
 		}
 
-		if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
-			getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded_Background);
-			((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded_Foreground));
-
-			if (check != null) 
-				check.setEnabled(false);
-			if (ratingBar != null)
-				ratingBar.setEnabled(false);
-		} else {
-			switch(task.getPriority()) {
-			case Low: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow_Foreground));
-				break;
-			case Normal:
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal_Foreground));
-				break;
-			case Important: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant_Foreground));
-				break;
-			case Critical: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical_Foreground));
-				break;
-			}
-
-			if (check != null) 
-				check.setEnabled(true);
-			if (ratingBar != null)
-				ratingBar.setEnabled(true);
-		}
-
 		TextView dueDate = (TextView)getView(R.id.task_duedate);
+		final Button dueDateButton = (Button)getView(R.id.task_duedate_button);;
 		if (dueDate != null) { 
 
 			if (task.getDueDate() != null) {
@@ -204,7 +171,6 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			};
 
-			Button dueDateButton = (Button)getView(R.id.task_duedate_button);
 			dueDateButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					Calendar c = Calendar.getInstance();
@@ -218,7 +184,7 @@ public class TaskViewHolder extends ViewHolder {
 			});
 		}
 		
-		Button changeNameButton = (Button)getView(R.id.task_changeName_button);
+		final Button changeNameButton = (Button)getView(R.id.task_changeName_button);
 		if (changeNameButton != null) {
 			changeNameButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -239,7 +205,7 @@ public class TaskViewHolder extends ViewHolder {
 			});
 		}
 		
-		Button changeDescriptionButton = (Button)getView(R.id.task_changeDescription_button);
+		final Button changeDescriptionButton = (Button)getView(R.id.task_changeDescription_button);;
 		if (changeDescriptionButton != null) {
 			changeDescriptionButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -258,6 +224,52 @@ public class TaskViewHolder extends ViewHolder {
 					});
 				}
 			});
+		}
+		
+		if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
+			getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded_Background);
+			((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded_Foreground));
+
+			if (check != null) 
+				check.setEnabled(false);
+			if (ratingBar != null)
+				ratingBar.setEnabled(false);
+			if (dueDateButton != null)
+				dueDateButton.setEnabled(false);
+			if (changeNameButton != null)
+				changeNameButton.setEnabled(false);
+			if (changeDescriptionButton != null)
+				changeDescriptionButton.setEnabled(false);
+		} else {
+			switch(task.getPriority()) {
+			case Low: 
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow_Background);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow_Foreground));
+				break;
+			case Normal:
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal_Background);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal_Foreground));
+				break;
+			case Important: 
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant_Background);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant_Foreground));
+				break;
+			case Critical: 
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical_Background);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical_Foreground));
+				break;
+			}
+
+			if (check != null) 
+				check.setEnabled(true);
+			if (ratingBar != null)
+				ratingBar.setEnabled(true);
+			if (dueDateButton != null)
+				dueDateButton.setEnabled(true);
+			if (changeNameButton != null)
+				changeNameButton.setEnabled(true);
+			if (changeDescriptionButton != null)
+				changeDescriptionButton.setEnabled(true);
 		}
 		
 		this.view.requestLayout();
