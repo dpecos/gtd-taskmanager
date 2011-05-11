@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GTD Task Manager</string>
-    <color name="Task_PriorityLow_Background">#ffCAE6CB</color>
-    <color name="Task_PriorityLow_Foreground">#ff7BB37D</color>
-    <color name="Task_PriorityNormal_Background">#ffC2CDED</color>
-    <color name="Task_PriorityNormal_Foreground">#ff7F92C9</color>
-    <color name="Task_PriorityImportant_Background">#ffE6E0CA</color>
-    <color name="Task_PriorityImportant_Foreground">#ffBFB17C</color>
-    <color name="Task_PriorityCritical_Background">#ffE6CACA</color>
-    <color name="Task_PriorityCritical_Foreground">#ffE39696</color>
-    <color name="Task_PriorityDiscarded_Background">#ffd7d7d7</color>
-    <color name="Task_PriorityDiscarded_Foreground">#ff999999</color>
+    <color name="Task_PriorityLow">#ff7BB37D</color>
+    <color name="Task_PriorityNormal">#ff7F92C9</color>
+    <color name="Task_PriorityImportant">#ffE8CA68</color>
+    <color name="Task_PriorityCritical">#ffE39696</color>
+    <color name="Task_PriorityDiscarded">#ff999999</color>
     <color name="Context_Item_Foreground">#ff23409E</color>
     <color name="Context_Item_Background">#bbE8E8E8</color>
     <color name="Project_Item_Background">#ffD3D8E8</color>
@@ -30,4 +25,6 @@
 	<string name="textbox_label_description">Task description:</string>
     <string name="textbox_cancel">Ok</string>
     <string name="textbox_ok">Cancel</string>
+    <string name="menu_configuration">Configuration</string>
+    <string name="menu_about">About</string>
 </resources>

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -92,8 +93,16 @@ public class TaskViewHolder extends ViewHolder {
 				break;
 			}
 			ratingBar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+				private Toast toast;
 				public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 					if (fromUser) {
+						
+						if (this.toast != null) {
+							this.toast.cancel();
+						} else {
+							this.toast = Toast.makeText(view.getContext(), "", Toast.LENGTH_SHORT);
+						}
+						
 						switch((int)rating) {
 						case 1:
 							task.setPriority(Task.Priority.Low);
@@ -108,6 +117,11 @@ public class TaskViewHolder extends ViewHolder {
 							task.setPriority(Task.Priority.Critical);
 							break;
 						}
+						
+						String msg = view.getResources().getString(R.string.task_priority_label) + " " + task.getPriority();
+						this.toast.setText(msg);
+						this.toast.show();
+						
 						updateView();
 					}
 				}
@@ -140,7 +154,6 @@ public class TaskViewHolder extends ViewHolder {
 		}
 
 		TextView dueDate = (TextView)getView(R.id.task_duedate);
-		final Button dueDateButton = (Button)getView(R.id.task_duedate_button);;
 		if (dueDate != null) { 
 
 			if (task.getDueDate() != null) {
@@ -153,110 +166,37 @@ public class TaskViewHolder extends ViewHolder {
 				dueDate.setText(
 						new StringBuilder()
 						.append(mYear + 1).append("-")
-						.append(mDay).append("-")
-						.append(mYear).append(" "));
+						.append(mMonth).append("-")
+						.append(mDay).append(" "));
 			}
 
-			final DatePickerDialog.OnDateSetListener dateSetListener =
-				new DatePickerDialog.OnDateSetListener() {
-
-				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-					Calendar c = Calendar.getInstance();
-					c.set(Calendar.YEAR, year);
-					c.set(Calendar.MONTH, monthOfYear);
-					c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-					task.setDueDate(c.getTime());
-
-					updateView();
-				}
-			};
-
-			dueDateButton.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					Calendar c = Calendar.getInstance();
-					if (task.getDueDate() != null) 
-						c.setTime(task.getDueDate());
-					int mYear = c.get(Calendar.YEAR);
-					int mMonth = c.get(Calendar.MONTH);
-					int mDay = c.get(Calendar.DAY_OF_MONTH);
-					new DatePickerDialog(view.getContext(), dateSetListener, mYear, mMonth, mDay).show();
-				}
-			});
-		}
-		
-		final Button changeNameButton = (Button)getView(R.id.task_changeName_button);
-		if (changeNameButton != null) {
-			changeNameButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ActivityUtils.showAddDialog(
-							view.getContext(), 
-							res.getString(R.string.textbox_title_name), 
-							res.getString(R.string.textbox_label_name), 
-							task.getName(),
-							new OnDismissListener() {
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							task.setName(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							updateView();
-						}
-					});
-				}
-			});
-		}
-		
-		final Button changeDescriptionButton = (Button)getView(R.id.task_changeDescription_button);;
-		if (changeDescriptionButton != null) {
-			changeDescriptionButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ActivityUtils.showAddDialog(
-							view.getContext(), 
-							res.getString(R.string.textbox_title_description), 
-							res.getString(R.string.textbox_label_description), 
-							task.getDescription(),
-							new OnDismissListener() {
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							task.setDescription(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							updateView();
-						}
-					});
-				}
-			});
 		}
 		
 		if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
-			getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded_Background);
-			((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded_Foreground));
+			getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded);
+			((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
 
 			if (check != null) 
 				check.setEnabled(false);
 			if (ratingBar != null)
 				ratingBar.setEnabled(false);
-			if (dueDateButton != null)
-				dueDateButton.setEnabled(false);
-			if (changeNameButton != null)
-				changeNameButton.setEnabled(false);
-			if (changeDescriptionButton != null)
-				changeDescriptionButton.setEnabled(false);
 		} else {
 			switch(task.getPriority()) {
 			case Low: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow_Foreground));
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow));
 				break;
 			case Normal:
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal_Foreground));
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal));
 				break;
 			case Important: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant_Foreground));
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant));
 				break;
 			case Critical: 
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical_Background);
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical_Foreground));
+				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical);
+				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical));
 				break;
 			}
 
@@ -264,12 +204,6 @@ public class TaskViewHolder extends ViewHolder {
 				check.setEnabled(true);
 			if (ratingBar != null)
 				ratingBar.setEnabled(true);
-			if (dueDateButton != null)
-				dueDateButton.setEnabled(true);
-			if (changeNameButton != null)
-				changeNameButton.setEnabled(true);
-			if (changeDescriptionButton != null)
-				changeDescriptionButton.setEnabled(true);
 		}
 		
 		this.view.requestLayout();

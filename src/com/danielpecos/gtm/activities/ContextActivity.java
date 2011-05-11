@@ -7,6 +7,9 @@ import java.util.HashMap;
 import android.app.ExpandableListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -41,7 +44,28 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		this.initializeUI();
 	}
-	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.context_activity_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		/*switch (item.getItemId()) {
+		case R.id.menu_configuration:
+			//llamarConfigActivity();
+			return true;
+		case R.id.menu_about:
+			//llamarAcercaDeActivity();
+			return true;
+		}*/
+		return false;
+	}
+
 	private void initializeUI() {
 		setContentView(R.layout.context_layout);
 
@@ -54,12 +78,12 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		this.projectViewHolders = new HashMap<Long, ProjectViewHolder>();
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
-		
+
 		for (Context ctx : contexts) {
 			HashMap<String, Object> contextData = new HashMap<String, Object>();
 			contextData.put("name", ctx.getName());
 			groupData.add(contextData);
-			
+
 			// PROJECTS LIST
 			ArrayList<HashMap<String, Object>> contextChildData = new ArrayList<HashMap<String,Object>>();
 			for (Project project : ctx.getProjects()) {
@@ -69,32 +93,32 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				contextChildData.add(projectData);
 			}
 			childrenData_projects.add(contextChildData);
-			
+
 			// TASKS LIST
 			contextChildData = new ArrayList<HashMap<String,Object>>();
 			ArrayList<HashMap<String, Object>> contextChildEvents = new ArrayList<HashMap<String,Object>>();
 			for (final Task task : ctx.getTasks()) {
-				
+
 				TaskViewHolder tvh = new TaskViewHolder(null, task);
 				taskViewHolders.put(task.getId(), tvh);
-				
+
 				HashMap<String, Object> taskData = tvh.getListFields();
 				HashMap<String, Object> taskEvents = tvh.getListEvents(null);
-				
+
 				contextChildData.add(taskData);
 				contextChildEvents.add(taskEvents);
 			}
 			childrenData_tasks.add(contextChildData);
 			childrenEvents_tasks.add(contextChildEvents);
 		}
-		
+
 		this.setListAdapter(new ExpandableNestedMixedListAdapter(
 				this, 
 				groupData, 
 				R.layout.context_item, 
 				new String[] {"name"}, 
 				new int[] {R.id.context_name}, 
-				
+
 				childrenData_projects, 
 				R.layout.project_item, 
 				new String[] {"name", "description", "status_text", "status_icon"},
@@ -109,7 +133,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						//tvh.updateView();
 					}
 				},
-				
+
 				childrenData_tasks, 
 				R.layout.task_item, 
 				new String[] {"name", "description", "status_check"},
@@ -141,19 +165,19 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		prj.createTask("Tarea 3", "Tarea num 1.1.3", Task.Priority.Low).setStatus(Task.Status.Completed);
 		prj.createTask("Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
 		prj.createTask("Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
-		
+
 		ctx.createTask("Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
 		ctx.createTask("Tarea 2", "Tarea num 1.0.2", Task.Priority.Important);
 		ctx.createTask("Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal).setStatus(Task.Status.Completed);
 		ctx.createTask("Tarea 4", "Tarea num 1.0.4", Task.Priority.Low);
-		
+
 		prj = ctx.createProject("Proyecto 1.2", "Descripción de proyecto 1.2");
 		prj.createTask("Tarea 1", "Tarea num 1.2.1", Task.Priority.Critical);
 		prj.createTask("Tarea 2", "Tarea num 1.2.2", Task.Priority.Important);
 		prj.createTask("Tarea 3", "Tarea num 1.2.3", Task.Priority.Low);
 		prj.createTask("Tarea 4", "Tarea num 1.2.4", Task.Priority.Important);
 		prj.createTask("Tarea 5", "Tarea num 1.2.5", Task.Priority.Critical);
-		
+
 		this.taskManager.createContext("Contexto 2");
 		this.taskManager.createContext("Contexto 3");
 
@@ -165,7 +189,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		boolean result = super.onChildClick(parent, view, groupPosition, childPosition, id);
 
 		Context ctx = taskManager.elementAt(groupPosition);
-		
+
 		if (childPosition < ctx.getProjects().size()) {
 			Project prj = ctx.projectAt(childPosition);
 			this.triggerViewHolder = this.projectViewHolders.get(prj.getId());
@@ -178,24 +202,24 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		return result;
 	}
-	
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
 			if (this.triggerViewHolder != null) {
-				
+
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
 				projectViewHolder.updateView();
 			}
 		} else if (requestCode == ActivityUtils.TASK_ACTIVITY) {
 			if (this.triggerViewHolder != null) {
-				
+
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView();
 			}
 		}
-		
+
 		this.triggerViewHolder = null;
 	}
 }

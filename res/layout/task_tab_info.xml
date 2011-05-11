@@ -4,39 +4,36 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent"
 	android:background="#ffffffff">
-	<LinearLayout
+	
+	<RelativeLayout 
 		android:id="@+id/task_header"
-		android:orientation="horizontal"
 		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content">
-		<CheckBox 
-			android:id="@+id/task_status_check" 
-			android:layout_height="wrap_content" 
-			android:layout_marginLeft="5dip" 
-			android:layout_marginRight="5dip" 
-			android:layout_width="wrap_content"
-			android:layout_alignParentLeft="true"/>
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:background="#ffffffff">
 		<TextView 
 			android:id="@+id/task_priority" 
-			android:layout_height="22dip"
-			android:layout_width="22dip" 
-			android:layout_toRightOf="@+id/task_status_check"
-			android:layout_centerInParent="true"
-	        android:layout_marginLeft="7dip"
-	        android:layout_marginRight="7dip" />
+			android:layout_height="45dip"
+			android:layout_width="7dip" 
+			android:layout_alignParentLeft="true" 
+	        android:layout_marginLeft="1dip"
+	        android:layout_marginRight="3dip" />	
+		<CheckBox
+			android:id="@+id/task_status_check"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"  
+			android:layout_toRightOf="@+id/task_priority"
+			android:paddingRight="5dip" 
+			android:focusable="false"/>
 		<TextView 
 			android:id="@+id/task_name" 
 			android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:layout_toRightOf="@+id/task_priority"
-			android:layout_centerInParent="true" 
-			android:paddingTop="5dip"  
-			android:paddingLeft="5dip"
-	        android:paddingRight="5dip" 
+			android:layout_width="wrap_content" 
+			android:layout_toRightOf="@+id/task_status_check"
+			android:layout_centerInParent="true"
 	        android:textStyle="bold" 
-	        android:textSize="14dip"
-	        android:textColor="#ff000000" />
-	</LinearLayout>
+	        android:textSize="16dip" />
+	</RelativeLayout>
 	
 	
 	<TextView 
@@ -49,7 +46,7 @@
         android:textColor="#ff777777"      
         android:textSize="13dip" />
 	
-	<RelativeLayout 
+	<!-- RelativeLayout 
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/task_subheader"
 	    android:layout_width="wrap_content"
@@ -65,18 +62,19 @@
 	            android:layout_height="wrap_content"
 	            android:layout_toRightOf="@+id/task_changeName_button"
 	            android:text="@string/task_changeDescription_button"/>
-	</RelativeLayout>	
+	</RelativeLayout-->	
 	
 	<TextView 
 		android:id="@+id/task_priority_label"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" 
-		android:layout_below="@+id/task_subheader" 
+		android:layout_below="@+id/task_description" 
 		android:paddingLeft="5dip" 
 		android:paddingRight="5dip"
         android:textColor="#ff777777"      
         android:textSize="13dip" 
-        android:text="@string/task_priority_label"/>        
+        android:text="@string/task_priority_label"/>
+                
 	<RatingBar android:id="@+id/task_priority_bar"
 	    android:layout_height="wrap_content"
 	    android:layout_width="wrap_content"
@@ -93,7 +91,7 @@
         android:textColor="#ff777777"      
         android:textSize="13dip" 
         android:text="@string/task_duedate_label"/> 
-	<RelativeLayout 
+	<!-- RelativeLayout 
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/layout_date"
 	    android:layout_width="wrap_content"
@@ -113,7 +111,16 @@
 	            android:layout_toRightOf="@+id/task_duedate"
 	            android:layout_gravity="center|center_vertical"
 	            android:text="@string/task_duedate_button"/>
-	</RelativeLayout>	   
+	</RelativeLayout-->
+	
+	 <TextView android:id="@+id/task_duedate"
+	            android:layout_width="150dip"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center|center_vertical"
+	            android:textColor="#ff000000" 
+	            android:text=""
+	            android:layout_below="@+id/task_duedate_label"
+	            />	   
 	
 	<ToggleButton 
 		android:id="@+id/task_status_discarded"
@@ -123,7 +130,7 @@
 		android:textOff="@string/task_status_discarded"
 		android:layout_width="120dip" 
 		android:layout_centerHorizontal="true"
-		android:layout_below="@+id/layout_date"/>     
+		android:layout_below="@+id/task_duedate"/>     
 	          
 </RelativeLayout>
 
