@@ -1,11 +1,12 @@
 package com.danielpecos.gtm.model.beans;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 public abstract class TaskContainer implements Iterable<Task>{
-	LinkedHashMap<Long, Task> tasks;
+	HashMap<Long, Task> tasks;
 	
 	public TaskContainer() {
 		this.tasks = new LinkedHashMap<Long, Task>();

@@ -23,8 +23,20 @@
 	<string name="textbox_label_name">Task name:</string>
 	<string name="textbox_title_description">Set task description</string>
 	<string name="textbox_label_description">Task description:</string>
-    <string name="textbox_cancel">Ok</string>
+	<string name="textbox_cancel">OK</string>
     <string name="textbox_ok">Cancel</string>
-    <string name="menu_configuration">Configuration</string>
-    <string name="menu_about">About</string>
+    <string name="context_optionsMenu_addContext">Add Context...</string>
+    <string name="context_optionsMenu_configuration">Configuration</string>
+    <string name="context_optionsMenu_about">About</string>
+    <string name="context_contextMenu_deleteContext">Delete Context</string>
+	<string name="context_contextMenu_deleteProject">Delete Project</string>
+	<string name="context_contextMenu_deleteTask">Delete Task</string>
+    <string name="context_contextMenu_addProject">Add Project...</string>
+    <string name="context_contextMenu_addTask">Add Task...</string>
+    <string name="textbox_addContext_title">Create new Context</string>
+    <string name="textbox_addContext_label">Context name:</string>
+    <string name="textbox_addProject_title">Create new Project</string>
+	<string name="textbox_addProject_label">Project name:</string>
+    <string name="textbox_addTask_title">Set task name</string>
+	<string name="textbox_addTask_label">Task name:</string>
 </resources>

@@ -4,18 +4,23 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 public class Context extends TaskContainer {
-	int id;
+	long id;
 	String name;
 
 	LinkedHashMap<Long, Project> projects;
+
+	public Context(String name) {
+		this.id = (long) (Math.random() * 10000);
+		this.projects = new LinkedHashMap<Long, Project>();
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;
 	}
 	
-	public Context(String name) {
-		this.projects = new LinkedHashMap<Long, Project>();
-		this.name = name;
+	public long getId() {
+		return id;
 	}
 
 	public Project createProject(String name, String description) {
@@ -33,10 +38,12 @@ public class Context extends TaskContainer {
 	}
 
 	public void deleteProject(Project project) {
-		for (Task task : project) {
-			project.deleteTask(task);
+		Collection<Task> tasks = project.getTasks(); 
+		while (!tasks.isEmpty()) {
+			Object[] tasksArray = tasks.toArray();
+			project.deleteTask((Task)tasksArray[0]);
 		}
-		this.projects.remove(name);
+		this.projects.remove(project.getId());
 	}
 
 	public Project projectAt(int projectPosition) {

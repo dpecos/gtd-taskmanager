@@ -22,6 +22,7 @@ public class ProjectViewHolder extends ViewHolder {
 		HashMap<String, Object> projectData = new HashMap<String, Object>();
 		
 		projectData.put("_BASE_", project);
+		projectData.put("id", project.getId());
 		projectData.put("name", project.getName());
 		projectData.put("description", project.getDescription());
 		projectData.put("status_text", project.getCompletedTasksCount() + "/" + project.getTasksCount());

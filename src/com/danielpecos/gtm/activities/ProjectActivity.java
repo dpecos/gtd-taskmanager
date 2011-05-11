@@ -42,10 +42,10 @@ public class ProjectActivity extends ListActivity {
 		
 		this.taskManager = TaskManager.getInstance();
 
-		String context_name = (String) getIntent().getSerializableExtra("context_name");
+		Long context_id = (Long) getIntent().getSerializableExtra("context_id");
 		Long project_id = (Long) getIntent().getSerializableExtra("project_id");
 		
-		this.context = this.taskManager.getContext(context_name);
+		this.context = this.taskManager.getContext(context_id);
 		this.project = this.context.getProject(project_id);
 		
 		this.initializeUI();

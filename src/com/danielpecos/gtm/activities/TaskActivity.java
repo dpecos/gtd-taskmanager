@@ -39,12 +39,12 @@ public class TaskActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String context_name = (String) getIntent().getSerializableExtra("context_name");
-		Long project_id = (Long) getIntent().getSerializableExtra("project_id");
-		Long task_id = (Long) getIntent().getSerializableExtra("task_id");
+		Long context_id = (Long)getIntent().getSerializableExtra("context_id");
+		Long project_id = (Long)getIntent().getSerializableExtra("project_id");
+		Long task_id = (Long)getIntent().getSerializableExtra("task_id");
 
 		taskManager = TaskManager.getInstance();
-		context = taskManager.getContext(context_name);
+		context = taskManager.getContext(context_id);
 		if (project_id != null) {
 			project = context.getProject(project_id);
 			task = project.getTask(task_id);

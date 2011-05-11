@@ -81,12 +81,16 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 	}
 
 	public int getChildrenCount(int groupPosition) {
-		return this.childrenData1.get(groupPosition).size() + this.childrenData2.get(groupPosition).size();
+		if (groupPosition < this.childrenData1.size() && groupPosition < this.childrenData2.size()) {
+			return this.childrenData1.get(groupPosition).size() + this.childrenData2.get(groupPosition).size();
+		} else {
+			return 0;
+		}
 	}
 
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
 			View convertView, ViewGroup parent) {
-		
+
 		if (this.viewsCache.containsKey(groupPosition + "-" + childPosition)) {
 			convertView = this.viewsCache.get(groupPosition + "-" + childPosition);
 		} else {
@@ -94,6 +98,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 				if (convertView == null || convertView.getId() != this.children1Item) {
 					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 					convertView = mInflater.inflate(this.children1Item, parent, false);
+					convertView.setContentDescription("" + this.childrenData1.get(groupPosition).get(childPosition).get("id"));
 				}
 
 				int i = 0;
@@ -108,16 +113,16 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 				}
 
 			} else {
-
+				int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
+				
 				if (convertView == null || convertView.getId() != this.children2Item) {
 					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 					convertView = mInflater.inflate(this.children2Item, parent, false);
+					convertView.setContentDescription("" + this.childrenData2.get(groupPosition).get(realChildPosition).get("id"));
 				}
 
 				int i = 0;
 				for (int elemId : this.children2ElemIds) {
-					int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
-
 					String keyName = this.children2ElemNames[i++];
 					Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
 					View v = convertView.findViewById(elemId);
@@ -129,7 +134,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			}
 			this.viewsCache.put(groupPosition + "-" + childPosition, convertView);
 		}
-			
+
 		if (childPosition < this.childrenData1.get(groupPosition).size()) {
 			if (this.children1Listener != null) 
 				this.children1Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
@@ -161,6 +166,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		if (convertView == null) {
 			LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 			convertView = mInflater.inflate(this.groupItem, parent, false);
+			convertView.setContentDescription("" + this.groupData.get(groupPosition).get("id"));
 		}
 
 		int i = 0;
@@ -170,7 +176,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			View v = convertView.findViewById(elemId);
 			SimpleListAdapter.setViewValue(v, value, null);
 		}
-		
+
 		/*if (this.getChildrenCount(groupPosition) == 0)
 			convertView.setEnabled(false);*/
 

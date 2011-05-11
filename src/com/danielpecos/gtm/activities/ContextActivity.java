@@ -4,22 +4,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import android.app.Dialog;
 import android.app.ExpandableListActivity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.beans.TaskContainer;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
@@ -40,6 +46,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		this.taskManager = TaskManager.getInstance();
+
 		loadTestData();
 
 		this.initializeUI();
@@ -48,116 +56,234 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.context_activity_menu, menu);
+		inflater.inflate(R.menu.context_options_menu, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
-		/*switch (item.getItemId()) {
-		case R.id.menu_configuration:
-			//llamarConfigActivity();
+		switch (item.getItemId()) {
+		case R.id.context_optionsMenu_addContext:
+			ActivityUtils.showAddDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_addContext_title), 
+					this.getResources().getString(R.string.textbox_addContext_label), 
+					null,
+					new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							String contextName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							taskManager.createContext(contextName);
+							initializeUI();
+						}
+					});
 			return true;
-		case R.id.menu_about:
-			//llamarAcercaDeActivity();
+		case R.id.context_optionsMenu_configuration:
+		case R.id.context_optionsMenu_about:
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.context_item_menu, menu);
+
+		int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
+		
+		if (itemId == R.id.context_item) {
+			menu.getItem(1).setVisible(false);
+			menu.getItem(2).setVisible(false);
+		} if (itemId == R.id.project_item) {
+			menu.getItem(0).setVisible(false);
+			menu.getItem(2).setVisible(false);
+			menu.getItem(3).setVisible(false);
+		} else if (itemId == R.id.task_item) {
+			menu.getItem(0).setVisible(false);
+			menu.getItem(1).setVisible(false);
+			menu.getItem(3).setVisible(false);
+			menu.getItem(4).setVisible(false);
+		}
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+
+		final ExpandableListContextMenuInfo  menuInfo = (ExpandableListContextMenuInfo) item.getMenuInfo();
+		
+		int pos = (int)menuInfo.id;
+		Context context = (Context)taskManager.getContexts().toArray()[pos];
+		
+		switch (item.getItemId()) {
+		case R.id.context_contextMenu_deleteContext: {
+			taskManager.deleteContext(context);
+			initializeUI();
 			return true;
-		}*/
-		return false;
+		}
+		case R.id.context_contextMenu_deleteProject: {
+			return true;
+		}
+		case R.id.context_contextMenu_deleteTask: {
+			return true;
+		}
+		case R.id.context_contextMenu_addProject: {
+			ActivityUtils.showAddDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_addProject_title), 
+					this.getResources().getString(R.string.textbox_addProject_label), 
+					null,
+					new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							context.createProject(projectName, null);
+							initializeUI();
+						}
+					});
+			return true;
+		}
+		case R.id.context_contextMenu_addTask: {
+			OnDismissListener listener = null;
+			int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
+			if (itemId == R.id.context_item) {
+				final TaskContainer taskContainer = context;
+				listener = new OnDismissListener() {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+						taskContainer.createTask(taskName, null, Task.Priority.Normal);
+						initializeUI();
+					}
+				};
+			} else if (itemId == R.id.project_item) {
+				Project project = context.getProject(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+				final TaskContainer taskContainer = project;
+				listener = new OnDismissListener() {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+						taskContainer.createTask(taskName, null, Task.Priority.Normal);
+						initializeUI();
+					}
+				};
+			}
+			ActivityUtils.showAddDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_addTask_title), 
+					this.getResources().getString(R.string.textbox_addTask_label), 
+					null,
+					listener);
+			return true;
+		}
+		default: {
+			return false;
+		}
+		}
 	}
 
 	private void initializeUI() {
 		setContentView(R.layout.context_layout);
 
-		ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
-		ArrayList<ArrayList<HashMap<String, Object>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, Object>>>();
-		ArrayList<ArrayList<HashMap<String, Object>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
-		ArrayList<ArrayList<HashMap<String, Object>>> childrenEvents_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
-
-		Collection<Context> contexts = taskManager.getContexts();
-
 		this.projectViewHolders = new HashMap<Long, ProjectViewHolder>();
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
 
-		for (Context ctx : contexts) {
-			HashMap<String, Object> contextData = new HashMap<String, Object>();
-			contextData.put("name", ctx.getName());
-			groupData.add(contextData);
+		if (taskManager != null) {
+			ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
+			ArrayList<ArrayList<HashMap<String, Object>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, Object>>>();
+			ArrayList<ArrayList<HashMap<String, Object>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
+			ArrayList<ArrayList<HashMap<String, Object>>> childrenEvents_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 
-			// PROJECTS LIST
-			ArrayList<HashMap<String, Object>> contextChildData = new ArrayList<HashMap<String,Object>>();
-			for (Project project : ctx.getProjects()) {
-				ProjectViewHolder pvh = new ProjectViewHolder(null, project);
-				this.projectViewHolders.put(project.getId(), pvh);
-				HashMap<String, Object> projectData = pvh.getListFields();
-				contextChildData.add(projectData);
+			Collection<Context> contexts = taskManager.getContexts();
+
+			for (Context ctx : contexts) {
+				HashMap<String, Object> contextData = new HashMap<String, Object>();
+				contextData.put("id", ctx.getId());
+				contextData.put("name", ctx.getName());
+				groupData.add(contextData);
+
+				// PROJECTS LIST
+				ArrayList<HashMap<String, Object>> contextChildData = new ArrayList<HashMap<String,Object>>();
+				for (Project project : ctx.getProjects()) {
+					ProjectViewHolder pvh = new ProjectViewHolder(null, project);
+					this.projectViewHolders.put(project.getId(), pvh);
+					HashMap<String, Object> projectData = pvh.getListFields();
+					contextChildData.add(projectData);
+				}
+				childrenData_projects.add(contextChildData);
+
+				// TASKS LIST
+				contextChildData = new ArrayList<HashMap<String,Object>>();
+				ArrayList<HashMap<String, Object>> contextChildEvents = new ArrayList<HashMap<String,Object>>();
+				for (final Task task : ctx.getTasks()) {
+
+					TaskViewHolder tvh = new TaskViewHolder(null, task);
+					taskViewHolders.put(task.getId(), tvh);
+
+					HashMap<String, Object> taskData = tvh.getListFields();
+					HashMap<String, Object> taskEvents = tvh.getListEvents(null);
+
+					contextChildData.add(taskData);
+					contextChildEvents.add(taskEvents);
+				}
+				childrenData_tasks.add(contextChildData);
+				childrenEvents_tasks.add(contextChildEvents);
 			}
-			childrenData_projects.add(contextChildData);
 
-			// TASKS LIST
-			contextChildData = new ArrayList<HashMap<String,Object>>();
-			ArrayList<HashMap<String, Object>> contextChildEvents = new ArrayList<HashMap<String,Object>>();
-			for (final Task task : ctx.getTasks()) {
+			this.setListAdapter(new ExpandableNestedMixedListAdapter(
+					this, 
+					groupData, 
+					R.layout.context_item, 
+					new String[] {"name"}, 
+					new int[] {R.id.context_name}, 
 
-				TaskViewHolder tvh = new TaskViewHolder(null, task);
-				taskViewHolders.put(task.getId(), tvh);
+					childrenData_projects, 
+					R.layout.project_item, 
+					new String[] {"name", "description", "status_text", "status_icon"},
+					new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
+					null, 
+					new RowDisplayListener() {
+						@Override
+						public void onViewSetUp(View view, HashMap<String, Object> data) {
+							Project project = (Project)data.get("_BASE_");
+							ViewHolder tvh = projectViewHolders.get(project.getId());
+							tvh.setView(view);
+							//tvh.updateView();
+						}
+					},
 
-				HashMap<String, Object> taskData = tvh.getListFields();
-				HashMap<String, Object> taskEvents = tvh.getListEvents(null);
+					childrenData_tasks, 
+					R.layout.task_item, 
+					new String[] {"name", "description", "status_check"},
+					new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check}, 
+					childrenEvents_tasks, 
+					new RowDisplayListener() {
+						@Override
+						public void onViewSetUp(View view, HashMap<String, Object> data) {
+							Task task = (Task)data.get("_BASE_");
+							ViewHolder tvh = taskViewHolders.get(task.getId());
+							tvh.setView(view);
+							tvh.updateView();
+						}
+					}
+			));
 
-				contextChildData.add(taskData);
-				contextChildEvents.add(taskEvents);
-			}
-			childrenData_tasks.add(contextChildData);
-			childrenEvents_tasks.add(contextChildEvents);
+			this.getExpandableListView().expandGroup(0);
 		}
 
-		this.setListAdapter(new ExpandableNestedMixedListAdapter(
-				this, 
-				groupData, 
-				R.layout.context_item, 
-				new String[] {"name"}, 
-				new int[] {R.id.context_name}, 
+		this.registerForContextMenu(this.getExpandableListView());
 
-				childrenData_projects, 
-				R.layout.project_item, 
-				new String[] {"name", "description", "status_text", "status_icon"},
-				new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
-				null, 
-				new RowDisplayListener() {
-					@Override
-					public void onViewSetUp(View view, HashMap<String, Object> data) {
-						Project project = (Project)data.get("_BASE_");
-						ViewHolder tvh = projectViewHolders.get(project.getId());
-						tvh.setView(view);
-						//tvh.updateView();
-					}
-				},
-
-				childrenData_tasks, 
-				R.layout.task_item, 
-				new String[] {"name", "description", "status_check"},
-				new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check}, 
-				childrenEvents_tasks, 
-				new RowDisplayListener() {
-					@Override
-					public void onViewSetUp(View view, HashMap<String, Object> data) {
-						Task task = (Task)data.get("_BASE_");
-						ViewHolder tvh = taskViewHolders.get(task.getId());
-						tvh.setView(view);
-						tvh.updateView();
-					}
-				}
-		));
 		this.getExpandableListView().setOnChildClickListener(this);
-
-		this.getExpandableListView().expandGroup(0);
 	}
 
 
 	private void loadTestData() {
 		// Test data
-		this.taskManager = TaskManager.getInstance();
+
 		Context ctx = this.taskManager.createContext("Contexto 1");
 		Project prj = ctx.createProject("Proyecto 1.1", "Descripción de proyecto 1.1");
 		prj.createTask("Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);

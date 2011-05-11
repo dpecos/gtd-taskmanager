@@ -38,6 +38,7 @@ public class TaskViewHolder extends ViewHolder {
 		HashMap<String, Object> taskData = new HashMap<String, Object>();
 
 		taskData.put("_BASE_", task);
+		taskData.put("id", task.getId());
 		taskData.put("name", task.getName());
 		taskData.put("description", task.getDescription());
 		taskData.put("status_check", task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);

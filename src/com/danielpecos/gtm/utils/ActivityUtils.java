@@ -26,14 +26,14 @@ public class ActivityUtils {
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);
-		intent.putExtra("context_name", context.getName());
+		intent.putExtra("context_id", context.getId());
 		intent.putExtra("project_id", project.getId());
 		activity.startActivityForResult(intent, PROJECT_ACTIVITY);
 	}
 
 	public static void showTaskActivity(Activity activity, Context context, Project project, Task task) {
 		Intent intent = new Intent(activity.getBaseContext(), TaskActivity.class);
-		intent.putExtra("context_name", context.getName());
+		intent.putExtra("context_id", context.getId());
 		if (project != null)
 			intent.putExtra("project_id", project.getId());
 		intent.putExtra("task_id", task.getId());
