@@ -2,14 +2,14 @@ package com.danielpecos.gtm.views;
 
 import java.util.HashMap;
 
-import com.danielpecos.gtm.R;
-
 import android.view.View;
 
 public abstract class ViewHolder {
 	protected View view;
+	protected HashMap<String, Object> viewListeners;
 	
 	public abstract HashMap<String, Object> getListFields();
+	public abstract HashMap<String, Object> getListEvents(Object ... params);
 	
 	public abstract void updateView();
 	

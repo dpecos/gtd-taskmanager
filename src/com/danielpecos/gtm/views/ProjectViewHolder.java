@@ -61,6 +61,11 @@ public class ProjectViewHolder extends ViewHolder {
 
 		return imageResource;
 	}
+
+	@Override
+	public HashMap<String, Object> getListEvents(Object... params) {
+		return null;
+	}
 	
 	
 
