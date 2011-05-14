@@ -41,7 +41,7 @@ public class ActivityUtils {
 
 	}
 
-	public static void showAddDialog(final android.content.Context context, String title, String label, String text, OnDismissListener listener) {
+	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, OnDismissListener listener) {
 
 		final Dialog textboxDialog = new Dialog(context);
 		textboxDialog.getWindow().setFlags(

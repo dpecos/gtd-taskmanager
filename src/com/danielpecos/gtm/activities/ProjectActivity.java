@@ -40,7 +40,7 @@ public class ProjectActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		this.taskManager = TaskManager.getInstance();
+		this.taskManager = TaskManager.getInstance(this);
 
 		Long context_id = (Long) getIntent().getSerializableExtra("context_id");
 		Long project_id = (Long) getIntent().getSerializableExtra("project_id");

@@ -3,7 +3,14 @@ package com.danielpecos.gtm.model.beans;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Task {
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
+import com.danielpecos.gtm.model.persistence.Persistable;
+
+public class Task implements Persistable {
 	public enum Type {
 		Normal, Web, Call_SMS, Email, Location 
 	}
@@ -13,7 +20,7 @@ public class Task {
 	public enum Priority {
 		Low, Normal, Important, Critical
 	}
-	
+
 	long id;
 	String name;
 	String description;
@@ -23,22 +30,29 @@ public class Task {
 	GeoPoint location;
 	Type type;
 	ArrayList<String> tags;
-	
-	public Task(String name, String description, Priority priority) {
-		this.id = (long) (Math.random() * 10000);
-		this.name = name;
-		this.description = description;
-		this.priority = priority;
-		
+
+	public Task() {
+		this.priority = Priority.Normal;
 		this.status = Status.Active;
 		this.type = Type.Normal;
 		this.tags = new ArrayList<String>();
 	}
+
+	public Task(Cursor cursor) {
+		this();
+		this.load(cursor);
+	}
 	
+	public Task(String name, String description, Priority priority) {
+		this();
+		this.name = name;
+		this.description = description;
+	}
+
 	public long getId() {
 		return this.id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -78,5 +92,27 @@ public class Task {
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
-	
+
+	@Override
+	public long store(GTDSQLHelper helper) {
+		SQLiteDatabase db = helper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		//values.put(TaskSQLHelper.TIME, System.currentTimeMillis());
+		// values.put(GTMDataSQLHelper.TITLE, title);
+		return db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
+	}
+
+	@Override
+	public boolean load(Cursor cursor) {
+		this.id = cursor.getLong(0);
+		this.name = cursor.getString(1);
+		return true;
+	}
+
+	@Override
+	public boolean remove(GTDSQLHelper helper) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

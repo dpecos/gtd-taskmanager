@@ -43,7 +43,7 @@ public class TaskActivity extends TabActivity {
 		Long project_id = (Long)getIntent().getSerializableExtra("project_id");
 		Long task_id = (Long)getIntent().getSerializableExtra("task_id");
 
-		taskManager = TaskManager.getInstance();
+		taskManager = TaskManager.getInstance(this);
 		context = taskManager.getContext(context_id);
 		if (project_id != null) {
 			project = context.getProject(project_id);
@@ -70,7 +70,7 @@ public class TaskActivity extends TabActivity {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.menu_changeName:
-			ActivityUtils.showAddDialog(
+			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_title_name), 
 					this.getResources().getString(R.string.textbox_label_name), 
@@ -84,7 +84,7 @@ public class TaskActivity extends TabActivity {
 					});
 			return true;
 		case R.id.menu_changeDescription:
-			ActivityUtils.showAddDialog(
+			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_title_description), 
 					this.getResources().getString(R.string.textbox_label_description), 

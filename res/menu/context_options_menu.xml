@@ -4,6 +4,10 @@
 		android:id="@+id/context_optionsMenu_addContext"
     	android:title="@string/context_optionsMenu_addContext"
 		android:icon="@android:drawable/ic_menu_add"/>
+	<item 
+		android:id="@+id/context_optionsMenu_reloadData"
+    	android:title="@string/context_optionsMenu_reloadData"
+		android:icon="@android:drawable/ic_menu_add"/>
     <item 
 		android:id="@+id/context_optionsMenu_configuration"
     	android:title="@string/context_optionsMenu_configuration"
