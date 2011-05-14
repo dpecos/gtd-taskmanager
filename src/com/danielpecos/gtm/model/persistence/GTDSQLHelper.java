@@ -15,13 +15,16 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TABLE_CONTEXTS = "contexts";
 	public static final String TABLE_PROJECTS = "projects";
 	public static final String TABLE_TASKS = "tasks";
-	public static final String TABLE_CONTEXTS_PROJECTS = "contexts_projects";
+	public static final String TABLE_CONTEXTS_TASKS = "contexts_tasks";
+	public static final String TABLE_PROJECTS_TASKS = "projects_tasks";
+
 
 	// Columns
 	public static final String CONTEXT_NAME = "name";
 
 	public static final String PROJECT_NAME = "name";
 	public static final String PROJECT_DESCRIPTION = "description";
+	public static final String PROJECT_CONTEXTID = "context_id";
 
 	public static final String TASK_NAME = "name";
 	public static final String TASK_DESCRIPTION = "description";
@@ -30,6 +33,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 	public static final String CONTEXT_ID = "context_id";
 	public static final String PROJECT_ID = "project_id";
+	public static final String TASK_ID = "task_id";
 
 
 	public GTDSQLHelper(Context context) {
@@ -51,7 +55,9 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			sql = "create table " + TABLE_PROJECTS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, "
 			+ PROJECT_NAME + " text not null, "
-			+ PROJECT_DESCRIPTION + " text "
+			+ PROJECT_DESCRIPTION + " text, "
+			+ PROJECT_CONTEXTID + " integer, "
+			+ "FOREIGN KEY(" + PROJECT_CONTEXTID + ") REFERENCES " + TABLE_CONTEXTS + "(id) "
 			+ ");";
 			db.execSQL(sql);
 
@@ -64,12 +70,21 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ ");";
 			db.execSQL(sql);
 
-			sql = "create table " + TABLE_CONTEXTS_PROJECTS + "( " 
+			sql = "create table " + TABLE_CONTEXTS_TASKS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, "
 			+ CONTEXT_ID + " integer, "
-			+ PROJECT_ID + " integer, "
+			+ TASK_ID + " integer, "
 			+ "FOREIGN KEY(" + CONTEXT_ID + ") REFERENCES " + TABLE_CONTEXTS + "(id), "
-			+ "FOREIGN KEY(" + PROJECT_ID + ") REFERENCES " + TABLE_PROJECTS + "(id) "
+			+ "FOREIGN KEY(" + TASK_ID + ") REFERENCES " + TABLE_TASKS + "(id) "
+			+ ");";
+			db.execSQL(sql);
+			
+			sql = "create table " + TABLE_PROJECTS_TASKS + "( " 
+			+ BaseColumns._ID + " integer primary key autoincrement, "
+			+ PROJECT_ID + " integer, "
+			+ TASK_ID + " integer, "
+			+ "FOREIGN KEY(" + PROJECT_ID + ") REFERENCES " + TABLE_PROJECTS + "(id), "
+			+ "FOREIGN KEY(" + TASK_ID + ") REFERENCES " + TABLE_TASKS + "(id) "
 			+ ");";
 			db.execSQL(sql);
 

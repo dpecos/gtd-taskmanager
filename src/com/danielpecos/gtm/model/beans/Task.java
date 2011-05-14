@@ -6,6 +6,7 @@ import java.util.Date;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.BaseColumns;
 
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;
@@ -29,20 +30,13 @@ public class Task implements Persistable {
 	Date dueDate;
 	GeoPoint location;
 	Type type;
-	ArrayList<String> tags;
 
 	public Task() {
 		this.priority = Priority.Normal;
 		this.status = Status.Active;
 		this.type = Type.Normal;
-		this.tags = new ArrayList<String>();
 	}
 
-	public Task(Cursor cursor) {
-		this();
-		this.load(cursor);
-	}
-	
 	public Task(String name, String description, Priority priority) {
 		this();
 		this.name = name;
@@ -97,22 +91,32 @@ public class Task implements Persistable {
 	public long store(GTDSQLHelper helper) {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		//values.put(TaskSQLHelper.TIME, System.currentTimeMillis());
-		// values.put(GTMDataSQLHelper.TITLE, title);
+		values.put(GTDSQLHelper.TASK_NAME, this.name);
+		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
+		values.put(GTDSQLHelper.TASK_STATUS, this.status.toString());
+		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
 		return db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 	}
 
 	@Override
-	public boolean load(Cursor cursor) {
-		this.id = cursor.getLong(0);
-		this.name = cursor.getString(1);
+	public boolean load(SQLiteDatabase db, Cursor cursor) {
+		int i = 0;
+		this.id = cursor.getLong(i++);
+		this.name = cursor.getString(i++);
+		this.description = cursor.getString(i++);
+		this.status = Status.valueOf(cursor.getString(i++));
+		this.priority = Priority.valueOf(cursor.getString(i++));
 		return true;
 	}
 
 	@Override
 	public boolean remove(GTDSQLHelper helper) {
-		// TODO Auto-generated method stub
-		return false;
+		SQLiteDatabase db = helper.getWritableDatabase();
+		if (this.id != 0) {
+			return db.delete(GTDSQLHelper.TABLE_TASKS, BaseColumns._ID + "=" + this.getId(), null) > 0;
+		} else {
+			return false;
+		}
 	}
 
 }

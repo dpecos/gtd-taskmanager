@@ -22,9 +22,9 @@ public class Context extends TaskContainer implements Persistable {
 		this.projects = new LinkedHashMap<Long, Project>();
 	}
 
-	public Context(Cursor cursor) {
+	public Context(SQLiteDatabase db, Cursor cursor) {
 		this();
-		this.load(cursor);
+		this.load(db, cursor);
 	}
 
 	public Context(String name) {
@@ -43,35 +43,21 @@ public class Context extends TaskContainer implements Persistable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public void addProject(Project project) {
 		this.projects.put(project.getId(), project);
 	}
 
 	public Project createProject(android.content.Context ctx, String name, String description) {
-		Project project = new Project(name, description);
-		
-		GTDSQLHelper helper = GTDSQLHelper.getInstance(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
-		db.beginTransaction();
-		try {
-			if (project.store(helper) > 0) {
-				this.addProject(project);
+		Project project = new Project(this.getId(), name, description);
 
-				ContentValues values = new ContentValues();
-				values.put(GTDSQLHelper.CONTEXT_ID, this.id);
-				values.put(GTDSQLHelper.PROJECT_ID, id);
-				if (db.insert(GTDSQLHelper.TABLE_CONTEXTS_PROJECTS, null, values) > 0) {
-					db.setTransactionSuccessful();
-					return project;
-				} else { 
-					return null;
-				}
-			} else { 
-				return null;
-			}
-		} finally {
-			db.endTransaction();
+		GTDSQLHelper helper = GTDSQLHelper.getInstance(ctx);
+		long id = project.store(helper);
+		if (id > 0) {
+			this.addProject(project);
+			return project;
+		} else { 
+			return null;
 		}
 	}
 
@@ -143,21 +129,6 @@ public class Context extends TaskContainer implements Persistable {
 
 	}
 
-	//	protected boolean storeProjects(GTDSQLHelper helper, SQLiteDatabase db) {
-	//		for (Project p : this.getProjects()) {
-	//			long id = p.store(helper);
-	//			if (id > 0) {
-	//				ContentValues values = new ContentValues();
-	//				values.put(GTDSQLHelper.CONTEXT_ID, this.id);
-	//				values.put(GTDSQLHelper.PROJECT_ID, id);
-	//				db.insert(GTDSQLHelper.TABLE_CONTEXTS_PROJECTS, null, values);
-	//			} else {
-	//				return false;
-	//			}
-	//		}
-	//		return true;
-	//	}
-
 	protected boolean removeProjects(GTDSQLHelper helper) {
 		for (Project p : this.getProjects()) {
 			if (!p.remove(helper)) {
@@ -168,10 +139,19 @@ public class Context extends TaskContainer implements Persistable {
 	}
 
 	@Override
-	public boolean load(Cursor cursor) {
+	public boolean load(SQLiteDatabase db, Cursor cursor) {
 		int i = 0;
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
+
+		Cursor cursor_projects = db.query(GTDSQLHelper.TABLE_PROJECTS, null, GTDSQLHelper.PROJECT_CONTEXTID + "=" + this.id, null, null, null, null);
+		while (cursor_projects.moveToNext()) {
+			Project project = new Project(db, cursor_projects);
+			this.addProject(project);
+		}
+		
+		this.loadTasks(db, GTDSQLHelper.TABLE_CONTEXTS_TASKS, GTDSQLHelper.CONTEXT_ID + "=" + this.id);
+
 		return true;
 	}
 

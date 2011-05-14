@@ -46,4 +46,7 @@
     <string name="textbox_renameProject_label">Project name:</string>	
     <string name="textbox_addTask_title">Set task name</string>
 	<string name="textbox_addTask_label">Task name:</string>
+	<string name="error_loadingData">Error loading data</string>
+	<string name="error_creatingProject">Error creating project</string>
+	<string name="error_creatingTask">Error creating task</string>
 </resources>

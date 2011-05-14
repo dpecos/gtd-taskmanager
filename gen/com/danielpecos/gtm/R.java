@@ -97,6 +97,9 @@ public final class R {
         public static final int context_optionsMenu_addContext=0x7f040011;
         public static final int context_optionsMenu_configuration=0x7f040013;
         public static final int context_optionsMenu_reloadData=0x7f040012;
+        public static final int error_creatingProject=0x7f040027;
+        public static final int error_creatingTask=0x7f040028;
+        public static final int error_loadingData=0x7f040026;
         public static final int task_changeDescription_button=0x7f04000a;
         public static final int task_changeName_button=0x7f040009;
         public static final int task_duedate_button=0x7f040008;

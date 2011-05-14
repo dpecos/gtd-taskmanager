@@ -10,14 +10,18 @@ import com.danielpecos.gtm.model.persistence.Persistable;
 
 public class Project extends TaskContainer implements Persistable {
 	long id;
+	long context_id;
 	String name;
 	String description;
 
-	public Project(Cursor cursor) {
-		this.load(cursor);
+	public Project(SQLiteDatabase db, Cursor cursor) {
+		this.load(db, cursor);
+		
+		this.loadTasks(db, GTDSQLHelper.TABLE_PROJECTS_TASKS, GTDSQLHelper.PROJECT_ID + "=" + this.id);
 	}
 
-	public Project(String name, String description) {
+	public Project(long contextId, String name, String description) {
+		this.context_id = contextId;
 		this.name = name;
 		this.description = description;
 	}
@@ -51,24 +55,21 @@ public class Project extends TaskContainer implements Persistable {
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.PROJECT_NAME, this.name);
 			values.put(GTDSQLHelper.PROJECT_DESCRIPTION, this.description);
+			values.put(GTDSQLHelper.PROJECT_CONTEXTID, this.context_id);
 			this.id = db.insert(GTDSQLHelper.TABLE_PROJECTS, null, values);
+			
+			return this.id;
 		} else {
 			// update
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.PROJECT_NAME, this.name);
 			values.put(GTDSQLHelper.PROJECT_DESCRIPTION, this.description);
+			values.put(GTDSQLHelper.PROJECT_CONTEXTID, this.context_id);
 			if (db.update(GTDSQLHelper.TABLE_PROJECTS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
 				return this.id;
 			} else {
 				return -1;
 			}
-		}
-
-		
-		if (this.id > 0 && this.storeTasks(helper)) {
-			return this.id;
-		} else {
-			return -1;
 		}
 	}
 
@@ -88,11 +89,12 @@ public class Project extends TaskContainer implements Persistable {
 	}
 	
 	@Override
-	public boolean load(Cursor cursor) {
+	public boolean load(SQLiteDatabase db, Cursor cursor) {
 		int i = 0;
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
 		this.description = cursor.getString(i++);
+		this.context_id = cursor.getLong(i++);
 		return true;
 	}
 }

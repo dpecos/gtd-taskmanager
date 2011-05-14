@@ -8,10 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
+import com.danielpecos.gtm.utils.ActivityUtils;
 
 
 public class TaskManager {
@@ -62,22 +64,12 @@ public class TaskManager {
 		Cursor cursor = db.query(GTDSQLHelper.TABLE_CONTEXTS, null, null, null, null, null, null);
 
 		while (cursor.moveToNext()) {
-			Context c = new Context(cursor);
+			Context c = new Context(db, cursor);
 			if (c.getId() < 0) {
+				ActivityUtils.showMessage(ctx, R.string.error_loadingData);
 				return false;
 			} else {
 				this.contexts.put(c.getId(), c);
-				
-				Cursor cursor_contexts_projects = db.query(GTDSQLHelper.TABLE_CONTEXTS_PROJECTS, null, GTDSQLHelper.CONTEXT_ID + "=" + c.getId(), null, null, null, null);
-				while (cursor_contexts_projects.moveToNext()) {
-					int project_id = cursor.getInt(0);
-					
-					Cursor cursor_projects = db.query(GTDSQLHelper.TABLE_PROJECTS, null, BaseColumns._ID + "=" + project_id, null, null, null, null);
-					while (cursor_projects.moveToNext()) {
-						Project project = new Project(cursor_projects);
-						c.addProject(project);
-					}
-				}
 			}
 		}
 

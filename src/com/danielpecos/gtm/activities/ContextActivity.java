@@ -103,10 +103,12 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
 		} if (itemId == R.id.project_item) {
+			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
 			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
 		} else if (itemId == R.id.task_item) {
+			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
 			menu.getItem(2).setVisible(false);
 			menu.getItem(3).setVisible(false);
@@ -156,10 +158,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-//							Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+							//							Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
 							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							context.createProject(ContextActivity.this, projectName, null);
-							initializeUI();
+							if (context.createProject(ContextActivity.this, projectName, null) != null) {
+								initializeUI();
+							} else {
+								ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingProject);
+							}
 						}
 					});
 			return true;
@@ -191,7 +196,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		case R.id.context_contextMenu_deleteTask: {
 			return true;
 		}
-		
+
 		case R.id.context_contextMenu_addTask: {
 			OnDismissListener listener = null;
 			int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
@@ -201,8 +206,11 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-						taskContainer.createTask(taskName, null, Task.Priority.Normal);
-						initializeUI();
+						if (taskContainer.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
+							initializeUI();
+						} else {
+							ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+						}
 					}
 				};
 			} else if (itemId == R.id.project_item) {
@@ -212,8 +220,11 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-						taskContainer.createTask(taskName, null, Task.Priority.Normal);
-						initializeUI();
+						if (taskContainer.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
+							initializeUI();
+						} else {
+							ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+						}
 					}
 				};
 			}
@@ -331,23 +342,23 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		Context ctx = this.taskManager.createContext(this, "Contexto 1");
 		Project prj = ctx.createProject(this, "Proyecto 1.1", "Descripción de proyecto 1.1");
-		prj.createTask("Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);
-		prj.createTask("Tarea 2", "Tarea num 1.1.2", Task.Priority.Important).setStatus(Task.Status.Completed);
-		prj.createTask("Tarea 3", "Tarea num 1.1.3", Task.Priority.Low).setStatus(Task.Status.Completed);
-		prj.createTask("Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
-		prj.createTask("Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
+		prj.createTask(this, "Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);
+		prj.createTask(this, "Tarea 2", "Tarea num 1.1.2", Task.Priority.Important).setStatus(Task.Status.Completed);
+		prj.createTask(this, "Tarea 3", "Tarea num 1.1.3", Task.Priority.Low).setStatus(Task.Status.Completed);
+		prj.createTask(this, "Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
+		prj.createTask(this, "Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
 
-		ctx.createTask("Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
-		ctx.createTask("Tarea 2", "Tarea num 1.0.2", Task.Priority.Important);
-		ctx.createTask("Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal).setStatus(Task.Status.Completed);
-		ctx.createTask("Tarea 4", "Tarea num 1.0.4", Task.Priority.Low);
+		ctx.createTask(this, "Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
+		ctx.createTask(this, "Tarea 2", "Tarea num 1.0.2", Task.Priority.Important);
+		ctx.createTask(this, "Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal).setStatus(Task.Status.Completed);
+		ctx.createTask(this, "Tarea 4", "Tarea num 1.0.4", Task.Priority.Low);
 
 		prj = ctx.createProject(this, "Proyecto 1.2", "Descripción de proyecto 1.2");
-		prj.createTask("Tarea 1", "Tarea num 1.2.1", Task.Priority.Critical);
-		prj.createTask("Tarea 2", "Tarea num 1.2.2", Task.Priority.Important);
-		prj.createTask("Tarea 3", "Tarea num 1.2.3", Task.Priority.Low);
-		prj.createTask("Tarea 4", "Tarea num 1.2.4", Task.Priority.Important);
-		prj.createTask("Tarea 5", "Tarea num 1.2.5", Task.Priority.Critical);
+		prj.createTask(this, "Tarea 1", "Tarea num 1.2.1", Task.Priority.Critical);
+		prj.createTask(this, "Tarea 2", "Tarea num 1.2.2", Task.Priority.Important);
+		prj.createTask(this, "Tarea 3", "Tarea num 1.2.3", Task.Priority.Low);
+		prj.createTask(this, "Tarea 4", "Tarea num 1.2.4", Task.Priority.Important);
+		prj.createTask(this, "Tarea 5", "Tarea num 1.2.5", Task.Priority.Critical);
 
 		this.taskManager.createContext(this, "Contexto 2");
 		this.taskManager.createContext(this, "Contexto 3");

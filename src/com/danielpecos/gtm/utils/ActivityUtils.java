@@ -81,6 +81,10 @@ public class ActivityUtils {
 			}
 		});
 
+	}
+
+	public static void showMessage(android.content.Context ctx, int resId) {
+		Toast.makeText(ctx, resId, Toast.LENGTH_SHORT).show();
 	} 
 
 }
