@@ -23,6 +23,7 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
@@ -78,7 +79,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setName(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setName(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskViewHolder.updateView();
 						}
 					});
@@ -92,7 +93,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setDescription(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setDescription(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskViewHolder.updateView();
 						}
 					});
@@ -111,7 +112,7 @@ public class TaskActivity extends TabActivity {
 					c.set(Calendar.YEAR, year);
 					c.set(Calendar.MONTH, monthOfYear);
 					c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-					task.setDueDate(c.getTime());
+					task.setDueDate(GTDSQLHelper.getInstance(TaskActivity.this), c.getTime());
 
 					taskViewHolder.updateView();
 				}

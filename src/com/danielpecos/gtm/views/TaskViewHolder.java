@@ -17,6 +17,7 @@ import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
@@ -31,6 +32,10 @@ public class TaskViewHolder extends ViewHolder {
 	public TaskViewHolder(View view, Task task) {
 		super(view);
 		this.task = task;
+	}
+	
+	public Task getTask() {
+		return task;
 	}
 
 	@Override
@@ -57,15 +62,15 @@ public class TaskViewHolder extends ViewHolder {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked) {
 					if (task.getStatus() == Task.Status.Discarded) {
-						task.setStatus(Task.Status.Discarded_Completed);
+						task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded_Completed);
 					} else {
-						task.setStatus(Task.Status.Completed);
+						task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Completed);
 					}
 				} else {
 					if (task.getStatus() == Task.Status.Discarded_Completed) {
-						task.setStatus(Task.Status.Discarded);
+						task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded);
 					} else {
-						task.setStatus(Task.Status.Active);
+						task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Active);
 					}
 				}
 				
@@ -91,16 +96,16 @@ public class TaskViewHolder extends ViewHolder {
 
 						switch((int)rating) {
 						case 1:
-							task.setPriority(Task.Priority.Low);
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Low);
 							break;
 						case 2:
-							task.setPriority(Task.Priority.Normal);
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Normal);
 							break;
 						case 3:
-							task.setPriority(Task.Priority.Important);
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Important);
 							break;
 						case 4:
-							task.setPriority(Task.Priority.Critical);
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Critical);
 							break;
 						}
 
@@ -121,15 +126,15 @@ public class TaskViewHolder extends ViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (!isChecked) {
 						if (task.getStatus() == Task.Status.Completed) {
-							task.setStatus(Task.Status.Discarded_Completed);
+							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded_Completed);
 						} else {
-							task.setStatus(Task.Status.Discarded);
+							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded);
 						}
 					} else {
 						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(Task.Status.Completed);
+							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Completed);
 						} else {
-							task.setStatus(Task.Status.Active);
+							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Active);
 						}
 					}
 					updateView();

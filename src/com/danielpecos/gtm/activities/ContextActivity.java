@@ -49,7 +49,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		this.taskManager = TaskManager.getInstance(this);
 
-		//loadTestData();
+		loadTestData();
 
 		this.initializeUI();
 	}
@@ -74,8 +74,11 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String contextName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							taskManager.createContext(ContextActivity.this, contextName);
-							initializeUI();
+							if (taskManager.createContext(ContextActivity.this, contextName) != null) {
+								initializeUI();
+							} else {
+								ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingContext);
+							}
 						}
 					});
 			return true;
@@ -105,8 +108,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		} if (itemId == R.id.project_item) {
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
-			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
+			menu.getItem(5).setVisible(false);
 		} else if (itemId == R.id.task_item) {
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
@@ -123,11 +126,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		final ExpandableListContextMenuInfo  menuInfo = (ExpandableListContextMenuInfo) item.getMenuInfo();
 
-		int pos = (int)menuInfo.id;
-		final Context context = (Context)taskManager.getContexts().toArray()[pos];
+		//int pos = (int)menuInfo.id;
+		//final Context context = (Context)taskManager.getContexts().toArray()[pos];
+		//final Context context = taskManager.getContext(menuInfo.t)
 
 		switch (item.getItemId()) {
 		case R.id.context_contextMenu_renameContext: {
+			final Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_renameContext_title), 
@@ -137,19 +142,23 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String contextName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							context.setName(contextName);
-							context.store(GTDSQLHelper.getInstance(ContextActivity.this));
+							context.setName(GTDSQLHelper.getInstance(ContextActivity.this), contextName);
 							initializeUI();
 						}
 					});
 			return true;
 		}
 		case R.id.context_contextMenu_deleteContext: {
-			taskManager.deleteContext(ContextActivity.this, context);
-			initializeUI();
+			Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+			if (taskManager.deleteContext(ContextActivity.this, context)) {
+				initializeUI();
+			} else {
+				ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingContext);
+			}
 			return true;
 		}
 		case R.id.context_contextMenu_addProject: {
+			final Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_addProject_title), 
@@ -158,7 +167,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							//							Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
 							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
 							if (context.createProject(ContextActivity.this, projectName, null) != null) {
 								initializeUI();
@@ -170,7 +178,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			return true;
 		}		
 		case R.id.context_contextMenu_renameProject: {
-			final Project project = context.getProject(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+			long project_id = Long.parseLong(menuInfo.targetView.getContentDescription().toString());
+			final Project project = ((ProjectViewHolder)this.projectViewHolders.get(project_id)).getProject();
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_renameProject_title), 
@@ -180,20 +189,36 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							project.setName(projectName);
-							project.store(GTDSQLHelper.getInstance(ContextActivity.this));
+							project.setName(GTDSQLHelper.getInstance(ContextActivity.this), projectName);
 							initializeUI();
 						}
 					});
 			return true;
 		}		
 		case R.id.context_contextMenu_deleteProject: {
-			Project project = context.getProject(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
-			context.deleteProject(ContextActivity.this, project);
-			initializeUI();
+			long project_id = Long.parseLong(menuInfo.targetView.getContentDescription().toString());
+			final Project project = ((ProjectViewHolder)this.projectViewHolders.get(project_id)).getProject();
+			final Context context = findContextContaining(project);
+
+			if (context.deleteProject(ContextActivity.this, project)) {
+				initializeUI();
+			} else {
+				ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingProject);
+			}
+
 			return true;
 		}
 		case R.id.context_contextMenu_deleteTask: {
+			long task_id = Long.parseLong(menuInfo.targetView.getContentDescription().toString());
+			final Task task = ((TaskViewHolder)this.taskViewHolders.get(task_id)).getTask();
+			final Context context = findContextContaining(task);
+
+			if (context.deleteTask(ContextActivity.this, task)) {
+				initializeUI();
+			} else {
+				ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingTask);
+			}
+
 			return true;
 		}
 
@@ -201,6 +226,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			OnDismissListener listener = null;
 			int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
 			if (itemId == R.id.context_item) {
+				final Context context = taskManager.getContext(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+
 				final TaskContainer taskContainer = context;
 				listener = new OnDismissListener() {
 					@Override
@@ -214,7 +241,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					}
 				};
 			} else if (itemId == R.id.project_item) {
-				Project project = context.getProject(Long.parseLong(menuInfo.targetView.getContentDescription().toString()));
+				long project_id = Long.parseLong(menuInfo.targetView.getContentDescription().toString());
+				final Project project = ((ProjectViewHolder)this.projectViewHolders.get(project_id)).getProject();
+
 				final TaskContainer taskContainer = project;
 				listener = new OnDismissListener() {
 					@Override
@@ -240,6 +269,24 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			return false;
 		}
 		}
+	}
+
+	private Context findContextContaining(Task task) {
+		for (Context c : taskManager.getContexts()) {
+			if (c.getTask(task.getId()) != null) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	private Context findContextContaining(Project project) {
+		for (Context c : taskManager.getContexts()) {
+			if (c.getProject(project.getId()) != null) {
+				return c;
+			}
+		}
+		return null;
 	}
 
 	private void initializeUI() {
@@ -343,14 +390,14 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		Context ctx = this.taskManager.createContext(this, "Contexto 1");
 		Project prj = ctx.createProject(this, "Proyecto 1.1", "Descripción de proyecto 1.1");
 		prj.createTask(this, "Tarea 1", "Tarea num 1.1.1", Task.Priority.Critical);
-		prj.createTask(this, "Tarea 2", "Tarea num 1.1.2", Task.Priority.Important).setStatus(Task.Status.Completed);
-		prj.createTask(this, "Tarea 3", "Tarea num 1.1.3", Task.Priority.Low).setStatus(Task.Status.Completed);
+		prj.createTask(this, "Tarea 2", "Tarea num 1.1.2", Task.Priority.Important);
+		prj.createTask(this, "Tarea 3", "Tarea num 1.1.3", Task.Priority.Low);
 		prj.createTask(this, "Tarea 4", "Tarea num 1.1.4", Task.Priority.Important);
 		prj.createTask(this, "Tarea 5", "Tarea num 1.1.5", Task.Priority.Critical);
 
 		ctx.createTask(this, "Tarea 1", "Tarea num 1.0.1", Task.Priority.Critical);
 		ctx.createTask(this, "Tarea 2", "Tarea num 1.0.2", Task.Priority.Important);
-		ctx.createTask(this, "Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal).setStatus(Task.Status.Completed);
+		ctx.createTask(this, "Tarea 3", "Tarea num 1.0.3", Task.Priority.Normal);
 		ctx.createTask(this, "Tarea 4", "Tarea num 1.0.4", Task.Priority.Low);
 
 		prj = ctx.createProject(this, "Proyecto 1.2", "Descripción de proyecto 1.2");

@@ -47,6 +47,10 @@
     <string name="textbox_addTask_title">Set task name</string>
 	<string name="textbox_addTask_label">Task name:</string>
 	<string name="error_loadingData">Error loading data</string>
+	<string name="error_deletingContext">Error deleting context</string>
+	<string name="error_deletingProject">Error deleting project</string>
+	<string name="error_deletingTask">Error deleting task</string>
+	<string name="error_creatingContext">Error creating context</string>
 	<string name="error_creatingProject">Error creating project</string>
 	<string name="error_creatingTask">Error creating task</string>
 </resources>

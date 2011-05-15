@@ -1,6 +1,5 @@
 package com.danielpecos.gtm.model.beans;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -41,6 +40,7 @@ public class Task implements Persistable {
 		this();
 		this.name = name;
 		this.description = description;
+		this.priority = priority;
 	}
 
 	public long getId() {
@@ -51,51 +51,67 @@ public class Task implements Persistable {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(GTDSQLHelper helper, String name) {
 		this.name = name;
+		this.store(helper);
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(GTDSQLHelper helper, String description) {
 		this.description = description;
+		this.store(helper);
 	}
 
 	public Status getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(GTDSQLHelper helper, Status status) {
 		this.status = status;
+		this.store(helper);
 	}
 
 	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Priority priority) {
+	public void setPriority(GTDSQLHelper helper, Priority priority) {
 		this.priority = priority;
+		this.store(helper);
 	}
 
 	public Date getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(GTDSQLHelper helper, Date dueDate) {
 		this.dueDate = dueDate;
+		this.store(helper);
 	}
 
 	@Override
 	public long store(GTDSQLHelper helper) {
 		SQLiteDatabase db = helper.getWritableDatabase();
+		
 		ContentValues values = new ContentValues();
 		values.put(GTDSQLHelper.TASK_NAME, this.name);
 		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
 		values.put(GTDSQLHelper.TASK_STATUS, this.status.toString());
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
-		return db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
+		
+		if (this.id == 0) {
+			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
+		} else {
+			if (db.update(GTDSQLHelper.TABLE_TASKS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
+				return this.id;
+			} else {
+				return -1;
+			}
+		}
+		return this.id;
 	}
 
 	@Override

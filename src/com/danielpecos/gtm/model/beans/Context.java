@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
@@ -40,8 +40,9 @@ public class Context extends TaskContainer implements Persistable {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(GTDSQLHelper helper, String name) {
 		this.name = name;
+		this.store(helper);
 	}
 
 	public void addProject(Project project) {
@@ -68,10 +69,12 @@ public class Context extends TaskContainer implements Persistable {
 		}
 	}
 
-	public void deleteProject(android.content.Context ctx, Project project) {
+	public boolean deleteProject(android.content.Context ctx, Project project) {
 		if (project.remove(GTDSQLHelper.getInstance(ctx))) {
 			this.projects.remove(project.getId());
+			return true;
 		}
+		return false;
 	}
 
 	public Project getProject(Long id) {
@@ -116,17 +119,23 @@ public class Context extends TaskContainer implements Persistable {
 	@Override
 	public boolean remove(GTDSQLHelper helper) {
 		SQLiteDatabase db = helper.getWritableDatabase();
+		db.beginTransaction();
 		boolean result = false;
-		if (this.id != 0) {
-			result = db.delete(GTDSQLHelper.TABLE_CONTEXTS, BaseColumns._ID + "=" + this.getId(), null) > 0;
-		}
 
-		if (result) {
-			return this.removeProjects(helper) && this.removeTasks(helper);
-		} else {
-			return false;
-		}
+		try {
+			if (this.id != 0) {
+				result = db.delete(GTDSQLHelper.TABLE_CONTEXTS, BaseColumns._ID + "=" + this.getId(), null) > 0;
+			}
 
+			if (result && this.removeProjects(helper) && this.removeTasks(helper)) {
+				db.setTransactionSuccessful();
+			} else {
+				result = false;
+			}
+		} finally {
+			db.endTransaction();
+		}
+		return result;
 	}
 
 	protected boolean removeProjects(GTDSQLHelper helper) {
@@ -135,6 +144,7 @@ public class Context extends TaskContainer implements Persistable {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
@@ -144,15 +154,22 @@ public class Context extends TaskContainer implements Persistable {
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
 
-		Cursor cursor_projects = db.query(GTDSQLHelper.TABLE_PROJECTS, null, GTDSQLHelper.PROJECT_CONTEXTID + "=" + this.id, null, null, null, null);
-		while (cursor_projects.moveToNext()) {
-			Project project = new Project(db, cursor_projects);
-			this.addProject(project);
-		}
-		
-		this.loadTasks(db, GTDSQLHelper.TABLE_CONTEXTS_TASKS, GTDSQLHelper.CONTEXT_ID + "=" + this.id);
+		Cursor cursor_projects = null;
+		try {
+			cursor_projects= db.query(GTDSQLHelper.TABLE_PROJECTS, null, GTDSQLHelper.PROJECT_CONTEXTID + "=" + this.id, null, null, null, null);
+			while (cursor_projects.moveToNext()) {
+				Project project = new Project(db, cursor_projects);
+				this.addProject(project);
+			}
 
-		return true;
+			return this.loadTasks(db, GTDSQLHelper.TABLE_CONTEXTS_TASKS, GTDSQLHelper.CONTEXT_ID + "=" + this.id);
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			if (cursor_projects != null && !cursor_projects.isClosed()) {
+				cursor_projects.close();
+			}
+		}
 	}
 
 }

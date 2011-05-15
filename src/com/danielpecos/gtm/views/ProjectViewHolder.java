@@ -17,6 +17,10 @@ public class ProjectViewHolder extends ViewHolder {
 		this.project = project;
 	}
 	
+	public Project getProject() {
+		return project;
+	}
+
 	@Override
 	public HashMap<String, Object> getListFields() {
 		HashMap<String, Object> projectData = new HashMap<String, Object>();

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
@@ -62,8 +63,12 @@ public abstract class TaskContainer implements Iterable<Task> {
 		}
 	}
 
-	public void deleteTask(Task task) {
-		this.tasks.remove(task.getId());
+	public boolean deleteTask(android.content.Context ctx, Task task) {
+		if (task.remove(GTDSQLHelper.getInstance(ctx))) {
+			this.tasks.remove(task.getId());
+			return true;
+		}
+		return false;
 	}
 
 	public Task getTask(long id) {
@@ -94,23 +99,41 @@ public abstract class TaskContainer implements Iterable<Task> {
 	}
 
 	protected boolean loadTasks(SQLiteDatabase db, String table, String where) {
-		Cursor cursor = db.query(table, null, where, null, null, null, null);
+		Cursor cursor = null;
 
-		while (cursor.moveToNext()) {
-			long task_id = cursor.getLong(2);
+		try {
+			cursor = db.query(table, null, where, null, null, null, null);
 
-			Cursor cursor_task = db.query(GTDSQLHelper.TABLE_TASKS, null, BaseColumns._ID + "=" + task_id, null, null, null, null);
-			while (cursor_task.moveToNext()) {
-				Task t = new Task();
-				if (!t.load(db, cursor_task)) {
-					return false;
-				} else {
-					this.tasks.put(t.getId(), t);
+			while (cursor.moveToNext()) {
+				long task_id = cursor.getLong(2);
+
+				Cursor cursor_task = null;
+				try {
+					cursor_task = db.query(GTDSQLHelper.TABLE_TASKS, null, BaseColumns._ID + "=" + task_id, null, null, null, null);
+					while (cursor_task.moveToNext()) {
+						Task t = new Task();
+						if (!t.load(db, cursor_task)) {
+							return false;
+						} else {
+							this.tasks.put(t.getId(), t);
+						}
+					}
+				} catch (SQLException e) {
+				} finally {
+					if (cursor_task != null && !cursor_task.isClosed()) {
+						cursor_task.close();
+					}
 				}
 			}
-		}
 
-		return true;
+			return true;
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+			}
+		}
 	}
 
 	protected boolean removeTasks(GTDSQLHelper helper) {
@@ -119,7 +142,20 @@ public abstract class TaskContainer implements Iterable<Task> {
 				return false;
 			}
 		}
-		return true;
+
+		if (this.tasks.size() > 0) {
+
+			SQLiteDatabase db = helper.getWritableDatabase();
+			if (this instanceof Context) {
+				return (db.delete(GTDSQLHelper.TABLE_CONTEXTS_TASKS, GTDSQLHelper.CONTEXT_ID + "=" + ((Context)this).getId(), null) > 0);
+			} else if (this instanceof Project) {
+				return (db.delete(GTDSQLHelper.TABLE_PROJECTS_TASKS, GTDSQLHelper.PROJECT_ID + "=" + ((Project)this).getId(), null) > 0);
+			}
+
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }
