@@ -19,6 +19,7 @@
 
 		<activity android:name=".activities.TaskActivity" />
 	    <activity android:name=".activities.TaskActivity$TaskTabInfoActivity"/>
+	    <activity android:name=".activities.TaskActivity$TaskTabReminderActivity"/>
 	    
     </application>
 </manifest>

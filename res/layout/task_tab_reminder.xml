@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/layout"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="#ffffffff">
+	     
+	<TextView 
+		android:id="@+id/task_duedate_label"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent" 
+        android:background="@color/task_info_label_background"
+        android:padding="10dip"
+        android:layout_marginBottom="5dip"     
+        android:textStyle="bold"     
+        android:text="@string/task_duedate_label"/> 
+	
+	<LinearLayout 	
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView 
+			android:id="@+id/task_duedate"
+	        android:layout_width="150dip"
+	        android:layout_height="wrap_content"
+	        android:padding="10dip"
+	        android:layout_gravity="center|center_vertical"
+	        android:textColor="#ff000000" 
+	        android:text="-" />
+	        
+	    <Button
+	    	android:id="@+id/button_changeDueDate"
+	    	android:layout_width="wrap_content"
+			android:layout_height="wrap_content"   
+	    	android:text="@string/task_duedate_button"/>
+    </LinearLayout>
+        
+    <TextView 
+		android:id="@+id/task_duetime_label"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent" 
+        android:background="@color/task_info_label_background"
+        android:padding="10dip"
+        android:layout_marginTop="10dip"          
+        android:layout_marginBottom="5dip"     
+        android:textStyle="bold"     
+        android:text="@string/task_duetime_label"/> 
+        
+	<LinearLayout 	
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView 
+			android:id="@+id/task_duetime"
+	        android:layout_width="150dip"
+	        android:layout_height="wrap_content"
+	        android:padding="10dip"
+	        android:layout_gravity="center|center_vertical"
+	        android:textColor="#ff000000" 
+	        android:text="-" />   
+        	    <Button
+	    	android:id="@+id/button_changeDueTime"
+	    	android:layout_width="wrap_content"
+			android:layout_height="wrap_content"   
+	    	android:text="@string/task_duetime_button"/>
+    </LinearLayout>     
+	          
+</LinearLayout>

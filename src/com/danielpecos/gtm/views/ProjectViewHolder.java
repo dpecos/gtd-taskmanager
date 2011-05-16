@@ -29,7 +29,7 @@ public class ProjectViewHolder extends ViewHolder {
 		projectData.put("id", project.getId());
 		projectData.put("name", project.getName());
 		projectData.put("description", project.getDescription());
-		projectData.put("status_text", project.getCompletedTasksCount() + "/" + project.getTasksCount());
+		projectData.put("status_text", project.getCompletedTasksCount() + "/" + (project.getTasksCount() - project.getDiscardedTasksCount()));
 		projectData.put("status_icon", this.getProjectStatusIcon(project.getTasksCount(), project.getCompletedTasksCount()));
 		
 		return projectData;
@@ -38,7 +38,7 @@ public class ProjectViewHolder extends ViewHolder {
 	@Override
 	public void updateView() {
 		int completedTasks = project.getCompletedTasksCount();
-		int totalTasks = project.getTasksCount();
+		int totalTasks = project.getTasksCount() - project.getDiscardedTasksCount();
 
 		((TextView)getView(R.id.project_name)).setText(project.getName());
 		((TextView)getView(R.id.project_description)).setText(project.getDescription());

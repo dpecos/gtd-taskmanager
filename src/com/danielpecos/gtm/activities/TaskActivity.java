@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -32,9 +33,10 @@ public class TaskActivity extends TabActivity {
 	private TaskManager taskManager;
 	private Context context;
 	private Project project;
-	private Task task;
+	private static Task task;
 
-	private static TaskViewHolder taskViewHolder;
+	private static TaskViewHolder taskInfoViewHolder;
+	private static TaskViewHolder taskReminderViewHolder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +82,7 @@ public class TaskActivity extends TabActivity {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							task.setName(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							taskViewHolder.updateView();
+							taskInfoViewHolder.updateView();
 						}
 					});
 			return true;
@@ -94,37 +96,16 @@ public class TaskActivity extends TabActivity {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							task.setDescription(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							taskViewHolder.updateView();
+							taskInfoViewHolder.updateView();
 						}
 					});
 			return true;
-		case R.id.menu_changeDueDate:
-			Calendar c = Calendar.getInstance();
-			if (task.getDueDate() != null) 
-				c.setTime(task.getDueDate());
-			int mYear = c.get(Calendar.YEAR);
-			int mMonth = c.get(Calendar.MONTH);
-			int mDay = c.get(Calendar.DAY_OF_MONTH);
-			new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-
-				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-					Calendar c = Calendar.getInstance();
-					c.set(Calendar.YEAR, year);
-					c.set(Calendar.MONTH, monthOfYear);
-					c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-					task.setDueDate(GTDSQLHelper.getInstance(TaskActivity.this), c.getTime());
-
-					taskViewHolder.updateView();
-				}
-			}, mYear, mMonth, mDay).show();
 		}
 		return false;
 	}
 
 	private void initializeUI() {
 		setContentView(R.layout.task_layout);
-
-		this.taskViewHolder = new TaskViewHolder(null, task);
 
 		Resources res = getResources(); 
 		TabHost tabHost = getTabHost(); 
@@ -141,10 +122,22 @@ public class TaskActivity extends TabActivity {
                 .setContent(intent);
 	    tabHost.addTab(spec);*/
 
+		intent = new Intent().setClass(this, TaskTabReminderActivity.class);
 		spec = tabHost.newTabSpec("reminder").setIndicator(getString(R.string.task_tab_reminder),
 				res.getDrawable(android.R.drawable.ic_popup_reminder))
 				.setContent(intent);
 		tabHost.addTab(spec);
+		
+		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
+			@Override
+			public void onTabChanged(String tabId) {
+				if (tabId.equalsIgnoreCase("details")) {
+					taskInfoViewHolder.updateView();
+				} else if (tabId.equalsIgnoreCase("reminder")) {
+					taskReminderViewHolder.updateView();
+				}
+			}
+		});
 
 	}
 
@@ -154,8 +147,23 @@ public class TaskActivity extends TabActivity {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.task_tab_info);
 
-			taskViewHolder.setView(findViewById(android.R.id.content));
-			taskViewHolder.updateView();
+			taskInfoViewHolder = new TaskViewHolder(null, task);
+			taskInfoViewHolder.setView(findViewById(android.R.id.content));
+			taskInfoViewHolder.updateView();
+
+		}
+		
+	}
+	
+	public static class TaskTabReminderActivity extends Activity {
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.task_tab_reminder);
+
+			taskReminderViewHolder = new TaskViewHolder(null, task);
+			taskReminderViewHolder.setView(findViewById(android.R.id.content));
+			taskReminderViewHolder.updateView();
 
 		}
 	}

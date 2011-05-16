@@ -15,6 +15,8 @@ import com.danielpecos.gtm.utils.ActivityUtils;
 
 
 public class TaskManager {
+	public static final String TAG = "GTD-TaskManager";
+	
 	static TaskManager instance;
 
 	HashMap<Long, Context> contexts;

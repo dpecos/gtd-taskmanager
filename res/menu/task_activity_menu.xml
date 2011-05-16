@@ -5,8 +5,5 @@
 		android:icon="@android:drawable/ic_menu_preferences"/>
     <item android:title="@string/task_changeDescription_button"
 		android:id="@+id/menu_changeDescription"
-		android:icon="@android:drawable/ic_menu_info_details"/>
-    <item android:title="@string/task_duedate_button"
-		android:id="@+id/menu_changeDueDate"
-		android:icon="@android:drawable/ic_menu_preferences"/>		
+		android:icon="@android:drawable/ic_menu_info_details"/>		
 </menu>

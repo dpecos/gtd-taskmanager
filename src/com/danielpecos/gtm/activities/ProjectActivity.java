@@ -63,6 +63,7 @@ public class ProjectActivity extends ListActivity {
 
 		View projectItemView = mInflater.inflate(R.layout.project_item, null);
 		projectItemView.setMinimumHeight(projectItemView.getMeasuredHeight() + 8);
+		projectItemView.setPadding(0, 6, 0, 0);
 		
 		LinearLayout header = (LinearLayout)findViewById(R.id.header);
 		header.addView(projectItemView);

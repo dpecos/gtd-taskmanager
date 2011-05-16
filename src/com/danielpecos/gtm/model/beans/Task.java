@@ -1,12 +1,16 @@
 package com.danielpecos.gtm.model.beans;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Log;
 
+import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;
 
@@ -96,11 +100,18 @@ public class Task implements Persistable {
 	public long store(GTDSQLHelper helper) {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		
+		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		ContentValues values = new ContentValues();
 		values.put(GTDSQLHelper.TASK_NAME, this.name);
 		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
 		values.put(GTDSQLHelper.TASK_STATUS, this.status.toString());
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
+		if (this.getDueDate() != null) {
+			values.put(GTDSQLHelper.TASK_DUEDATETIME, iso8601Format.format(this.getDueDate()));
+//		} else {
+//			values.put(GTDSQLHelper.TASK_DUEDATETIME, null);
+		}
 		
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
@@ -116,12 +127,22 @@ public class Task implements Persistable {
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
+		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		int i = 0;
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
 		this.description = cursor.getString(i++);
 		this.status = Status.valueOf(cursor.getString(i++));
 		this.priority = Priority.valueOf(cursor.getString(i++));
+		try {
+			String date = cursor.getString(i++);
+			if (date != null && !date.equalsIgnoreCase("")) {
+				this.dueDate = iso8601Format.parse(date);
+			}
+		} catch (ParseException e) {
+			Log.e(TaskManager.TAG, e.getMessage());
+		}
 		return true;
 	}
 
@@ -136,3 +157,4 @@ public class Task implements Persistable {
 	}
 
 }
+

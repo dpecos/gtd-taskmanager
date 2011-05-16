@@ -92,6 +92,16 @@ public abstract class TaskContainer implements Iterable<Task> {
 		}
 		return count;
 	}
+	
+	public int getDiscardedTasksCount() {
+		int count = 0;
+		for (Task task : this.tasks.values()) {
+			if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
+				count ++;
+			}
+		}
+		return count;
+	}
 
 	@Override
 	public Iterator<Task> iterator() {
