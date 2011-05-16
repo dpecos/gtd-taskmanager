@@ -9,10 +9,13 @@
     <color name="Context_Item_Foreground">#ff23409E</color>
     <color name="Context_Item_Background">#bbE8E8E8</color>
     <color name="Project_Item_Background">#ffD3D8E8</color>
+    <!-- color name="task_info_label_foreground">#ff23409E</color-->
+    <color name="task_info_label_background">#bbE8E8E8</color>
     <string name="task_tab_details">Details</string>
     <string name="task_tab_map">Map</string>
     <string name="task_tab_reminder">Reminder</string>
     <string name="task_priority_label">Task priority:</string>
+    <string name="task_status_label">Task status:</string>
     <string name="task_status_discarded">Task discarded</string>
     <string name="task_status_active">Task active</string>
     <string name="task_duedate_label">Task due date:</string>
@@ -29,6 +32,9 @@
     <string name="context_optionsMenu_reloadData">Reload data</string>
     <string name="context_optionsMenu_configuration">Configuration</string>
     <string name="context_optionsMenu_about">About</string>
+    <string name="context_contextMenu_contextTitle">Context actions</string>
+    <string name="context_contextMenu_projectTitle">Project actions</string>
+    <string name="context_contextMenu_taskTitle">Task actions</string>
     <string name="context_contextMenu_renameContext">Rename Context</string>
     <string name="context_contextMenu_deleteContext">Delete Context</string>
 	<string name="context_contextMenu_renameProject">Rename Project</string>
@@ -53,4 +59,10 @@
 	<string name="error_creatingContext">Error creating context</string>
 	<string name="error_creatingProject">Error creating project</string>
 	<string name="error_creatingTask">Error creating task</string>
+	<string-array name="task_priorities">
+		<item>Low</item>
+		<item>Normal</item>
+		<item>Important</item>
+		<item>Critical</item>
+	</string-array>
 </resources>

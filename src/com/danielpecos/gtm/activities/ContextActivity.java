@@ -49,7 +49,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		this.taskManager = TaskManager.getInstance(this);
 
-		loadTestData();
+//		loadTestData();
 
 		this.initializeUI();
 	}
@@ -102,15 +102,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
 
 		if (itemId == R.id.context_item) {
+			menu.setHeaderTitle(R.string.context_contextMenu_contextTitle);
+			menu.setHeaderIcon(android.R.drawable.ic_menu_agenda);
 			menu.getItem(2).setVisible(false);
 			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
 		} if (itemId == R.id.project_item) {
+			menu.setHeaderTitle(R.string.context_contextMenu_projectTitle);
+			menu.setHeaderIcon(R.drawable.ic_menu_archive);
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
 			menu.getItem(4).setVisible(false);
 			menu.getItem(5).setVisible(false);
 		} else if (itemId == R.id.task_item) {
+			menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
+			menu.setHeaderIcon(R.drawable.ic_menu_mark);
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
 			menu.getItem(2).setVisible(false);

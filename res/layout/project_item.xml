@@ -26,10 +26,11 @@
         android:textColor="#ff444444"      
         android:textSize="11dip" />
     <LinearLayout
+  		android:id="@+id/project_icons"
     	android:orientation="vertical"
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"
-    	android:layout_alignParentRight="true"
+    	android:layout_toLeftOf="@+id/project_details"
     	android:layout_marginTop="7dip"
     	android:layout_marginRight="5dip"
     	android:gravity="center">
@@ -45,11 +46,11 @@
 	        android:textColor="#ff444444"      
 	        android:textSize="10dip" />  
     </LinearLayout>
-    <!-- ImageView 
-    	android:id="@+id/project_add_task"
+    <ImageView 
+    	android:id="@+id/project_details"
     	android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-    	android:layout_marginRight="5dip" 
-    	android:layout_alignParentRight="true"
-    	android:src="@android:drawable/ic_menu_add" /-->  	
+		android:layout_alignParentRight="true"
+    	android:layout_centerVertical="true"
+    	android:src="@drawable/expander_ic_minimized" />  	
 </RelativeLayout>

@@ -1,18 +1,20 @@
 package com.danielpecos.gtm.views;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.res.Resources;
-import android.provider.ContactsContract.CommonDataKinds.Event;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.RatingBar;
-import android.widget.RatingBar.OnRatingBarChangeListener;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
@@ -21,19 +23,20 @@ import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
-	
+
 	private TextView textView_taskName;
 	private TextView textView_taskDescription;
 	private CheckBox checkbox_taskStatus;
-	private RatingBar ratingBar_taskPriority;
+	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
 	private TextView textView_taskDueDate;
+	private List<TextView> textViews_labels;
 
 	public TaskViewHolder(View view, Task task) {
 		super(view);
 		this.task = task;
 	}
-	
+
 	public Task getTask() {
 		return task;
 	}
@@ -54,6 +57,11 @@ public class TaskViewHolder extends ViewHolder {
 	}
 
 	private void setUpView() {
+		this.textViews_labels = new ArrayList<TextView>();
+		this.textViews_labels.add((TextView)getView(R.id.task_priority_label));
+		this.textViews_labels.add((TextView)getView(R.id.task_duedate_label));
+		this.textViews_labels.add((TextView)getView(R.id.task_status_label));
+
 		this.textView_taskName = (TextView)getView(R.id.task_name);
 		this.textView_taskDescription = (TextView)getView(R.id.task_description);
 		this.checkbox_taskStatus = (CheckBox)getView(R.id.task_status_check);
@@ -73,52 +81,55 @@ public class TaskViewHolder extends ViewHolder {
 						task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Active);
 					}
 				}
-				
+
 				if (viewListeners != null && viewListeners.get("status_check") != null) {
 					((OnCheckedChangeListener)viewListeners.get("status_check")).onCheckedChanged(buttonView, isChecked);
 				}
-				
+
 				updateView();
 			}
 		});
-		this.ratingBar_taskPriority = (RatingBar)getView(R.id.task_priority_bar);
-		if (this.ratingBar_taskPriority != null) {
-			this.ratingBar_taskPriority.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
-				private Toast toast;
-				public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-					if (fromUser) {
 
-						if (this.toast != null) {
-							this.toast.cancel();
-						} else {
-							this.toast = Toast.makeText(view.getContext(), "", Toast.LENGTH_SHORT);
-						}
+		this.spinner_taskPriority = (Spinner)getView(R.id.task_priority_spinner);
+		if (this.spinner_taskPriority != null) {
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(), R.array.task_priorities, android.R.layout.simple_spinner_item);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			this.spinner_taskPriority.setAdapter(adapter);
+			this.spinner_taskPriority.setOnItemSelectedListener(new OnItemSelectedListener() {
+				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
-						switch((int)rating) {
-						case 1:
+					switch (pos) {
+					case 0:
+						if (task.getPriority() != Task.Priority.Low) {
 							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Low);
-							break;
-						case 2:
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Normal);
-							break;
-						case 3:
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Important);
-							break;
-						case 4:
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Critical);
-							break;
 						}
-
-						String msg = view.getResources().getString(R.string.task_priority_label) + " " + task.getPriority();
-						this.toast.setText(msg);
-						this.toast.show();
-
-						updateView();
+						break;
+					case 1:
+						if (task.getPriority() != Task.Priority.Normal) {
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Normal);
+						}
+						break;
+					case 2:
+						if (task.getPriority() != Task.Priority.Important) {
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Important);
+						}
+						break;
+					case 3:
+						if (task.getPriority() != Task.Priority.Critical) {
+							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Critical);
+						}
+						break;
 					}
+
+					updateView();
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
 				}
 			});
 		}
-		
+
 		this.toggleButton_taskDiscarded = (ToggleButton)getView(R.id.task_status_discarded);
 		if (this.toggleButton_taskDiscarded != null) {
 			this.toggleButton_taskDiscarded.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -141,40 +152,58 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			});
 		}
-		
+
 		this.textView_taskDueDate = (TextView)getView(R.id.task_duedate);
 	}
-	
+
 	@Override
 	public void updateView() {
-		
+
 		if (this.textView_taskName == null) {
 			this.setUpView();
 		}
-		
+
 		final Resources res = this.view.getResources();
 
 		this.textView_taskName.setText(task.getName());
 		this.textView_taskDescription.setText(task.getDescription());
 		this.checkbox_taskStatus.setChecked(task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
-		
+
 		// this line is required to force the UI to update the checkbox view when using a real device
 		this.checkbox_taskStatus.requestLayout();
-		
-		if (this.ratingBar_taskPriority != null) {
-			switch (task.getPriority()) {
-			case Low:
-				this.ratingBar_taskPriority.setRating(1.0f);
-				break;
-			case Normal:
-				this.ratingBar_taskPriority.setRating(2.0f);
-				break;
-			case Important:
-				this.ratingBar_taskPriority.setRating(3.0f);
-				break;
-			case Critical:
-				this.ratingBar_taskPriority.setRating(4.0f);
-				break;
+
+		if (this.spinner_taskPriority != null) {
+			if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
+				for (TextView label: this.textViews_labels) {
+					label.setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
+				}
+			} else {
+				switch (task.getPriority()) {
+				case Low:
+					this.spinner_taskPriority.setSelection(0);
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityLow));
+					}
+					break;
+				case Normal:
+					this.spinner_taskPriority.setSelection(1);
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityNormal));
+					}
+					break;
+				case Important:
+					this.spinner_taskPriority.setSelection(2);
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityImportant));
+					}
+					break;
+				case Critical:
+					this.spinner_taskPriority.setSelection(3);
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityCritical));
+					}
+					break;
+				}
 			}
 
 		}
@@ -207,8 +236,8 @@ public class TaskViewHolder extends ViewHolder {
 
 			if (this.checkbox_taskStatus != null) 
 				this.checkbox_taskStatus.setEnabled(false);
-			if (this.ratingBar_taskPriority != null)
-				this.ratingBar_taskPriority.setEnabled(false);
+			if (this.spinner_taskPriority != null)
+				this.spinner_taskPriority.setEnabled(false);
 		} else {
 			switch(task.getPriority()) {
 			case Low: 
@@ -231,8 +260,8 @@ public class TaskViewHolder extends ViewHolder {
 
 			if (this.checkbox_taskStatus != null) 
 				this.checkbox_taskStatus.setEnabled(true);
-			if (this.ratingBar_taskPriority != null)
-				this.ratingBar_taskPriority.setEnabled(true);
+			if (this.spinner_taskPriority != null)
+				this.spinner_taskPriority.setEnabled(true);
 		}
 
 		this.view.requestLayout();

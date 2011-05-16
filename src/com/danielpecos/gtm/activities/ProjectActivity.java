@@ -71,6 +71,9 @@ public class ProjectActivity extends ListActivity {
 		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
 		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
 
+		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
+		//findViewById(R.id.project_details).setVisibility(View.GONE);
+				
 		projectViewHolder.updateView();
 		
 		//projectItemView.setTag(projectViewHolder);
