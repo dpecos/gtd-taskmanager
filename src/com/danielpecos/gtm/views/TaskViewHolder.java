@@ -26,7 +26,6 @@ import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Task;
-import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
@@ -112,15 +111,15 @@ public class TaskViewHolder extends ViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (isChecked) {
 						if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded_Completed);
+							task.setStatus(view.getContext(), Task.Status.Discarded_Completed);
 						} else {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Completed);
+							task.setStatus(view.getContext(), Task.Status.Completed);
 						}
 					} else {
 						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded);
+							task.setStatus(view.getContext(), Task.Status.Discarded);
 						} else {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Active);
+							task.setStatus(view.getContext(), Task.Status.Active);
 						}
 					}
 
@@ -144,22 +143,22 @@ public class TaskViewHolder extends ViewHolder {
 					switch (pos) {
 					case 0:
 						if (task.getPriority() != Task.Priority.Low) {
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Low);
+							task.setPriority(view.getContext(), Task.Priority.Low);
 						}
 						break;
 					case 1:
 						if (task.getPriority() != Task.Priority.Normal) {
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Normal);
+							task.setPriority(view.getContext(), Task.Priority.Normal);
 						}
 						break;
 					case 2:
 						if (task.getPriority() != Task.Priority.Important) {
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Important);
+							task.setPriority(view.getContext(), Task.Priority.Important);
 						}
 						break;
 					case 3:
 						if (task.getPriority() != Task.Priority.Critical) {
-							task.setPriority(GTDSQLHelper.getInstance(view.getContext()), Task.Priority.Critical);
+							task.setPriority(view.getContext(), Task.Priority.Critical);
 						}
 						break;
 					}
@@ -180,15 +179,15 @@ public class TaskViewHolder extends ViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (!isChecked) {
 						if (task.getStatus() == Task.Status.Completed) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded_Completed);
+							task.setStatus(view.getContext(), Task.Status.Discarded_Completed);
 						} else if (task.getStatus() == Task.Status.Active) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Discarded);
+							task.setStatus(view.getContext(), Task.Status.Discarded);
 						}
 					} else {
 						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Completed);
+							task.setStatus(view.getContext(), Task.Status.Completed);
 						} else if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(GTDSQLHelper.getInstance(view.getContext()), Task.Status.Active);
+							task.setStatus(view.getContext(), Task.Status.Active);
 						}
 					}
 					updateView();
@@ -221,7 +220,7 @@ public class TaskViewHolder extends ViewHolder {
 							c.set(Calendar.YEAR, year);
 							c.set(Calendar.MONTH, monthOfYear);
 							c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-							task.setDueDate(GTDSQLHelper.getInstance(view.getContext()), c.getTime());
+							task.setDueDate(view.getContext(), c.getTime());
 
 							updateView();
 						}
@@ -258,7 +257,7 @@ public class TaskViewHolder extends ViewHolder {
 							}
 							c.set(Calendar.HOUR_OF_DAY, hourOfDay);
 							c.set(Calendar.MINUTE, minute);
-							task.setDueDate(GTDSQLHelper.getInstance(view.getContext()), c.getTime());
+							task.setDueDate(view.getContext(), c.getTime());
 
 							updateView();
 						}

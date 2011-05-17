@@ -55,50 +55,53 @@ public class Task implements Persistable {
 		return name;
 	}
 
-	public void setName(GTDSQLHelper helper, String name) {
+	public void setName(android.content.Context ctx, String name) {
 		this.name = name;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(GTDSQLHelper helper, String description) {
+	public void setDescription(android.content.Context ctx, String description) {
 		this.description = description;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	public Status getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(GTDSQLHelper helper, Status status) {
+	public void setStatus(android.content.Context ctx, Status status) {
 		this.status = status;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(GTDSQLHelper helper, Priority priority) {
+	public void setPriority(android.content.Context ctx, Priority priority) {
 		this.priority = priority;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	public Date getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(GTDSQLHelper helper, Date dueDate) {
+	public void setDueDate(android.content.Context ctx, Date dueDate) {
 		this.dueDate = dueDate;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	@Override
-	public long store(GTDSQLHelper helper) {
+	public long store(android.content.Context ctx) {
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
+		
+		long result = 0;
 		
 		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -115,14 +118,18 @@ public class Task implements Persistable {
 		
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
+			result = this.id;
 		} else {
 			if (db.update(GTDSQLHelper.TABLE_TASKS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
-				return this.id;
+				result = this.id;
 			} else {
-				return -1;
+				result = -1;
 			}
 		}
-		return this.id;
+		
+		db.close();
+		
+		return result;
 	}
 
 	@Override
@@ -147,13 +154,29 @@ public class Task implements Persistable {
 	}
 
 	@Override
-	public boolean remove(GTDSQLHelper helper) {
-		SQLiteDatabase db = helper.getWritableDatabase();
-		if (this.id != 0) {
-			return db.delete(GTDSQLHelper.TABLE_TASKS, BaseColumns._ID + "=" + this.getId(), null) > 0;
+	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
+
+		SQLiteDatabase db = null;
+
+		if (dbParent == null) {
+			GTDSQLHelper helper = new GTDSQLHelper(ctx);
+			db = helper.getWritableDatabase();
 		} else {
-			return false;
+			db = dbParent;
 		}
+
+		boolean result = false;
+		if (this.id != 0) {
+			result = db.delete(GTDSQLHelper.TABLE_TASKS, BaseColumns._ID + "=" + this.getId(), null) > 0;
+		} else {
+			result =  false;
+		}
+		
+		if (dbParent == null) {
+			db.close();
+		}
+		
+		return result;
 	}
 
 }

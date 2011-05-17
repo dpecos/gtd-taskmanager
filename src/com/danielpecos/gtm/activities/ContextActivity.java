@@ -148,7 +148,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String contextName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							context.setName(GTDSQLHelper.getInstance(ContextActivity.this), contextName);
+							context.setName(ContextActivity.this, contextName);
 							initializeUI();
 						}
 					});
@@ -195,7 +195,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-							project.setName(GTDSQLHelper.getInstance(ContextActivity.this), projectName);
+							project.setName(ContextActivity.this, projectName);
 							initializeUI();
 						}
 					});

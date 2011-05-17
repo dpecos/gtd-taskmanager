@@ -40,9 +40,9 @@ public class Context extends TaskContainer implements Persistable {
 		return name;
 	}
 
-	public void setName(GTDSQLHelper helper, String name) {
+	public void setName(android.content.Context ctx, String name) {
 		this.name = name;
-		this.store(helper);
+		this.store(ctx);
 	}
 
 	public void addProject(Project project) {
@@ -52,8 +52,7 @@ public class Context extends TaskContainer implements Persistable {
 	public Project createProject(android.content.Context ctx, String name, String description) {
 		Project project = new Project(this.getId(), name, description);
 
-		GTDSQLHelper helper = GTDSQLHelper.getInstance(ctx);
-		long id = project.store(helper);
+		long id = project.store(ctx);
 		if (id > 0) {
 			this.addProject(project);
 			return project;
@@ -63,14 +62,14 @@ public class Context extends TaskContainer implements Persistable {
 	}
 
 	public void updateProject(android.content.Context ctx, String name, Project project) {
-		project.store(GTDSQLHelper.getInstance(ctx));
+		project.store(ctx);
 		if (this.projects.remove(name) != null) {
 			this.projects.put(project.getId(), project);
 		}
 	}
 
 	public boolean deleteProject(android.content.Context ctx, Project project) {
-		if (project.remove(GTDSQLHelper.getInstance(ctx))) {
+		if (project.remove(ctx, null)) {
 			this.projects.remove(project.getId());
 			return true;
 		}
@@ -96,51 +95,67 @@ public class Context extends TaskContainer implements Persistable {
 	}
 
 	@Override
-	public long store(GTDSQLHelper helper) {
+	public long store(android.content.Context ctx) {
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
+		long result = 0;
 		if (this.id == 0) {
 			// insert
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
 			this.id = db.insert(GTDSQLHelper.TABLE_CONTEXTS, null, values);
-			return this.id;
+			result = this.id;
 		} else {
 			// update
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
 			if (db.update(GTDSQLHelper.TABLE_CONTEXTS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
-				return this.id;
+				result = this.id;
 			} else {
-				return -1;
+				result = -1;
 			}
 		}
+		helper.close();
+		return result;
 	}
 
 	@Override
-	public boolean remove(GTDSQLHelper helper) {
-		SQLiteDatabase db = helper.getWritableDatabase();
-		db.beginTransaction();
+	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
+
+		SQLiteDatabase db = null;
+
+		if (dbParent == null) {
+			GTDSQLHelper helper = new GTDSQLHelper(ctx);
+			db = helper.getWritableDatabase();
+		} else {
+			db = dbParent;
+		}
+
 		boolean result = false;
 
+		db.beginTransaction();
 		try {
 			if (this.id != 0) {
 				result = db.delete(GTDSQLHelper.TABLE_CONTEXTS, BaseColumns._ID + "=" + this.getId(), null) > 0;
 			}
 
-			if (result && this.removeProjects(helper) && this.removeTasks(helper)) {
+			if (result && this.removeProjects(ctx, db) && this.removeTasks(ctx, db)) {
 				db.setTransactionSuccessful();
 			} else {
 				result = false;
 			}
 		} finally {
 			db.endTransaction();
+			if (dbParent == null) {
+				db.close();
+			}
 		}
 		return result;
 	}
 
-	protected boolean removeProjects(GTDSQLHelper helper) {
+	protected boolean removeProjects(android.content.Context ctx, SQLiteDatabase db) {
 		for (Project p : this.getProjects()) {
-			if (!p.remove(helper)) {
+			if (!p.remove(ctx, db)) {
 				return false;
 			}
 		}

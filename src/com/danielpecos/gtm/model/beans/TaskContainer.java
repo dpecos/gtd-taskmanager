@@ -27,44 +27,38 @@ public abstract class TaskContainer implements Iterable<Task> {
 	public Task createTask(android.content.Context ctx, String name, String description, Task.Priority priority) {
 		Task task = new Task(name, description, priority);
 
-		GTDSQLHelper helper = GTDSQLHelper.getInstance(ctx);
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
 
-		db.beginTransaction();
+		long id = task.store(ctx);
+		if (id > 0) {
+			boolean result = false;
 
-		try {
-			long id = task.store(helper);
-			if (id > 0) {
-				boolean result = false;
+			ContentValues values = new ContentValues();
 
-				ContentValues values = new ContentValues();
+			values.put(GTDSQLHelper.TASK_ID, id);
+			if (this instanceof Context) {
+				values.put(GTDSQLHelper.CONTEXT_ID, ((Context)this).getId());
+				result = db.insert(GTDSQLHelper.TABLE_CONTEXTS_TASKS, null, values) > 0;
+			} else if (this instanceof Project) {
+				values.put(GTDSQLHelper.PROJECT_ID, ((Project)this).getId());
+				result = db.insert(GTDSQLHelper.TABLE_PROJECTS_TASKS, null, values) > 0;
+			}
 
-				values.put(GTDSQLHelper.TASK_ID, id);
-				if (this instanceof Context) {
-					values.put(GTDSQLHelper.CONTEXT_ID, ((Context)this).getId());
-					result = db.insert(GTDSQLHelper.TABLE_CONTEXTS_TASKS, null, values) > 0;
-				} else if (this instanceof Project) {
-					values.put(GTDSQLHelper.PROJECT_ID, ((Project)this).getId());
-					result = db.insert(GTDSQLHelper.TABLE_PROJECTS_TASKS, null, values) > 0;
-				}
-
-				if (result) {
-					db.setTransactionSuccessful();
-					this.addTask(task);
-					return task;
-				} else {
-					return null;
-				}
-			} else { 
+			if (result) {
+				db.setTransactionSuccessful();
+				this.addTask(task);
+				return task;
+			} else {
 				return null;
 			}
-		} finally {
-			db.endTransaction();
+		} else { 
+			return null;
 		}
 	}
 
 	public boolean deleteTask(android.content.Context ctx, Task task) {
-		if (task.remove(GTDSQLHelper.getInstance(ctx))) {
+		if (task.remove(ctx, null)) {
 			this.tasks.remove(task.getId());
 			return true;
 		}
@@ -92,7 +86,7 @@ public abstract class TaskContainer implements Iterable<Task> {
 		}
 		return count;
 	}
-	
+
 	public int getDiscardedTasksCount() {
 		int count = 0;
 		for (Task task : this.tasks.values()) {
@@ -146,16 +140,15 @@ public abstract class TaskContainer implements Iterable<Task> {
 		}
 	}
 
-	protected boolean removeTasks(GTDSQLHelper helper) {
+	protected boolean removeTasks(android.content.Context ctx, SQLiteDatabase db) {
 		for (Task t : this) {
-			if (!t.remove(helper)) {
+			if (!t.remove(ctx, db)) {
 				return false;
 			}
 		}
 
 		if (this.tasks.size() > 0) {
 
-			SQLiteDatabase db = helper.getWritableDatabase();
 			if (this instanceof Context) {
 				return (db.delete(GTDSQLHelper.TABLE_CONTEXTS_TASKS, GTDSQLHelper.CONTEXT_ID + "=" + ((Context)this).getId(), null) > 0);
 			} else if (this instanceof Project) {

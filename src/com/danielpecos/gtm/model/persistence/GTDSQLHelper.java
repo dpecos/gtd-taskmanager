@@ -1,15 +1,16 @@
 package com.danielpecos.gtm.model.persistence;
 
+import com.danielpecos.gtm.model.TaskManager;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 public class GTDSQLHelper extends SQLiteOpenHelper {
-	private static GTDSQLHelper instance;
-
-	private static final String DATABASE_NAME = "gtd_taskmanager.db";
 	private static final int DATABASE_VERSION = 1;
+	private static final String DATABASE_NAME = "gtd_taskmanager.db";
 
 	// Table name
 	public static final String TABLE_CONTEXTS = "contexts";
@@ -41,7 +42,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public GTDSQLHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		SQLiteDatabase db = context.openOrCreateDatabase(DATABASE_NAME, SQLiteDatabase.CREATE_IF_NECESSARY, null);
-		//		db.setVersion(1);
+		db.close();
 	}		
 
 	@Override
@@ -81,7 +82,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ "FOREIGN KEY(" + TASK_ID + ") REFERENCES " + TABLE_TASKS + "(id) "
 			+ ");";
 			db.execSQL(sql);
-			
+
 			sql = "create table " + TABLE_PROJECTS_TASKS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, "
 			+ PROJECT_ID + " integer, "
@@ -100,25 +101,21 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (oldVersion >= newVersion)
-			return;
+		if (oldVersion < newVersion) {
 
-		String sql = null;
-		if (oldVersion == 1) 
-			sql = "alter table " + TABLE_TASKS + " add note text;";
-		if (oldVersion == 2)
-			sql = "";
+			Log.w(TaskManager.TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
-		if (sql != null) {
-			db.execSQL(sql);
+			/*String sql = null;
+			if (oldVersion == 1) {
+				sql = "alter table " + TABLE_TASKS + " add " + TASK_DUEDATETIME + " datetime ";
+			} else if (oldVersion == 2) {
+				sql = "";
+			}
+
+			if (sql != null) {
+				db.execSQL(sql);
+			}*/
 		}
 	}
-
-	public static GTDSQLHelper getInstance(Context context) {
-		if (instance == null) {
-			instance = new GTDSQLHelper(context);
-		}
-		return instance;
-	}
-
+	
 }

@@ -81,7 +81,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setName(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setName(TaskActivity.this, ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskInfoViewHolder.updateView();
 						}
 					});
@@ -95,7 +95,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setDescription(GTDSQLHelper.getInstance(TaskActivity.this), ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setDescription(TaskActivity.this, ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskInfoViewHolder.updateView();
 						}
 					});

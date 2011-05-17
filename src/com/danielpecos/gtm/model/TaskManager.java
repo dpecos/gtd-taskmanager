@@ -40,7 +40,7 @@ public class TaskManager {
 
 	public Context createContext(android.content.Context ctx, String name) {
 		Context context = new Context(name);
-		if (context.store(GTDSQLHelper.getInstance(ctx)) > 0) {
+		if (context.store(ctx) > 0) {
 			this.contexts.put(context.getId(), context);
 			return context;
 		} else { 
@@ -49,7 +49,7 @@ public class TaskManager {
 	}
 
 	public boolean deleteContext(android.content.Context ctx, Context context) {
-		if (context.remove(GTDSQLHelper.getInstance(ctx))) {
+		if (context.remove(ctx, null)) {
 			this.contexts.remove(context.getId());
 			return true;
 		} else {
@@ -58,7 +58,7 @@ public class TaskManager {
 	}
 
 	private boolean loadDatabase(android.content.Context ctx) {
-		GTDSQLHelper helper = GTDSQLHelper.getInstance(ctx);
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 
 		helper.getWritableDatabase();
 
@@ -86,6 +86,7 @@ public class TaskManager {
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
 			}
+			db.close();
 		}
 	}
 
