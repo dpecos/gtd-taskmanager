@@ -45,8 +45,9 @@ public abstract class TaskContainer implements Iterable<Task> {
 				result = db.insert(GTDSQLHelper.TABLE_PROJECTS_TASKS, null, values) > 0;
 			}
 
+			db.close();
+			
 			if (result) {
-				db.setTransactionSuccessful();
 				this.addTask(task);
 				return task;
 			} else {
