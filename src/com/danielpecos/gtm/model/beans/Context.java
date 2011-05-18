@@ -18,7 +18,7 @@ public class Context extends TaskContainer implements Persistable {
 
 	LinkedHashMap<Long, Project> projects;
 
-	public Context() {
+	private Context() {
 		this.projects = new LinkedHashMap<Long, Project>();
 	}
 
@@ -45,7 +45,7 @@ public class Context extends TaskContainer implements Persistable {
 		this.store(ctx);
 	}
 
-	public void addProject(Project project) {
+	void addProject(Project project) {
 		this.projects.put(project.getId(), project);
 	}
 
@@ -82,16 +82,6 @@ public class Context extends TaskContainer implements Persistable {
 
 	public Collection<Project> getProjects() {
 		return this.projects.values();
-	}
-
-	public Project projectAt(int projectPosition) {
-		Project prj = (Project) this.getProjects().toArray()[projectPosition];
-		return prj;
-	}
-
-	public Task taskAt(int taskPosition) {
-		Task task = (Task) this.getTasks().toArray()[taskPosition];
-		return task;
 	}
 
 	@Override

@@ -328,7 +328,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				// TASKS LIST
 				contextChildData = new ArrayList<HashMap<String,Object>>();
 				ArrayList<HashMap<String, Object>> contextChildEvents = new ArrayList<HashMap<String,Object>>();
-				for (final Task task : ctx.getTasks()) {
+				for (final Task task : ctx) {
 
 					TaskViewHolder tvh = new TaskViewHolder(null, task);
 					taskViewHolders.put(task.getId(), tvh);
@@ -426,13 +426,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		Context ctx = taskManager.elementAt(groupPosition);
 
 		if (childPosition < ctx.getProjects().size()) {
-			Project prj = ctx.projectAt(childPosition);
-			this.triggerViewHolder = this.projectViewHolders.get(prj.getId());
-			ActivityUtils.showProjectActivity(this, ctx, prj);
+			long projectId = Long.parseLong(view.getContentDescription().toString());
+			this.triggerViewHolder = this.projectViewHolders.get(projectId);
+			ActivityUtils.showProjectActivity(this, ctx, ctx.getProject(projectId));
 		} else {
-			Task task = ctx.taskAt(childPosition - ctx.getProjects().size());
-			this.triggerViewHolder = this.taskViewHolders.get(task.getId());
-			ActivityUtils.showTaskActivity(this, ctx, null, task);
+			long taskId = Long.parseLong(view.getContentDescription().toString());
+			this.triggerViewHolder = this.taskViewHolders.get(taskId);
+			ActivityUtils.showTaskActivity(this, ctx, null, ctx.getTask(taskId));
 		}
 
 		return result;

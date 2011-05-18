@@ -84,7 +84,7 @@ public class ProjectActivity extends ListActivity {
 		
 		ArrayList<HashMap<String, Object>> itemsData = new ArrayList<HashMap<String, Object>>();
 		ArrayList<HashMap<String, Object>> itemsEvents = new ArrayList<HashMap<String, Object>>();
-		for (final Task task : project.getTasks()) {
+		for (final Task task : project) {
 			
 			TaskViewHolder tvh = new TaskViewHolder(null, task);
 			taskViewHolders.put(task.getId(), tvh);
@@ -121,9 +121,9 @@ public class ProjectActivity extends ListActivity {
 	public void onListItemClick(ListView parent, View view, int position, long id) {
 		super.onListItemClick(parent, view, position, id);
 
-		Task task = this.project.elementAt(position);
-		this.triggerViewHolder = this.taskViewHolders.get(task.getId());
-		ActivityUtils.showTaskActivity(this, this.context, this.project, task);
+		long taskId = Long.parseLong(view.getContentDescription().toString());
+		this.triggerViewHolder = this.taskViewHolders.get(taskId);
+		ActivityUtils.showTaskActivity(this, this.context, this.project, this.project.getTask(taskId));
 	}
 	
 	@Override

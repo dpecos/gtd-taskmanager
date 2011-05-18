@@ -34,13 +34,13 @@ public class Task implements Persistable {
 	GeoPoint location;
 	Type type;
 
-	public Task() {
+	Task() {
 		this.priority = Priority.Normal;
 		this.status = Status.Active;
 		this.type = Type.Normal;
 	}
 
-	public Task(String name, String description, Priority priority) {
+	Task(String name, String description, Priority priority) {
 		this();
 		this.name = name;
 		this.description = description;

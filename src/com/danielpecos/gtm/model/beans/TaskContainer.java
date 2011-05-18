@@ -1,9 +1,13 @@
 package com.danielpecos.gtm.model.beans;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,11 +20,18 @@ import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 public abstract class TaskContainer implements Iterable<Task> {
 	HashMap<Long, Task> tasks;
 
-	public TaskContainer() {
+	private static Comparator<Task> comparator = new Comparator<Task>() {
+		@Override
+		public int compare(Task t1, Task t2) {
+			return -1 * t1.getPriority().compareTo(t2.getPriority());
+		}
+	};
+
+	TaskContainer() {
 		this.tasks = new LinkedHashMap<Long, Task>();
 	}
 
-	public void addTask(Task task) {
+	void addTask(Task task) {
 		this.tasks.put(task.getId(), task);
 	}
 
@@ -46,7 +57,7 @@ public abstract class TaskContainer implements Iterable<Task> {
 			}
 
 			db.close();
-			
+
 			if (result) {
 				this.addTask(task);
 				return task;
@@ -68,10 +79,6 @@ public abstract class TaskContainer implements Iterable<Task> {
 
 	public Task getTask(long id) {
 		return this.tasks.get(id);
-	}
-
-	public Collection<Task> getTasks() {
-		return this.tasks.values();
 	}
 
 	public int getTasksCount() {
@@ -100,7 +107,9 @@ public abstract class TaskContainer implements Iterable<Task> {
 
 	@Override
 	public Iterator<Task> iterator() {
-		return this.tasks.values().iterator();
+		List<Task> list = new ArrayList<Task>(this.tasks.values());
+		Collections.sort(list, comparator);
+		return list.iterator();
 	}
 
 	protected boolean loadTasks(SQLiteDatabase db, String table, String where) {

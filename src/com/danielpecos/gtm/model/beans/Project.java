@@ -14,13 +14,13 @@ public class Project extends TaskContainer implements Persistable {
 	String name;
 	String description;
 
-	public Project(SQLiteDatabase db, Cursor cursor) {
+	Project(SQLiteDatabase db, Cursor cursor) {
 		this.load(db, cursor);
 
 		this.loadTasks(db, GTDSQLHelper.TABLE_PROJECTS_TASKS, GTDSQLHelper.PROJECT_ID + "=" + this.id);
 	}
 
-	public Project(long contextId, String name, String description) {
+	Project(long contextId, String name, String description) {
 		this.context_id = contextId;
 		this.name = name;
 		this.description = description;
@@ -41,11 +41,6 @@ public class Project extends TaskContainer implements Persistable {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public Task elementAt(int position) {
-		Task task = (Task) this.tasks.values().toArray()[position];
-		return task;
 	}
 
 	@Override
