@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,6 +26,7 @@ import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.activities.CameraActivity;
 import com.danielpecos.gtm.model.beans.Task;
 
 public class TaskViewHolder extends ViewHolder {
@@ -39,7 +41,8 @@ public class TaskViewHolder extends ViewHolder {
 	private Button button_changeDueDate;
 	private TextView textView_taskDueTime;
 	private Button button_changeDueTime;
-	
+	private Button button_takePicture;
+
 	private List<TextView> textViews_labels;
 
 	public TaskViewHolder(View view, Task task) {
@@ -82,6 +85,9 @@ public class TaskViewHolder extends ViewHolder {
 		}
 		if (getView(R.id.task_duetime_label) != null) {
 			this.textViews_labels.add((TextView)getView(R.id.task_duetime_label));
+		}
+		if (getView(R.id.task_picture_label) != null) {
+			this.textViews_labels.add((TextView)getView(R.id.task_picture_label));
 		}
 
 		this.textView_taskName = (TextView)getView(R.id.task_name);
@@ -225,11 +231,11 @@ public class TaskViewHolder extends ViewHolder {
 							updateView();
 						}
 					}, mYear, mMonth, mDay).show();
-					
+
 				}
 			});
 		}
-		
+
 		this.textView_taskDueTime = (TextView)getView(R.id.task_duetime);
 		this.button_changeDueTime = (Button)getView(R.id.button_changeDueTime);
 		if (this.button_changeDueTime != null) {
@@ -262,7 +268,18 @@ public class TaskViewHolder extends ViewHolder {
 							updateView();
 						}
 					}, mHour, mMinute, true).show();
-					
+
+				}
+			});
+		}
+
+		this.button_takePicture = (Button)getView(R.id.task_take_picture);
+		if (this.button_takePicture != null) {
+			this.button_takePicture.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(v.getContext(), CameraActivity.class);    	    	
+					v.getContext().startActivity(i);
 				}
 			});
 		}
@@ -317,19 +334,19 @@ public class TaskViewHolder extends ViewHolder {
 			if (task.getDueDate() != null) {
 				Calendar c = Calendar.getInstance();
 				c.setTime(task.getDueDate());
-				
+
 				int mYear = c.get(Calendar.YEAR);
 				int mMonth = c.get(Calendar.MONTH);
 				int mDay = c.get(Calendar.DAY_OF_MONTH);
 				int mHour = c.get(Calendar.HOUR_OF_DAY);
 				int mMinute = c.get(Calendar.MINUTE);
-				
+
 				this.textView_taskDueDate.setText(
 						new StringBuilder()
 						.append(mYear + 1).append("/")
 						.append(mMonth <= 9 ? "0" + mMonth : mMonth).append("/")
 						.append(mDay <= 9 ? "0" + mDay : mDay));
-				
+
 				this.textView_taskDueTime.setText(
 						new StringBuilder()
 						.append(mHour <= 9 ? "0" + mHour : mHour).append(":")
@@ -428,6 +445,8 @@ public class TaskViewHolder extends ViewHolder {
 				this.button_changeDueDate.setEnabled(true);
 			if (this.button_changeDueTime != null)
 				this.button_changeDueTime.setEnabled(true);
+			if (this.button_takePicture != null)
+				this.button_takePicture.setEnabled(true);
 		}
 
 		this.view.requestLayout();

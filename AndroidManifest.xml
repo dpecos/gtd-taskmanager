@@ -3,7 +3,8 @@
       package="com.danielpecos.gtm"
       android:versionCode="1"
       android:versionName="1.0">
-
+	
+	<uses-permission android:name="android.permission.CAMERA"/>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity 
@@ -21,5 +22,9 @@
 	    <activity android:name=".activities.TaskActivity$TaskTabInfoActivity"/>
 	    <activity android:name=".activities.TaskActivity$TaskTabReminderActivity"/>
 	    
+	    <activity android:name=".activities.TaskMapActivity"  android:theme="@android:style/Theme.Light"/>
+	    
+	    <activity android:name=".activities.CameraActivity"/>
+	     
     </application>
 </manifest>

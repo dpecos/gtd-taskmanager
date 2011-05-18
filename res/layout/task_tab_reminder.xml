@@ -34,14 +34,15 @@
 	    	android:id="@+id/button_changeDueDate"
 	    	android:layout_width="wrap_content"
 			android:layout_height="wrap_content"   
-	    	android:text="@string/task_duedate_button"/>
+	    	android:text="@string/task_duedate_button"
+	    	android:drawableTop="@+android:drawable/ic_menu_month"/>
     </LinearLayout>
         
     <TextView 
 		android:id="@+id/task_duetime_label"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent" 
-        android:background="@color/task_info_label_background"
+        android:drawableTop="@color/task_info_label_background"
         android:padding="10dip"
         android:layout_marginTop="10dip"          
         android:layout_marginBottom="5dip"     
@@ -60,11 +61,19 @@
 	        android:layout_gravity="center|center_vertical"
 	        android:textColor="#ff000000" 
 	        android:text="-" />   
-        	    <Button
+       	<Button
 	    	android:id="@+id/button_changeDueTime"
 	    	android:layout_width="wrap_content"
 			android:layout_height="wrap_content"   
-	    	android:text="@string/task_duetime_button"/>
+	    	android:text="@string/task_duetime_button"
+	    	android:drawableTop="@+android:drawable/ic_menu_recent_history"/>
     </LinearLayout>     
+    
+    <!-- Button
+    	android:id="@+id/button_changeMapPosition"
+    	android:layout_width="wrap_content"
+		android:layout_height="wrap_content"   
+    	android:text="@string/task_map_button"
+    	android:background="@+android:id/ic_menu_mapmode.png"/-->  
 	          
 </LinearLayout>
