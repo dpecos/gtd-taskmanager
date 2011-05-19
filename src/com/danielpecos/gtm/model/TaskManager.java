@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
@@ -16,8 +18,8 @@ import com.danielpecos.gtm.utils.ActivityUtils;
 
 public class TaskManager {
 	public static final String TAG = "GTD-TaskManager";
-	
-	static TaskManager instance;
+	private static TaskManager instance;
+	private static SharedPreferences preferences;
 
 	HashMap<Long, Context> contexts;
 
@@ -34,8 +36,14 @@ public class TaskManager {
 	}
 
 	private TaskManager(android.content.Context ctx) {
+		preferences = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
+		
 		this.contexts = new LinkedHashMap<Long, Context>();
 		this.loadDatabase(ctx);
+	}
+	
+	public static SharedPreferences getPreferences() {
+		return preferences;
 	}
 
 	public Context createContext(android.content.Context ctx, String name) {
@@ -59,8 +67,6 @@ public class TaskManager {
 
 	private boolean loadDatabase(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
-
-		helper.getWritableDatabase();
 
 		SQLiteDatabase db = helper.getReadableDatabase();
 

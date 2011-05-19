@@ -9,8 +9,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -19,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +37,9 @@ public class TaskViewHolder extends ViewHolder {
 	private Task task;
 
 	private TextView textView_taskName;
+	private EditText editText_taskName;
 	private TextView textView_taskDescription;
+	private EditText editText_taskDescription;
 	private CheckBox checkbox_taskStatus;
 	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
@@ -90,24 +96,43 @@ public class TaskViewHolder extends ViewHolder {
 			this.textViews_labels.add((TextView)getView(R.id.task_picture_label));
 		}
 
-		this.textView_taskName = (TextView)getView(R.id.task_name);
-		this.textView_taskDescription = (TextView)getView(R.id.task_description);
-
-		if (this.textView_taskName != null && this.textView_taskDescription != null) {
-			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-			lp.addRule(RelativeLayout.RIGHT_OF, R.id.task_status_check);
-			if (spinner_taskPriority != null) {
-				lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-			} else {
-				if (task.getDescription() == null || task.getDescription().equalsIgnoreCase("")) {
-					this.textView_taskDescription.setVisibility(View.GONE);
-					lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-				} else {
-					this.textView_taskDescription.setVisibility(View.VISIBLE);
-					this.textView_taskName.setPadding(0, 7, 0, 0);
-				}
+		if (getView(R.id.task_name) != null) {
+			this.textView_taskName = (TextView)getView(R.id.task_name);
+		} else {
+			this.editText_taskName = (EditText)getView(R.id.task_name_text);
+			if (this.editText_taskName != null) {
+				this.editText_taskName.addTextChangedListener(new TextWatcher() {
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						task.setName(editText_taskName.getText().toString());
+					}
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count,	int after) {
+					}
+					@Override
+					public void afterTextChanged(Editable s) {
+					}
+				});
 			}
-			this.textView_taskName.setLayoutParams(lp);
+		}
+		if (getView(R.id.task_description) != null) {
+			this.textView_taskDescription = (TextView)getView(R.id.task_description);
+		} else {
+			this.editText_taskDescription = (EditText)getView(R.id.task_description_text);
+			if (this.editText_taskDescription != null) {
+				this.editText_taskDescription.addTextChangedListener(new TextWatcher() {
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						task.setDescription(editText_taskDescription.getText().toString());
+					}
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count,	int after) {
+					}
+					@Override
+					public void afterTextChanged(Editable s) {
+					}
+				});
+			}
 		}
 
 		this.checkbox_taskStatus = (CheckBox)getView(R.id.task_status_check);
@@ -117,15 +142,15 @@ public class TaskViewHolder extends ViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (isChecked) {
 						if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(view.getContext(), Task.Status.Discarded_Completed);
+							task.setStatus(Task.Status.Discarded_Completed);
 						} else {
-							task.setStatus(view.getContext(), Task.Status.Completed);
+							task.setStatus(Task.Status.Completed);
 						}
 					} else {
 						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(view.getContext(), Task.Status.Discarded);
+							task.setStatus(Task.Status.Discarded);
 						} else {
-							task.setStatus(view.getContext(), Task.Status.Active);
+							task.setStatus(Task.Status.Active);
 						}
 					}
 
@@ -149,22 +174,22 @@ public class TaskViewHolder extends ViewHolder {
 					switch (pos) {
 					case 0:
 						if (task.getPriority() != Task.Priority.Low) {
-							task.setPriority(view.getContext(), Task.Priority.Low);
+							task.setPriority(Task.Priority.Low);
 						}
 						break;
 					case 1:
 						if (task.getPriority() != Task.Priority.Normal) {
-							task.setPriority(view.getContext(), Task.Priority.Normal);
+							task.setPriority(Task.Priority.Normal);
 						}
 						break;
 					case 2:
 						if (task.getPriority() != Task.Priority.Important) {
-							task.setPriority(view.getContext(), Task.Priority.Important);
+							task.setPriority(Task.Priority.Important);
 						}
 						break;
 					case 3:
 						if (task.getPriority() != Task.Priority.Critical) {
-							task.setPriority(view.getContext(), Task.Priority.Critical);
+							task.setPriority(Task.Priority.Critical);
 						}
 						break;
 					}
@@ -185,15 +210,15 @@ public class TaskViewHolder extends ViewHolder {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (!isChecked) {
 						if (task.getStatus() == Task.Status.Completed) {
-							task.setStatus(view.getContext(), Task.Status.Discarded_Completed);
+							task.setStatus(Task.Status.Discarded_Completed);
 						} else if (task.getStatus() == Task.Status.Active) {
-							task.setStatus(view.getContext(), Task.Status.Discarded);
+							task.setStatus(Task.Status.Discarded);
 						}
 					} else {
 						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(view.getContext(), Task.Status.Completed);
+							task.setStatus(Task.Status.Completed);
 						} else if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(view.getContext(), Task.Status.Active);
+							task.setStatus(Task.Status.Active);
 						}
 					}
 					updateView();
@@ -226,7 +251,7 @@ public class TaskViewHolder extends ViewHolder {
 							c.set(Calendar.YEAR, year);
 							c.set(Calendar.MONTH, monthOfYear);
 							c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-							task.setDueDate(view.getContext(), c.getTime());
+							task.setDueDate(c.getTime());
 
 							updateView();
 						}
@@ -263,7 +288,7 @@ public class TaskViewHolder extends ViewHolder {
 							}
 							c.set(Calendar.HOUR_OF_DAY, hourOfDay);
 							c.set(Calendar.MINUTE, minute);
-							task.setDueDate(view.getContext(), c.getTime());
+							task.setDueDate(c.getTime());
 
 							updateView();
 						}
@@ -288,16 +313,37 @@ public class TaskViewHolder extends ViewHolder {
 	@Override
 	public void updateView() {
 
-		if (this.textView_taskName == null) {
+		if (this.textView_taskName == null && this.editText_taskName == null) {
 			this.setUpView();
 		}
 
 		final Resources res = this.view.getResources();
 
-		if (this.textView_taskName != null && this.textView_taskDescription != null) {
-			this.textView_taskName.setText(task.getName());
+		if (this.textView_taskName != null || this.editText_taskName != null) {
+			if (this.editText_taskName != null) {
+				this.editText_taskName.setText(task.getName());
+			} else if (this.textView_taskName != null){
+				this.textView_taskName.setText(task.getName());
+			}
 			if (task.getDescription() != null && !task.getDescription().equalsIgnoreCase("")) {
-				this.textView_taskDescription.setText(task.getDescription());
+				if (this.editText_taskDescription != null) {
+					this.editText_taskDescription.setText(task.getDescription());
+				} else if (this.textView_taskDescription != null) {
+					this.textView_taskDescription.setText(task.getDescription());
+				}
+			}
+
+			if (this.textView_taskName != null && this.textView_taskDescription != null) {
+				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+				lp.addRule(RelativeLayout.RIGHT_OF, R.id.task_status_check);
+				if (task.getDescription() == null || task.getDescription().equalsIgnoreCase("")) {
+					this.textView_taskDescription.setVisibility(View.GONE);
+					lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+				} else {
+					this.textView_taskDescription.setVisibility(View.VISIBLE);
+					this.textView_taskName.setPadding(0, 7, 0, 0);
+				}
+				this.textView_taskName.setLayoutParams(lp);
 			}
 		}
 

@@ -25,6 +25,7 @@
 		android:id="@+id/task_name" 
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" 
+		android:layout_toRightOf="@+id/task_status_check"
         android:textStyle="bold" 
         android:textSize="14dip" />
 	<TextView 

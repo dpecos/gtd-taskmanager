@@ -1,9 +1,7 @@
 package com.danielpecos.gtm.activities;
 
-import java.util.Calendar;
-
 import android.app.Activity;
-import android.app.DatePickerDialog;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.DialogInterface;
@@ -11,10 +9,10 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
@@ -24,7 +22,6 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
-import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
@@ -34,6 +31,7 @@ public class TaskActivity extends TabActivity {
 	private Context context;
 	private Project project;
 	private static Task task;
+	private Task originalTask;
 
 	private static TaskViewHolder taskInfoViewHolder;
 	private static TaskViewHolder taskReminderViewHolder;
@@ -56,9 +54,9 @@ public class TaskActivity extends TabActivity {
 			task = context.getTask(task_id);
 		}
 
-		this.initializeUI();
+		this.originalTask = (Task)task.clone();
 
-		setResult(RESULT_OK, getIntent());
+		this.initializeUI();
 	}
 
 	@Override
@@ -81,7 +79,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setName(TaskActivity.this, ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setName(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskInfoViewHolder.updateView();
 						}
 					});
@@ -95,7 +93,7 @@ public class TaskActivity extends TabActivity {
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
-							task.setDescription(TaskActivity.this, ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
+							task.setDescription(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
 							taskInfoViewHolder.updateView();
 						}
 					});
@@ -127,7 +125,7 @@ public class TaskActivity extends TabActivity {
 				res.getDrawable(android.R.drawable.ic_popup_reminder))
 				.setContent(intent);
 		tabHost.addTab(spec);
-		
+
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String tabId) {
@@ -152,9 +150,14 @@ public class TaskActivity extends TabActivity {
 			taskInfoViewHolder.updateView();
 
 		}
-		
+
+		@Override
+		public void onBackPressed() {
+			getParent().onBackPressed();
+		}
+
 	}
-	
+
 	public static class TaskTabReminderActivity extends Activity {
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -166,5 +169,68 @@ public class TaskActivity extends TabActivity {
 			taskReminderViewHolder.updateView();
 
 		}
+
+		@Override
+		public void onBackPressed() {
+			getParent().onBackPressed();
+		}
 	}
+
+	@Override
+	public void onBackPressed() {
+		//Handle the back button
+		this.close();
+	}
+	
+	private void close() {
+		if (task.hashCode() != this.originalTask.hashCode()) {
+			Log.d(TaskManager.TAG, "TaskActivity: task was modified");
+			new AlertDialog.Builder(this)
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.setTitle(R.string.task_quit_title)
+			.setMessage(R.string.task_quit_message)
+			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					closeSavingChanges();
+				}
+			})
+			.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					closeAndDiscardChanges();
+				}
+			})
+			.show();
+		} else {
+			Log.d(TaskManager.TAG, "TaskActivity: task wasn't modified");
+			this.finish();
+		}
+	}
+	
+	private void closeSavingChanges() {
+		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
+		task.store(TaskActivity.this);
+		Intent resultIntent = new Intent();
+		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
+				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
+				&& task.getPriority().equals(originalTask.getPriority())) {
+			
+			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
+			resultIntent.putExtra(ContextActivity.FULL_RELOAD, false);
+		} else {
+			Log.d(TaskManager.TAG, "TaskActivity: full reload required");
+			resultIntent.putExtra(ContextActivity.FULL_RELOAD, true);
+		}
+		this.setResult(RESULT_OK, resultIntent);
+		this.finish();  
+	}
+	
+	private void closeAndDiscardChanges() {
+		Log.d(TaskManager.TAG, "TaskActivity: close activity discarding changes");
+		task.reload(TaskActivity.this);
+		TaskActivity.this.setResult(RESULT_CANCELED);
+		TaskActivity.this.finish();   
+	}
+
 }

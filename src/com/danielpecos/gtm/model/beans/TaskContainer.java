@@ -1,7 +1,6 @@
 package com.danielpecos.gtm.model.beans;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,22 +9,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
+import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 
 public abstract class TaskContainer implements Iterable<Task> {
-	HashMap<Long, Task> tasks;
+	private HashMap<Long, Task> tasks;
 
-	private static Comparator<Task> comparator = new Comparator<Task>() {
-		@Override
-		public int compare(Task t1, Task t2) {
-			return -1 * t1.getPriority().compareTo(t2.getPriority());
-		}
-	};
+	private static Comparator<Task> comparator;
 
 	TaskContainer() {
 		this.tasks = new LinkedHashMap<Long, Task>();
@@ -107,6 +104,20 @@ public abstract class TaskContainer implements Iterable<Task> {
 
 	@Override
 	public Iterator<Task> iterator() {
+		if (comparator == null) {
+			comparator = new Comparator<Task>() {
+				@Override
+				public int compare(Task t1, Task t2) {
+					
+					String taskOrder = TaskManager.getPreferences().getString("settings_task_order", null);
+					if (taskOrder.equalsIgnoreCase("priority")) {
+						return -1 * t1.getPriority().compareTo(t2.getPriority());
+					} else {
+						return t1.getName().compareTo(t2.getName());
+					}
+				}
+			};
+		}
 		List<Task> list = new ArrayList<Task>(this.tasks.values());
 		Collections.sort(list, comparator);
 		return list.iterator();

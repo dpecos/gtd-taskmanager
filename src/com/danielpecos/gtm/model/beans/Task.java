@@ -14,7 +14,7 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;
 
-public class Task implements Persistable {
+public class Task implements Persistable, Cloneable {
 	public enum Type {
 		Normal, Web, Call_SMS, Email, Location 
 	}
@@ -55,56 +55,51 @@ public class Task implements Persistable {
 		return name;
 	}
 
-	public void setName(android.content.Context ctx, String name) {
+	public void setName(String name) {
 		this.name = name;
-		this.store(ctx);
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(android.content.Context ctx, String description) {
+	public void setDescription(String description) {
 		this.description = description;
-		this.store(ctx);
 	}
 
 	public Status getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(android.content.Context ctx, Status status) {
+	public void setStatus(Status status) {
 		this.status = status;
-		this.store(ctx);
 	}
 
 	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(android.content.Context ctx, Priority priority) {
+	public void setPriority(Priority priority) {
 		this.priority = priority;
-		this.store(ctx);
 	}
 
 	public Date getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(android.content.Context ctx, Date dueDate) {
+	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
-		this.store(ctx);
 	}
 
 	@Override
 	public long store(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
-		
+
 		long result = 0;
-		
+
 		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+
 		ContentValues values = new ContentValues();
 		values.put(GTDSQLHelper.TASK_NAME, this.name);
 		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
@@ -112,10 +107,10 @@ public class Task implements Persistable {
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
 		if (this.getDueDate() != null) {
 			values.put(GTDSQLHelper.TASK_DUEDATETIME, iso8601Format.format(this.getDueDate()));
-//		} else {
-//			values.put(GTDSQLHelper.TASK_DUEDATETIME, null);
+			//		} else {
+			//			values.put(GTDSQLHelper.TASK_DUEDATETIME, null);
 		}
-		
+
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 			result = this.id;
@@ -126,16 +121,16 @@ public class Task implements Persistable {
 				result = -1;
 			}
 		}
-		
+
 		db.close();
-		
+
 		return result;
 	}
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
 		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+
 		int i = 0;
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
@@ -151,6 +146,25 @@ public class Task implements Persistable {
 			Log.e(TaskManager.TAG, e.getMessage());
 		}
 		return true;
+	}
+
+	public boolean reload(android.content.Context ctx) {
+		boolean result = false;
+
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
+
+		helper.getWritableDatabase();
+
+		SQLiteDatabase db = helper.getReadableDatabase();
+
+		Cursor cursor = db.query(GTDSQLHelper.TABLE_TASKS, null, BaseColumns._ID + "=" + this.id, null, null, null, null);
+		while (cursor.moveToNext()) {
+			result = this.load(db, cursor);
+		}
+
+		db.close();
+
+		return result;
 	}
 
 	@Override
@@ -171,13 +185,35 @@ public class Task implements Persistable {
 		} else {
 			result =  false;
 		}
-		
+
 		if (dbParent == null) {
 			db.close();
 		}
-		
+
 		return result;
 	}
 
+	@Override
+	public int hashCode() {
+		return (
+				this.id +
+				this.name +
+				this.description + 
+				this.status + 
+				this.priority + 
+				this.dueDate + 
+				this.location
+		).hashCode();
+	}
+
+	@Override 
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
 

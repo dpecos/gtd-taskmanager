@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -26,7 +28,6 @@ import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.model.beans.TaskContainer;
-import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
@@ -35,6 +36,8 @@ import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
+
+	static final String FULL_RELOAD = "full_reload";
 
 	private TaskManager taskManager;
 
@@ -46,6 +49,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");
+		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
 
 		this.taskManager = TaskManager.getInstance(this);
 
@@ -81,15 +87,19 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							}
 						}
 					});
-			return true;
+			break;
 		case R.id.context_optionsMenu_reloadData:
 			taskManager = TaskManager.reset(ContextActivity.this);
 			initializeUI();
-		case R.id.context_optionsMenu_configuration:
+			break;
+		case R.id.context_optionsMenu_preferences:
+			Intent i = new Intent(this, SettingsActivity.class);  
+			startActivity(i);
+			break;
 		case R.id.context_optionsMenu_about:
-		default:
-			return super.onOptionsItemSelected(item);
+			break;
 		}
+		return true;
 	}
 
 	@Override
@@ -442,14 +452,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
-			if (this.triggerViewHolder != null) {
-
+			if (resultCode == RESULT_OK) {
+			} else if (this.triggerViewHolder != null) {
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
 				projectViewHolder.updateView();
 			}
 		} else if (requestCode == ActivityUtils.TASK_ACTIVITY) {
-			if (this.triggerViewHolder != null) {
-
+			if (resultCode == RESULT_OK) {
+				// task saved
+				if (data.getBooleanExtra(FULL_RELOAD, false)) {
+					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
+					taskViewHolder.updateView();
+				} else {
+					this.initializeUI();
+				}
+			} else if (resultCode != RESULT_CANCELED && this.triggerViewHolder != null) {
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView();
 			}

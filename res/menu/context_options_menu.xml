@@ -9,8 +9,8 @@
     	android:title="@string/context_optionsMenu_reloadData"
 		android:icon="@drawable/ic_menu_refresh"/>
     <item 
-		android:id="@+id/context_optionsMenu_configuration"
-    	android:title="@string/context_optionsMenu_configuration"
+		android:id="@+id/context_optionsMenu_preferences"
+    	android:title="@string/context_optionsMenu_settings"
 		android:icon="@android:drawable/ic_menu_preferences"/>
     <item 
 		android:id="@+id/context_optionsMenu_about"
