@@ -27,7 +27,8 @@
 		android:layout_width="wrap_content" 
 		android:layout_toRightOf="@+id/task_status_check"
         android:textStyle="bold" 
-        android:textSize="14dip" />
+        android:textSize="14dip" 
+        android:ellipsize="end"/>
 	<TextView 
 		android:id="@+id/task_description"
 		android:layout_height="wrap_content"
@@ -35,5 +36,6 @@
 		android:layout_toRightOf="@+id/task_status_check"
 		android:layout_below="@+id/task_name" 
         android:textColor="#ff444444"      
-        android:textSize="11dip" />
+        android:textSize="11dip" 
+        android:ellipsize="end"/>
 </RelativeLayout>

@@ -14,6 +14,7 @@
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"
 			android:gravity="center_vertical"
+			android:layout_marginRight="10dip"
 			android:background="#ffffffff">
 			<TextView 
 				android:id="@+id/task_priority" 
@@ -44,26 +45,41 @@
 			android:id="@+id/task_description_label"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 
-			android:paddingLeft="5dip" 
-			android:paddingRight="5dip"
-			android:padding="10dip"
+			android:padding="5dip"
+			android:layout_marginTop="5dip"          
+	        android:layout_marginBottom="5dip" 
 	        android:background="@color/task_info_label_background"  
 	        android:textStyle="bold" 
 	        android:text="@string/task_description_label"/>
 		
-		<EditText 
-			android:id="@+id/task_description_text"
-			android:layout_height="fill_parent"
-			android:layout_width="fill_parent" 
-			android:maxLines="3" />
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:orientation="horizontal"
+			android:paddingRight="10dip"
+			android:paddingLeft="10dip" >
+			<Button
+				android:id="@+id/task_description_clear"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="left"
+				android:layout_marginRight="5dip"
+				android:layout_centerVertical="true"
+				android:text="@string/clear"/>
+			<EditText 
+				android:id="@+id/task_description_text"
+				android:layout_height="fill_parent"
+				android:layout_width="fill_parent"
+				android:layout_gravity="right" 
+				android:minLines="3"
+				/>
+		</LinearLayout>
 		
 		<TextView 
 			android:id="@+id/task_priority_label"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 
-			android:paddingLeft="5dip" 
-			android:paddingRight="5dip"
-	        android:padding="10dip"
+			android:padding="5dip"
 	        android:background="@color/task_info_label_background"  
 	        android:layout_marginTop="10dip"          
 	        android:layout_marginBottom="5dip"  
@@ -97,7 +113,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 
 	        android:background="@color/task_info_label_background"    
-	        android:padding="10dip"
+	        android:padding="5dip"
 	        android:layout_marginTop="10dip"          
 	        android:layout_marginBottom="5dip"  
 	        android:textStyle="bold" 
@@ -117,7 +133,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 
 	        android:background="@color/task_info_label_background"    
-	        android:padding="10dip"
+	        android:padding="5dip"
 	        android:layout_marginTop="10dip"          
 	        android:layout_marginBottom="5dip"  
 	        android:textStyle="bold" 

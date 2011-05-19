@@ -3,6 +3,7 @@
     <string name="app_name">GTD Task Manager</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="clear">Clear</string>
     <color name="Task_PriorityLow">#ff53A656</color>
     <color name="Task_PriorityNormal">#ff6380D6</color>
     <color name="Task_PriorityImportant">#ffE0B528</color>

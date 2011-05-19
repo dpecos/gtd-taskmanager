@@ -40,6 +40,7 @@ public class TaskViewHolder extends ViewHolder {
 	private EditText editText_taskName;
 	private TextView textView_taskDescription;
 	private EditText editText_taskDescription;
+	private Button button_taskDescriptionClear;
 	private CheckBox checkbox_taskStatus;
 	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
@@ -130,6 +131,13 @@ public class TaskViewHolder extends ViewHolder {
 					}
 					@Override
 					public void afterTextChanged(Editable s) {
+					}
+				});
+				this.button_taskDescriptionClear = (Button)getView(R.id.task_description_clear);
+				this.button_taskDescriptionClear.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						editText_taskDescription.setText("");
 					}
 				});
 			}
