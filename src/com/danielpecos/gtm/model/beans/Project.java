@@ -37,13 +37,16 @@ public class Project extends TaskContainer implements Persistable {
 		return name;
 	}
 
-	public void setName(android.content.Context ctx, String name) {
+	public void setName(String name) {
 		this.name = name;
-		this.store(ctx);
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override

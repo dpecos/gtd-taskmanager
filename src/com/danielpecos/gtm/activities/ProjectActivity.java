@@ -4,16 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -37,36 +46,44 @@ public class ProjectActivity extends ListActivity {
 
 	private ProjectViewHolder projectViewHolder;
 	private HashMap<Long, TaskViewHolder> taskViewHolders;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		this.taskManager = TaskManager.getInstance(this);
 
 		Long context_id = (Long) getIntent().getSerializableExtra("context_id");
 		Long project_id = (Long) getIntent().getSerializableExtra("project_id");
-		
+
 		this.context = this.taskManager.getContext(context_id);
 		this.project = this.context.getProject(project_id);
-		
+
 		this.initializeUI();
-		
+
 		setResult(RESULT_OK, getIntent());
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.project_activity_menu, menu);
+		return true;
+	}
+
+
 	private void initializeUI() {
 		setContentView(R.layout.project_layout);
-		
+
 		this.setTitle(project.getName());
-		
+
 		// PROJECT 
 		LayoutInflater mInflater = (LayoutInflater) getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
 		View projectItemView = mInflater.inflate(R.layout.project_item, null);
 		projectItemView.setMinimumHeight(projectItemView.getMeasuredHeight() + 8);
 		projectItemView.setPadding(0, 6, 0, 0);
-		
+
 		LinearLayout header = (LinearLayout)findViewById(R.id.header);
 		header.addView(projectItemView);
 
@@ -76,19 +93,19 @@ public class ProjectActivity extends ListActivity {
 
 		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
 		//findViewById(R.id.project_details).setVisibility(View.GONE);
-				
+
 		projectViewHolder.updateView();
-		
+
 		//projectItemView.setTag(projectViewHolder);
-		
+
 		// TASKS LIST
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
-		
+
 		ArrayList<HashMap<String, Object>> itemsData = new ArrayList<HashMap<String, Object>>();
 		for (final Task task : project) {
-			
+
 			TaskViewHolder tvh = new TaskViewHolder(null, task);
-			
+
 			tvh.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
 					new OnCheckedChangeListener() {
 						@Override
@@ -99,11 +116,11 @@ public class ProjectActivity extends ListActivity {
 						}
 					}
 			});
-			
+
 			taskViewHolders.put(task.getId(), tvh);
-			
+
 			HashMap<String, Object> taskData = tvh.getListFields();
-			
+
 			itemsData.add(taskData);
 		}
 
@@ -128,6 +145,47 @@ public class ProjectActivity extends ListActivity {
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.project_optionsMenu_renameProject: {
+			ActivityUtils.showTextBoxDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_renameProject_title), 
+					this.getResources().getString(R.string.textbox_renameProject_label), 
+					project.getName(),
+					new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							project.setName(projectName);
+							project.store(ProjectActivity.this);
+							projectViewHolder.updateView();
+						}
+					});
+			break;
+		}
+		case R.id.project_optionsMenu_changeDescription: {
+			ActivityUtils.showTextBoxDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_changeProjectDescription_title), 
+					this.getResources().getString(R.string.textbox_changeProjectDescription_label), 
+					project.getDescription(),
+					new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							String projectDescription = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							project.setDescription(projectDescription);
+							project.store(ProjectActivity.this);
+							projectViewHolder.updateView();
+						}
+					});
+			break;
+		}
+		}
+		return true;
+	}
+
+	@Override
 	public void onListItemClick(ListView parent, View view, int position, long id) {
 		super.onListItemClick(parent, view, position, id);
 
@@ -135,7 +193,7 @@ public class ProjectActivity extends ListActivity {
 		this.triggerViewHolder = this.taskViewHolders.get(task.getId());
 		ActivityUtils.showTaskActivity(this, this.context, this.project, task);
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.TASK_ACTIVITY) {
@@ -156,12 +214,12 @@ public class ProjectActivity extends ListActivity {
 
 		this.triggerViewHolder = null;
 	}
-	
+
 	/*@Override
 	public void onBackPressed() {
 		this.close();
 	}*/
-	
+
 	private void close() {
 		/*if (task.hashCode() != this.originalTask.hashCode()) {
 			Log.d(TaskManager.TAG, "TaskActivity: task was modified");
@@ -187,7 +245,7 @@ public class ProjectActivity extends ListActivity {
 			this.finish();
 		}*/
 	}
-	
+
 	/*private void closeSavingChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
 		task.store(TaskActivity.this);
@@ -195,7 +253,7 @@ public class ProjectActivity extends ListActivity {
 		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
 				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
 				&& task.getPriority().equals(originalTask.getPriority())) {
-			
+
 			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
 			resultIntent.putExtra(ContextActivity.FULL_RELOAD, false);
 		} else {
@@ -205,7 +263,7 @@ public class ProjectActivity extends ListActivity {
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();  
 	}
-	
+
 	private void closeAndDiscardChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity discarding changes");
 		task.reload(TaskActivity.this);

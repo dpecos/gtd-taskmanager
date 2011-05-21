@@ -2,6 +2,8 @@ package com.danielpecos.gtm.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -41,7 +43,7 @@ public class ActivityUtils {
 
 	}
 
-	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, OnDismissListener listener) {
+	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {
 
 		final Dialog textboxDialog = new Dialog(context);
 		textboxDialog.getWindow().setFlags(
@@ -49,7 +51,7 @@ public class ActivityUtils {
 				WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 		textboxDialog.setTitle(title);
 		
-		textboxDialog.setOnDismissListener(listener);
+		//textboxDialog.setOnDismissListener(listener);
 
 		LayoutInflater li = (LayoutInflater) context.getSystemService(android.content.Context.LAYOUT_INFLATER_SERVICE);
 		View dialogView = li.inflate(R.layout.textbox_dialog, null);
@@ -67,10 +69,12 @@ public class ActivityUtils {
 		okButton.setOnClickListener(new OnClickListener() {
 			// @Override
 			public void onClick(View v) {
-				if (textBox.getText().length() == 0)
+				if (textBox.getText().length() == 0) {
 					Toast.makeText(context, "Enter a value.", Toast.LENGTH_LONG).show();
-				else 
+				} else { 
 					textboxDialog.dismiss();
+					listener.onDismiss(textboxDialog);
+				}
 			}
 		});
 

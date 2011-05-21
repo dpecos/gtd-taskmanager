@@ -15,19 +15,22 @@
 		android:layout_width="250dip"
 		android:layout_height="wrap_content" />
 	<LinearLayout 
-		android:orientation="horizontal"
 		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:paddingTop="15dip">
+		android:layout_height="wrap_content"
+		android:paddingTop="15dip"
+		android:orientation="horizontal"
+		android:weightSum="2">
 		<Button 
 			android:id="@+id/textbox_cancel_button" 
-			android:layout_width="80dip"
-			android:layout_height="fill_parent" 
-			android:text="@string/textbox_cancel" />
+			android:layout_width="0dp"
+			android:layout_height="wrap_content" 
+			android:text="@string/textbox_cancel" 
+			android:layout_weight="1"/>
 		<Button 
 			android:id="@+id/textbox_ok_button" 
-			android:layout_width="80dip"
-			android:layout_height="fill_parent" 
-			android:text="@string/textbox_ok" />
+			android:layout_width="0dp"
+			android:layout_height="wrap_content" 
+			android:text="@string/textbox_ok" 
+			android:layout_weight="1"/>					
 	</LinearLayout>
 </LinearLayout>

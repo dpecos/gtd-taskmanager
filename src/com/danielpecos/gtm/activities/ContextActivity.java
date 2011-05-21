@@ -144,23 +144,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.setHeaderIcon(android.R.drawable.ic_menu_agenda);
 			menu.getItem(2).setVisible(false);
 			menu.getItem(3).setVisible(false);
-			menu.getItem(4).setVisible(false);
 		} if (itemId == R.id.project_item) {
 			menu.setHeaderTitle(R.string.context_contextMenu_projectTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_archive);
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
+			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
-			menu.getItem(5).setVisible(false);
 		} else if (itemId == R.id.task_item) {
 			menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_mark);
 			menu.getItem(0).setVisible(false);
 			menu.getItem(1).setVisible(false);
 			menu.getItem(2).setVisible(false);
-			menu.getItem(3).setVisible(false);
+			menu.getItem(4).setVisible(false);
 			menu.getItem(5).setVisible(false);
-			menu.getItem(6).setVisible(false);
 		}
 
 	}
@@ -179,23 +177,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			final Object child = context.elementAt(childPos);
 
 			switch (item.getItemId()) {
-			case R.id.context_contextMenu_renameProject: {
-				final Project project = (Project)child;
-				ActivityUtils.showTextBoxDialog(
-						this, 
-						this.getResources().getString(R.string.textbox_renameProject_title), 
-						this.getResources().getString(R.string.textbox_renameProject_label), 
-						project.getName(),
-						new OnDismissListener() {
-							@Override
-							public void onDismiss(DialogInterface dialog) {
-								String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-								project.setName(ContextActivity.this, projectName);
-								initializeUI();
-							}
-						});
-				return true;
-			}		
 			case R.id.context_contextMenu_deleteProject: {
 				final Project project = (Project)child;
 				String projectName = project.getName();

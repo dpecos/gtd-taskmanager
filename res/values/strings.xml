@@ -37,8 +37,8 @@
 	<string name="textbox_label_name">Task name:</string>
 	<string name="textbox_title_description">Set task description</string>
 	<string name="textbox_label_description">Task description:</string>
-	<string name="textbox_cancel">OK</string>
-    <string name="textbox_ok">Cancel</string>
+	<string name="textbox_cancel">Cancel</string>
+    <string name="textbox_ok">OK</string>
     <string name="context_loadDemo_title">Load demo data?</string>
     <string name="context_loadDemo_message">You haven\'t created any context list. Do you want to load some demo data?</string>
     <string name="context_optionsMenu_addContext">Add Context...</string>
@@ -50,7 +50,6 @@
     <string name="context_contextMenu_taskTitle">Task actions</string>
     <string name="context_contextMenu_renameContext">Rename Context</string>
     <string name="context_contextMenu_deleteContext">Delete Context</string>
-	<string name="context_contextMenu_renameProject">Rename Project</string>
 	<string name="context_contextMenu_deleteProject">Delete Project</string>
 	<string name="context_contextMenu_deleteTask">Delete Task</string>
     <string name="context_contextMenu_addProject">Add Project...</string>
@@ -61,8 +60,10 @@
     <string name="textbox_renameContext_label">Context name:</string>
     <string name="textbox_addProject_title">Create new Project</string>
 	<string name="textbox_addProject_label">Project name:</string>
-    <string name="textbox_renameProject_title">Create new Project</string>
+    <string name="textbox_renameProject_title">Rename Project</string>
     <string name="textbox_renameProject_label">Project name:</string>	
+    <string name="textbox_changeProjectDescription_title">Change Project description</string>
+    <string name="textbox_changeProjectDescription_label">Project description:</string>	    
     <string name="textbox_addTask_title">Set task name</string>
 	<string name="textbox_addTask_label">Task name:</string>
 	<string name="error_loadingData">Error loading data</string>
@@ -78,6 +79,8 @@
 		<item>Normal</item>
 		<item>Low</item>
 	</string-array>
+	<string name="project_optionsMenu_renameProject">Rename Project</string>
+	<string name="project_optionsMenu_changeDescription">Change description</string>
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string-array name="settings_task_order_labels">
 		<item>Sort by priority</item>

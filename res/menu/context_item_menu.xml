@@ -9,10 +9,6 @@
     	android:title="@string/context_contextMenu_deleteContext"
 		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
 	<item 
-		android:id="@+id/context_contextMenu_renameProject"
-    	android:title="@string/context_contextMenu_renameProject"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
-	<item 
 		android:id="@+id/context_contextMenu_deleteProject"
     	android:title="@string/context_contextMenu_deleteProject"
 		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
