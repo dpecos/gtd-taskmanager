@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.provider.BaseColumns;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
@@ -73,7 +74,7 @@ public class TaskManager {
 		Cursor cursor = null;
 
 		try {
-			cursor = db.query(GTDSQLHelper.TABLE_CONTEXTS, null, null, null, null, null, null);
+			cursor = db.query(GTDSQLHelper.TABLE_CONTEXTS, null, null, null, null, null, BaseColumns._ID);
 
 			while (cursor.moveToNext()) {
 				Context c = new Context(db, cursor);
@@ -105,7 +106,7 @@ public class TaskManager {
 	}
 
 	public Context elementAt(int contextPosition) {
-		Context ctx = (Context) this.getContexts().toArray()[contextPosition];
+		Context ctx = (Context)this.getContexts().toArray()[contextPosition];
 		return ctx;
 	}
 

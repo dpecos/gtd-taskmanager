@@ -121,9 +121,9 @@ public class ProjectActivity extends ListActivity {
 	public void onListItemClick(ListView parent, View view, int position, long id) {
 		super.onListItemClick(parent, view, position, id);
 
-		long taskId = Long.parseLong(view.getContentDescription().toString());
-		this.triggerViewHolder = this.taskViewHolders.get(taskId);
-		ActivityUtils.showTaskActivity(this, this.context, this.project, this.project.getTask(taskId));
+		Task task = project.elementAt(position);
+		this.triggerViewHolder = this.taskViewHolders.get(task.getId());
+		ActivityUtils.showTaskActivity(this, this.context, this.project, task);
 	}
 	
 	@Override

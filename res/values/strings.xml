@@ -38,6 +38,8 @@
 	<string name="textbox_label_description">Task description:</string>
 	<string name="textbox_cancel">OK</string>
     <string name="textbox_ok">Cancel</string>
+    <string name="context_loadDemo_title">Load demo data?</string>
+    <string name="context_loadDemo_message">You haven\'t created any context list. Do you want to load some demo data?</string>
     <string name="context_optionsMenu_addContext">Add Context...</string>
     <string name="context_optionsMenu_reloadData">Reload data</string>
     <string name="context_optionsMenu_settings">Settings</string>

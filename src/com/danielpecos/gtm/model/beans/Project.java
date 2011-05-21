@@ -1,9 +1,12 @@
 package com.danielpecos.gtm.model.beans;
 
+import java.util.Arrays;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.view.View;
 
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;
@@ -116,5 +119,11 @@ public class Project extends TaskContainer implements Persistable {
 		this.description = cursor.getString(i++);
 		this.context_id = cursor.getLong(i++);
 		return true;
+	}
+
+	public Task elementAt(int position) {
+		Task[] tasks = this.tasks.values().toArray(new Task[]{});
+		Arrays.sort(tasks, TaskContainer.taskComparator);
+		return tasks[position];
 	}
 }

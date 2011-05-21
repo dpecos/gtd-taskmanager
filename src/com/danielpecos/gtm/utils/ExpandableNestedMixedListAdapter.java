@@ -7,13 +7,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter {
-	private HashMap<String, View> viewsCache;
-
 	private Context context;
 
 	private ArrayList<HashMap<String, Object>> groupData;
@@ -43,8 +40,6 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			int children1Item, String[] children1ElemNames, int[] children1ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children1Events, RowDisplayListener children1Listener,
 			ArrayList<ArrayList<HashMap<String, Object>>> childrenData2,
 			int children2Item, String[] children2ElemNames, int[] children2ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children2Events, RowDisplayListener rowDisplayListener) {
-
-		this.viewsCache = new HashMap<String, View>();
 
 		this.context = context;
 
@@ -91,48 +86,41 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
 			View convertView, ViewGroup parent) {
 
-		if (this.viewsCache.containsKey(groupPosition + "-" + childPosition)) {
-			convertView = this.viewsCache.get(groupPosition + "-" + childPosition);
-		} else {
-			if (childPosition < this.childrenData1.get(groupPosition).size()) {
-				if (convertView == null || convertView.getId() != this.children1Item) {
-					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-					convertView = mInflater.inflate(this.children1Item, parent, false);
-					convertView.setContentDescription("" + this.childrenData1.get(groupPosition).get(childPosition).get("id"));
-				}
-
-				int i = 0;
-				for (int elemId : this.children1ElemIds) {
-					String keyName = this.children1ElemNames[i++];
-					Object value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
-					View v = convertView.findViewById(elemId);
-					Object event = null;
-					if (this.children1Events != null && this.children1Events.get(groupPosition) != null && this.children1Events.get(groupPosition).get(childPosition) != null)
-						event = this.children1Events.get(groupPosition).get(childPosition).get(keyName);
-					SimpleListAdapter.setViewValue(v, value, event);
-				}
-
-			} else {
-				int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
-				
-				if (convertView == null || convertView.getId() != this.children2Item) {
-					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-					convertView = mInflater.inflate(this.children2Item, parent, false);
-					convertView.setContentDescription("" + this.childrenData2.get(groupPosition).get(realChildPosition).get("id"));
-				}
-
-				int i = 0;
-				for (int elemId : this.children2ElemIds) {
-					String keyName = this.children2ElemNames[i++];
-					Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
-					View v = convertView.findViewById(elemId);
-					Object event = null;
-					if (this.children2Events != null && this.children2Events.get(groupPosition) != null && this.children2Events.get(groupPosition).get(realChildPosition) != null)
-						event = this.children2Events.get(groupPosition).get(realChildPosition).get(keyName);
-					SimpleListAdapter.setViewValue(v, value, event);
-				}
+		if (childPosition < this.childrenData1.get(groupPosition).size()) {
+			if (convertView == null || convertView.getId() != this.children1Item) {
+				LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+				convertView = mInflater.inflate(this.children1Item, parent, false);
 			}
-			this.viewsCache.put(groupPosition + "-" + childPosition, convertView);
+
+			int i = 0;
+			for (int elemId : this.children1ElemIds) {
+				String keyName = this.children1ElemNames[i++];
+				Object value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
+				View v = convertView.findViewById(elemId);
+				Object event = null;
+				if (this.children1Events != null && this.children1Events.get(groupPosition) != null && this.children1Events.get(groupPosition).get(childPosition) != null)
+					event = this.children1Events.get(groupPosition).get(childPosition).get(keyName);
+				SimpleListAdapter.setViewValue(v, value, event);
+			}
+
+		} else {
+			int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
+
+			if (convertView == null || convertView.getId() != this.children2Item) {
+				LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+				convertView = mInflater.inflate(this.children2Item, parent, false);
+			}
+
+			int i = 0;
+			for (int elemId : this.children2ElemIds) {
+				String keyName = this.children2ElemNames[i++];
+				Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
+				View v = convertView.findViewById(elemId);
+				Object event = null;
+				if (this.children2Events != null && this.children2Events.get(groupPosition) != null && this.children2Events.get(groupPosition).get(realChildPosition) != null)
+					event = this.children2Events.get(groupPosition).get(realChildPosition).get(keyName);
+				SimpleListAdapter.setViewValue(v, value, event);
+			}
 		}
 
 		if (childPosition < this.childrenData1.get(groupPosition).size()) {
@@ -160,13 +148,11 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		return groupPosition;
 	}
 
-	public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
-			ViewGroup parent) {
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 
 		if (convertView == null) {
 			LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 			convertView = mInflater.inflate(this.groupItem, parent, false);
-			convertView.setContentDescription("" + this.groupData.get(groupPosition).get("id"));
 		}
 
 		int i = 0;

@@ -20,9 +20,9 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 
 public abstract class TaskContainer implements Iterable<Task> {
-	private HashMap<Long, Task> tasks;
+	protected HashMap<Long, Task> tasks;
 
-	private static Comparator<Task> comparator;
+	public static Comparator<Task> taskComparator;
 
 	TaskContainer() {
 		this.tasks = new LinkedHashMap<Long, Task>();
@@ -104,8 +104,8 @@ public abstract class TaskContainer implements Iterable<Task> {
 
 	@Override
 	public Iterator<Task> iterator() {
-		if (comparator == null) {
-			comparator = new Comparator<Task>() {
+		if (taskComparator == null) {
+			taskComparator = new Comparator<Task>() {
 				@Override
 				public int compare(Task t1, Task t2) {
 					
@@ -119,7 +119,7 @@ public abstract class TaskContainer implements Iterable<Task> {
 			};
 		}
 		List<Task> list = new ArrayList<Task>(this.tasks.values());
-		Collections.sort(list, comparator);
+		Collections.sort(list, taskComparator);
 		return list.iterator();
 	}
 
