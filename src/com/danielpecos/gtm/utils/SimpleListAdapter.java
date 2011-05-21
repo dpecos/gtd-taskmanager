@@ -23,18 +23,16 @@ public class SimpleListAdapter extends BaseAdapter {
 	private int item;
 	private String[] itemNames;
 	private int[] itemIds;
-	ArrayList<HashMap<String, Object>> itemEvents;
 	private RowDisplayListener itemListener;
 	
 	public SimpleListAdapter(Context context,
 			ArrayList<HashMap<String, Object>> itemData, int item,
-			String[] itemNames, int[] itemIds, ArrayList<HashMap<String, Object>> itemsEvents, RowDisplayListener itemListener) {
+			String[] itemNames, int[] itemIds, RowDisplayListener itemListener) {
 		this.context = context;
 		this.itemData = itemData;
 		this.item = item;
 		this.itemNames = itemNames;
 		this.itemIds = itemIds;
-		this.itemEvents = itemsEvents;
 		this.itemListener = itemListener;
 	}
 
@@ -65,20 +63,16 @@ public class SimpleListAdapter extends BaseAdapter {
 			View v = convertView.findViewById(elemId);
 			String keyName = this.itemNames[i++];
 			Object value = this.itemData.get(position).get(keyName);
-			Object event = this.itemEvents.get(position).get(keyName);
-			setViewValue(v, value, event);
+			setViewValue(v, value);
 		}
 		if (this.itemListener != null) 
 			this.itemListener.onViewSetUp(convertView, (HashMap<String, Object>)this.getItem(position));
 		return convertView;
 	}
 	
-	public static void setViewValue(View v, Object value, Object event) {
+	public static void setViewValue(View v, Object value) {
 		if (v instanceof CheckBox) {
 			((CheckBox) v).setChecked((Boolean) value);
-			if (event != null) {
-				((CheckBox) v).setOnCheckedChangeListener((OnCheckedChangeListener) event);
-			}
 		} else if (v instanceof ImageView) {
 			((ImageView) v).setImageResource((Integer)value);
 		} else if (v instanceof TextView) {

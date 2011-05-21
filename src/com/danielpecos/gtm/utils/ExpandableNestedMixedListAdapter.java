@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter {
+	private HashMap<String, View> viewsCache;
+
 	private Context context;
 
 	private ArrayList<HashMap<String, Object>> groupData;
@@ -22,14 +24,12 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 	private int children1Item;
 	private String[] children1ElemNames;
 	private int[] children1ElemIds;
-	private ArrayList<ArrayList<HashMap<String, Object>>> children1Events;
 	private RowDisplayListener children1Listener;
 
 	private ArrayList<ArrayList<HashMap<String, Object>>> childrenData2;
 	private int children2Item;
 	private String[] children2ElemNames;
 	private int[] children2ElemIds;
-	private ArrayList<ArrayList<HashMap<String, Object>>> children2Events;
 	private RowDisplayListener children2Listener;
 
 	public ExpandableNestedMixedListAdapter(
@@ -37,9 +37,11 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			ArrayList<HashMap<String, Object>> groupData, 
 			int groupItem, String[] groupElemNames,	int[] groupElemenIds,
 			ArrayList<ArrayList<HashMap<String, Object>>> childrenData1,
-			int children1Item, String[] children1ElemNames, int[] children1ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children1Events, RowDisplayListener children1Listener,
+			int children1Item, String[] children1ElemNames, int[] children1ElemIds, RowDisplayListener children1Listener,
 			ArrayList<ArrayList<HashMap<String, Object>>> childrenData2,
-			int children2Item, String[] children2ElemNames, int[] children2ElemIds, ArrayList<ArrayList<HashMap<String, Object>>> children2Events, RowDisplayListener rowDisplayListener) {
+			int children2Item, String[] children2ElemNames, int[] children2ElemIds, RowDisplayListener rowDisplayListener) {
+
+		this.viewsCache = new HashMap<String, View>();
 
 		this.context = context;
 
@@ -52,14 +54,12 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		this.children1Item = children1Item;
 		this.children1ElemNames = children1ElemNames;
 		this.children1ElemIds = children1ElemIds;
-		this.children1Events = children1Events;
 		this.children1Listener = children1Listener;
 
 		this.childrenData2 = childrenData2;
 		this.children2Item = children2Item;
 		this.children2ElemNames = children2ElemNames;
 		this.children2ElemIds = children2ElemIds;
-		this.children2Events = children2Events;
 		this.children2Listener = rowDisplayListener;
 	}
 
@@ -83,52 +83,53 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 		}
 	}
 
-	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
-			View convertView, ViewGroup parent) {
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild,	View convertView, ViewGroup parent) {
 
-		if (childPosition < this.childrenData1.get(groupPosition).size()) {
-			if (convertView == null || convertView.getId() != this.children1Item) {
-				LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-				convertView = mInflater.inflate(this.children1Item, parent, false);
-			}
-
-			int i = 0;
-			for (int elemId : this.children1ElemIds) {
-				String keyName = this.children1ElemNames[i++];
-				Object value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
-				View v = convertView.findViewById(elemId);
-				Object event = null;
-				if (this.children1Events != null && this.children1Events.get(groupPosition) != null && this.children1Events.get(groupPosition).get(childPosition) != null)
-					event = this.children1Events.get(groupPosition).get(childPosition).get(keyName);
-				SimpleListAdapter.setViewValue(v, value, event);
-			}
-
+		if (this.viewsCache.containsKey(groupPosition + "-" + childPosition)) {
+			convertView = this.viewsCache.get(groupPosition + "-" + childPosition);
 		} else {
-			int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
+			if (childPosition < this.childrenData1.get(groupPosition).size()) {
+				if (convertView == null || convertView.getId() != this.children1Item) {
+					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+					convertView = mInflater.inflate(this.children1Item, parent, false);
+				}
 
-			if (convertView == null || convertView.getId() != this.children2Item) {
-				LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-				convertView = mInflater.inflate(this.children2Item, parent, false);
+				int i = 0;
+				for (int elemId : this.children1ElemIds) {
+					String keyName = this.children1ElemNames[i++];
+					Object value = this.childrenData1.get(groupPosition).get(childPosition).get(keyName);
+					View v = convertView.findViewById(elemId);
+					SimpleListAdapter.setViewValue(v, value);
+				}
+
+			} else {
+				int realChildPosition = childPosition - this.childrenData1.get(groupPosition).size();
+
+				if (convertView == null || convertView.getId() != this.children2Item) {
+					LayoutInflater mInflater = (LayoutInflater) this.context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+					convertView = mInflater.inflate(this.children2Item, parent, false);
+				}
+
+				int i = 0;
+				for (int elemId : this.children2ElemIds) {
+					String keyName = this.children2ElemNames[i++];
+					Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
+					View v = convertView.findViewById(elemId);
+					SimpleListAdapter.setViewValue(v, value);
+				}
 			}
-
-			int i = 0;
-			for (int elemId : this.children2ElemIds) {
-				String keyName = this.children2ElemNames[i++];
-				Object value = this.childrenData2.get(groupPosition).get(realChildPosition).get(keyName);
-				View v = convertView.findViewById(elemId);
-				Object event = null;
-				if (this.children2Events != null && this.children2Events.get(groupPosition) != null && this.children2Events.get(groupPosition).get(realChildPosition) != null)
-					event = this.children2Events.get(groupPosition).get(realChildPosition).get(keyName);
-				SimpleListAdapter.setViewValue(v, value, event);
+			
+			if (childPosition < this.childrenData1.get(groupPosition).size()) {
+				if (this.children1Listener != null) {
+					this.children1Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+				}
+			} else {
+				if (this.children2Listener != null) {
+					this.children2Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+				}
 			}
-		}
-
-		if (childPosition < this.childrenData1.get(groupPosition).size()) {
-			if (this.children1Listener != null) 
-				this.children1Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
-		} else {
-			if (this.children2Listener != null) 
-				this.children2Listener.onViewSetUp(convertView, (HashMap<String, Object>)this.getChild(groupPosition, childPosition));
+			
+			this.viewsCache.put(groupPosition + "-" + childPosition, convertView);
 		}
 
 		return convertView;
@@ -160,7 +161,7 @@ public class ExpandableNestedMixedListAdapter extends BaseExpandableListAdapter 
 			String keyName = this.groupElemNames[i++];
 			Object value = this.groupData.get(groupPosition).get(keyName);
 			View v = convertView.findViewById(elemId);
-			SimpleListAdapter.setViewValue(v, value, null);
+			SimpleListAdapter.setViewValue(v, value);
 		}
 
 		/*if (this.getChildrenCount(groupPosition) == 0)

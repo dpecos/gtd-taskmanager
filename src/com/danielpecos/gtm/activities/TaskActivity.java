@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TabHost;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 import com.danielpecos.gtm.R;
@@ -27,11 +29,13 @@ import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {
 	public static final int DATE_DIALOG_ID = 0;
+	public static final String FULL_RELOAD = "full_reload";
+
 	private TaskManager taskManager;
 	private Context context;
 	private Project project;
 	private static Task task;
-	private Task originalTask;
+	private static Task originalTask;
 
 	private static TaskViewHolder taskInfoViewHolder;
 	private static TaskViewHolder taskReminderViewHolder;
@@ -131,6 +135,16 @@ public class TaskActivity extends TabActivity {
 
 			taskInfoViewHolder = new TaskViewHolder(null, task);
 			taskInfoViewHolder.setView(findViewById(android.R.id.content));
+			
+			taskInfoViewHolder.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
+					new OnCheckedChangeListener() {
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+							originalTask.setStatus(task.getStatus());
+						}
+					}
+			});
+			
 			taskInfoViewHolder.updateView();
 
 		}
@@ -188,6 +202,7 @@ public class TaskActivity extends TabActivity {
 			.show();
 		} else {
 			Log.d(TaskManager.TAG, "TaskActivity: task wasn't modified");
+			TaskActivity.this.setResult(RESULT_CANCELED);
 			this.finish();
 		}
 	}
@@ -201,10 +216,10 @@ public class TaskActivity extends TabActivity {
 				&& task.getPriority().equals(originalTask.getPriority())) {
 			
 			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
-			resultIntent.putExtra(ContextActivity.FULL_RELOAD, false);
+			resultIntent.putExtra(TaskActivity.FULL_RELOAD, false);
 		} else {
 			Log.d(TaskManager.TAG, "TaskActivity: full reload required");
-			resultIntent.putExtra(ContextActivity.FULL_RELOAD, true);
+			resultIntent.putExtra(TaskActivity.FULL_RELOAD, true);
 		}
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();  

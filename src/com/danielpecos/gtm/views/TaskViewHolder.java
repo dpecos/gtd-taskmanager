@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
@@ -69,7 +70,6 @@ public class TaskViewHolder extends ViewHolder {
 		taskData.put("name", task.getName());
 		taskData.put("description", task.getDescription());
 		taskData.put("status_check", task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
-		taskData.put("status", Task.Status.Completed);
 		taskData.put("priority", task.getPriority());
 
 		return taskData;
@@ -147,25 +147,44 @@ public class TaskViewHolder extends ViewHolder {
 			this.checkbox_taskStatus.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (isChecked) {
-						if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(Task.Status.Discarded_Completed);
-						} else {
-							task.setStatus(Task.Status.Completed);
-						}
-					} else {
-						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(Task.Status.Discarded);
-						} else {
-							task.setStatus(Task.Status.Active);
-						}
-					}
+					if (isCallbacksEnabled()) {
+						Task.Status previousStatus = task.getStatus();
 
-					if (viewListeners != null && viewListeners.get("status_check") != null) {
-						((OnCheckedChangeListener)viewListeners.get("status_check")).onCheckedChanged(buttonView, isChecked);
-					}
+						boolean needToBeUpdated = false;
+						if (isChecked && (previousStatus == Task.Status.Completed || previousStatus == Task.Status.Discarded_Completed)) {
+							needToBeUpdated = false;
+						} else if (isChecked && (previousStatus == Task.Status.Completed || previousStatus == Task.Status.Discarded_Completed)) {
+							needToBeUpdated = false;
+						} else {
+							needToBeUpdated = true;
+						}
 
-					updateView();
+						if (isChecked) {
+							if (task.getStatus() == Task.Status.Discarded) {
+								task.setStatus(Task.Status.Discarded_Completed);
+							} else {
+								task.setStatus(Task.Status.Completed);
+							}
+						} else {
+							if (task.getStatus() == Task.Status.Discarded_Completed) {
+								task.setStatus(Task.Status.Discarded);
+							} else {
+								task.setStatus(Task.Status.Active);
+							}
+						}
+
+						if (needToBeUpdated && task.store(view.getContext()) < 0) {
+							Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+						}
+
+						if (viewListeners != null && viewListeners.get(R.id.task_status_check) != null) {
+							for (Object event : viewListeners.get(R.id.task_status_check)) {
+								((OnCheckedChangeListener)event).onCheckedChanged(buttonView, isChecked);
+							}
+						}
+
+						updateView();
+					}
 				}
 			});
 		}
@@ -177,31 +196,34 @@ public class TaskViewHolder extends ViewHolder {
 			this.spinner_taskPriority.setAdapter(adapter);
 			this.spinner_taskPriority.setOnItemSelectedListener(new OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
-					switch (pos) {
-					case 0:
-						if (task.getPriority() != Task.Priority.Critical) {
-							task.setPriority(Task.Priority.Critical);
+					if (isCallbacksEnabled()) {
+						Task.Priority pIni = task.getPriority();
+						switch (pos) {
+						case 0:
+							if (task.getPriority() != Task.Priority.Critical) {
+								task.setPriority(Task.Priority.Critical);
+							}
+							break;
+						case 1:
+							if (task.getPriority() != Task.Priority.Important) {
+								task.setPriority(Task.Priority.Important);
+							}
+							break;
+						case 2:
+							if (task.getPriority() != Task.Priority.Normal) {
+								task.setPriority(Task.Priority.Normal);
+							}
+							break;
+						case 3:
+							if (task.getPriority() != Task.Priority.Low) {
+								task.setPriority(Task.Priority.Low);
+							}
+							break;
 						}
-						break;
-					case 1:
-						if (task.getPriority() != Task.Priority.Important) {
-							task.setPriority(Task.Priority.Important);
+						if (pIni != task.getPriority()) {
+							updateView();
 						}
-						break;
-					case 2:
-						if (task.getPriority() != Task.Priority.Normal) {
-							task.setPriority(Task.Priority.Normal);
-						}
-						break;
-					case 3:
-						if (task.getPriority() != Task.Priority.Low) {
-							task.setPriority(Task.Priority.Low);
-						}
-						break;
 					}
-
-					updateView();
 				}
 
 				@Override
@@ -215,20 +237,22 @@ public class TaskViewHolder extends ViewHolder {
 			this.toggleButton_taskDiscarded.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (!isChecked) {
-						if (task.getStatus() == Task.Status.Completed) {
-							task.setStatus(Task.Status.Discarded_Completed);
-						} else if (task.getStatus() == Task.Status.Active) {
-							task.setStatus(Task.Status.Discarded);
+					if (isCallbacksEnabled()) {
+						if (!isChecked) {
+							if (task.getStatus() == Task.Status.Completed) {
+								task.setStatus(Task.Status.Discarded_Completed);
+							} else if (task.getStatus() == Task.Status.Active) {
+								task.setStatus(Task.Status.Discarded);
+							}
+						} else {
+							if (task.getStatus() == Task.Status.Discarded_Completed) {
+								task.setStatus(Task.Status.Completed);
+							} else if (task.getStatus() == Task.Status.Discarded) {
+								task.setStatus(Task.Status.Active);
+							}
 						}
-					} else {
-						if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(Task.Status.Completed);
-						} else if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(Task.Status.Active);
-						}
+						updateView();
 					}
-					updateView();
 				}
 			});
 		}
@@ -320,206 +344,201 @@ public class TaskViewHolder extends ViewHolder {
 	@Override
 	public void updateView() {
 
-		if (this.textView_taskName == null && this.editText_taskName == null) {
-			this.setUpView();
-		}
+		if (this.isCallbacksEnabled()) {
 
-		final Resources res = this.view.getResources();
+			boolean disableCallbacks = false;
 
-		if (this.textView_taskName != null || this.editText_taskName != null) {
-			if (this.editText_taskName != null) {
-				this.editText_taskName.setText(task.getName());
-			} else if (this.textView_taskName != null){
-				this.textView_taskName.setText(task.getName());
-			}
-			if (task.getDescription() != null && !task.getDescription().equalsIgnoreCase("")) {
-				if (this.editText_taskDescription != null) {
-					this.editText_taskDescription.setText(task.getDescription());
-				} else if (this.textView_taskDescription != null) {
-					this.textView_taskDescription.setText(task.getDescription());
-				}
+			if (this.textView_taskName == null && this.editText_taskName == null) {
+				disableCallbacks = true;
+				this.setCallbacksEnabled(false);
+
+				this.setUpView();
 			}
 
-			if (this.textView_taskName != null && this.textView_taskDescription != null) {
-				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-				lp.addRule(RelativeLayout.RIGHT_OF, R.id.task_status_check);
-				if (task.getDescription() == null || task.getDescription().equalsIgnoreCase("")) {
-					this.textView_taskDescription.setVisibility(View.GONE);
-					lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-				} else {
-					this.textView_taskDescription.setVisibility(View.VISIBLE);
-					this.textView_taskName.setPadding(0, 7, 0, 0);
-				}
-				this.textView_taskName.setLayoutParams(lp);
-			}
-		}
+			final Resources res = this.view.getResources();
 
-		if (this.checkbox_taskStatus != null) {
-			this.checkbox_taskStatus.setChecked(task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
-
-			this.checkbox_taskStatus.requestLayout();
-		}
-
-		if (this.spinner_taskPriority != null) {
-			switch (task.getPriority()) {
-			case Low:
-				this.spinner_taskPriority.setSelection(3);
-				break;
-			case Normal:
-				this.spinner_taskPriority.setSelection(2);
-				break;
-			case Important:
-				this.spinner_taskPriority.setSelection(1);
-				break;
-			case Critical:
-				this.spinner_taskPriority.setSelection(0);
-				break;
-			}
-
-		}
-
-		if (this.toggleButton_taskDiscarded != null) {
-			this.toggleButton_taskDiscarded.setChecked(task.getStatus() != Task.Status.Discarded && task.getStatus() != Task.Status.Discarded_Completed);
-		}
-
-		if (this.textView_taskDueDate != null && this.textView_taskDueTime != null) { 
-
-			if (task.getDueDate() != null) {
-				Calendar c = Calendar.getInstance();
-				c.setTime(task.getDueDate());
-
-				int mYear = c.get(Calendar.YEAR);
-				int mMonth = c.get(Calendar.MONTH);
-				int mDay = c.get(Calendar.DAY_OF_MONTH);
-				int mHour = c.get(Calendar.HOUR_OF_DAY);
-				int mMinute = c.get(Calendar.MINUTE);
-
-				this.textView_taskDueDate.setText(
-						new StringBuilder()
-						.append(mYear + 1).append("/")
-						.append(mMonth <= 9 ? "0" + mMonth : mMonth).append("/")
-						.append(mDay <= 9 ? "0" + mDay : mDay));
-
-				this.textView_taskDueTime.setText(
-						new StringBuilder()
-						.append(mHour <= 9 ? "0" + mHour : mHour).append(":")
-						.append(mMinute <= 9 ? "0" + mMinute : mMinute));
-			}
-
-		}
-
-		if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
-			if (getView(R.id.task_priority) != null) {
-				getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded);
-			}
-			if (getView(R.id.task_priority_big) != null) {
-				getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityDiscarded);
-			}
-			if (getView(R.id.task_name) != null) {
-				((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
-			}
-			for (TextView label: this.textViews_labels) {
-				label.setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
-			}
-
-			if (this.checkbox_taskStatus != null) 
-				this.checkbox_taskStatus.setEnabled(false);
-			if (this.spinner_taskPriority != null)
-				this.spinner_taskPriority.setEnabled(false);
-			if (this.button_changeDueDate != null)
-				this.button_changeDueDate.setEnabled(false);
-			if (this.button_changeDueTime != null)
-				this.button_changeDueTime.setEnabled(false);
-		} else {
-			switch(task.getPriority()) {
-			case Low: 
-				if (getView(R.id.task_priority) != null) {
-					getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow);
+			if (this.textView_taskName != null || this.editText_taskName != null) {
+				if (this.editText_taskName != null) {
+					this.editText_taskName.setText(task.getName());
+				} else if (this.textView_taskName != null){
+					this.textView_taskName.setText(task.getName());
 				}
-				if (getView(R.id.task_priority_big) != null) {
-					getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityLow);
-				}
-				if (getView(R.id.task_name) != null) {
-					((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow));
-				}
-				for (TextView label: this.textViews_labels) {
-					label.setTextColor(res.getColor(R.color.Task_PriorityLow));
-				}
-				break;
-			case Normal:
-				if (getView(R.id.task_priority) != null) {
-					getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal);
-				}
-				if (getView(R.id.task_priority_big) != null) {
-					getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityNormal);
-				}
-				if (getView(R.id.task_name) != null) {
-					((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal));
-				}
-				for (TextView label: this.textViews_labels) {
-					label.setTextColor(res.getColor(R.color.Task_PriorityNormal));
-				}
-				break;
-			case Important: 
-				if (getView(R.id.task_priority) != null) {
-					getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant);
-				}
-				if (getView(R.id.task_priority_big) != null) {
-					getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityImportant);
-				}
-				if (getView(R.id.task_name) != null) {
-					((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant));
-				}
-				for (TextView label: this.textViews_labels) {
-					label.setTextColor(res.getColor(R.color.Task_PriorityImportant));
-				}
-				break;
-			case Critical: 
-				if (getView(R.id.task_priority) != null) {
-					getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical);
-				}
-				if (getView(R.id.task_priority_big) != null) {
-					getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityCritical);
-				}
-				if (getView(R.id.task_name) != null) {
-					((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical));
-				}
-				for (TextView label: this.textViews_labels) {
-					label.setTextColor(res.getColor(R.color.Task_PriorityCritical));
-				}
-				break;
-			}
-
-			if (this.checkbox_taskStatus != null) 
-				this.checkbox_taskStatus.setEnabled(true);
-			if (this.spinner_taskPriority != null)
-				this.spinner_taskPriority.setEnabled(true);
-			if (this.button_changeDueDate != null)
-				this.button_changeDueDate.setEnabled(true);
-			if (this.button_changeDueTime != null)
-				this.button_changeDueTime.setEnabled(true);
-			if (this.button_takePicture != null)
-				this.button_takePicture.setEnabled(true);
-		}
-
-		this.view.requestLayout();
-	}
-
-	public HashMap<String, Object> getListEvents(Object ... params) {
-		if (this.viewListeners == null) {
-			final ProjectViewHolder projectViewHolder = (params != null && params.length > 0) ? (ProjectViewHolder) params[0] : null;
-			this.viewListeners = new HashMap<String, Object>();
-
-			this.viewListeners.put("status_check", new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
-					if (projectViewHolder != null) {
-						projectViewHolder.updateView();
+				if (task.getDescription() != null && !task.getDescription().equalsIgnoreCase("")) {
+					if (this.editText_taskDescription != null) {
+						this.editText_taskDescription.setText(task.getDescription());
+					} else if (this.textView_taskDescription != null) {
+						this.textView_taskDescription.setText(task.getDescription());
 					}
 				}
-			});
+
+				if (this.textView_taskName != null && this.textView_taskDescription != null) {
+					RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+					lp.addRule(RelativeLayout.RIGHT_OF, R.id.task_status_check);
+					if (task.getDescription() == null || task.getDescription().equalsIgnoreCase("")) {
+						this.textView_taskDescription.setVisibility(View.GONE);
+						lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+					} else {
+						this.textView_taskDescription.setVisibility(View.VISIBLE);
+						this.textView_taskName.setPadding(0, 7, 0, 0);
+					}
+					this.textView_taskName.setLayoutParams(lp);
+				}
+			}
+
+			if (this.checkbox_taskStatus != null) {
+				this.checkbox_taskStatus.setChecked(task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
+
+				this.checkbox_taskStatus.requestLayout();
+			}
+
+			if (this.spinner_taskPriority != null) {
+				switch (task.getPriority()) {
+				case Low:
+					this.spinner_taskPriority.setSelection(3);
+					break;
+				case Normal:
+					this.spinner_taskPriority.setSelection(2);
+					break;
+				case Important:
+					this.spinner_taskPriority.setSelection(1);
+					break;
+				case Critical:
+					this.spinner_taskPriority.setSelection(0);
+					break;
+				}
+
+			}
+
+			if (this.toggleButton_taskDiscarded != null) {
+				this.toggleButton_taskDiscarded.setChecked(task.getStatus() != Task.Status.Discarded && task.getStatus() != Task.Status.Discarded_Completed);
+			}
+
+			if (this.textView_taskDueDate != null && this.textView_taskDueTime != null) { 
+
+				if (task.getDueDate() != null) {
+					Calendar c = Calendar.getInstance();
+					c.setTime(task.getDueDate());
+
+					int mYear = c.get(Calendar.YEAR);
+					int mMonth = c.get(Calendar.MONTH);
+					int mDay = c.get(Calendar.DAY_OF_MONTH);
+					int mHour = c.get(Calendar.HOUR_OF_DAY);
+					int mMinute = c.get(Calendar.MINUTE);
+
+					this.textView_taskDueDate.setText(
+							new StringBuilder()
+							.append(mYear + 1).append("/")
+							.append(mMonth <= 9 ? "0" + mMonth : mMonth).append("/")
+							.append(mDay <= 9 ? "0" + mDay : mDay));
+
+					this.textView_taskDueTime.setText(
+							new StringBuilder()
+							.append(mHour <= 9 ? "0" + mHour : mHour).append(":")
+							.append(mMinute <= 9 ? "0" + mMinute : mMinute));
+				}
+
+			}
+
+			if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
+				if (getView(R.id.task_priority) != null) {
+					getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityDiscarded);
+				}
+				if (getView(R.id.task_priority_big) != null) {
+					getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityDiscarded);
+				}
+				if (getView(R.id.task_name) != null) {
+					((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
+				}
+				for (TextView label: this.textViews_labels) {
+					label.setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
+				}
+
+				if (this.checkbox_taskStatus != null) 
+					this.checkbox_taskStatus.setEnabled(false);
+				if (this.spinner_taskPriority != null)
+					this.spinner_taskPriority.setEnabled(false);
+				if (this.button_changeDueDate != null)
+					this.button_changeDueDate.setEnabled(false);
+				if (this.button_changeDueTime != null)
+					this.button_changeDueTime.setEnabled(false);
+			} else {
+				switch(task.getPriority()) {
+				case Low: 
+					if (getView(R.id.task_priority) != null) {
+						getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityLow);
+					}
+					if (getView(R.id.task_priority_big) != null) {
+						getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityLow);
+					}
+					if (getView(R.id.task_name) != null) {
+						((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityLow));
+					}
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityLow));
+					}
+					break;
+				case Normal:
+					if (getView(R.id.task_priority) != null) {
+						getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityNormal);
+					}
+					if (getView(R.id.task_priority_big) != null) {
+						getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityNormal);
+					}
+					if (getView(R.id.task_name) != null) {
+						((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityNormal));
+					}
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityNormal));
+					}
+					break;
+				case Important: 
+					if (getView(R.id.task_priority) != null) {
+						getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityImportant);
+					}
+					if (getView(R.id.task_priority_big) != null) {
+						getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityImportant);
+					}
+					if (getView(R.id.task_name) != null) {
+						((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityImportant));
+					}
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityImportant));
+					}
+					break;
+				case Critical: 
+					if (getView(R.id.task_priority) != null) {
+						getView(R.id.task_priority).setBackgroundResource(R.color.Task_PriorityCritical);
+					}
+					if (getView(R.id.task_priority_big) != null) {
+						getView(R.id.task_priority_big).setBackgroundResource(R.color.Task_PriorityCritical);
+					}
+					if (getView(R.id.task_name) != null) {
+						((TextView)getView(R.id.task_name)).setTextColor(res.getColor(R.color.Task_PriorityCritical));
+					}
+					for (TextView label: this.textViews_labels) {
+						label.setTextColor(res.getColor(R.color.Task_PriorityCritical));
+					}
+					break;
+				}
+
+				if (this.checkbox_taskStatus != null) 
+					this.checkbox_taskStatus.setEnabled(true);
+				if (this.spinner_taskPriority != null)
+					this.spinner_taskPriority.setEnabled(true);
+				if (this.button_changeDueDate != null)
+					this.button_changeDueDate.setEnabled(true);
+				if (this.button_changeDueTime != null)
+					this.button_changeDueTime.setEnabled(true);
+				if (this.button_takePicture != null)
+					this.button_takePicture.setEnabled(true);
+			}
+
+			this.view.requestLayout();
+
+			if (disableCallbacks) {
+				this.setCallbacksEnabled(true);
+			}
 		}
-		return this.viewListeners;
 	}
 
 }

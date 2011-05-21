@@ -37,9 +37,6 @@ import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
-
-	static final String FULL_RELOAD = "full_reload";
-
 	private TaskManager taskManager;
 
 	private ViewHolder triggerViewHolder;
@@ -329,12 +326,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	}
 
 	private void initializeUI() {
-		ExpandableListView listView = this.getExpandableListView();
-		/*View itemView = listView.getChildAt(0);
-	    int mListPosition = listView.getFirstVisiblePosition();
-	    int mItemPosition = itemView == null ? 0 : itemView.getTop();*/
-		
 		setContentView(R.layout.context_layout);
+
+		ExpandableListView listView = this.getExpandableListView();
 
 		this.projectViewHolders = new HashMap<Long, ProjectViewHolder>();
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
@@ -343,7 +337,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
 			ArrayList<ArrayList<HashMap<String, Object>>> childrenData_projects =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 			ArrayList<ArrayList<HashMap<String, Object>>> childrenData_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
-			ArrayList<ArrayList<HashMap<String, Object>>> childrenEvents_tasks =  new ArrayList<ArrayList<HashMap<String, Object>>>();
 
 			Collection<Context> contexts = taskManager.getContexts();
 
@@ -365,20 +358,16 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 				// TASKS LIST
 				contextChildData = new ArrayList<HashMap<String,Object>>();
-				ArrayList<HashMap<String, Object>> contextChildEvents = new ArrayList<HashMap<String,Object>>();
 				for (final Task task : ctx) {
 
 					TaskViewHolder tvh = new TaskViewHolder(null, task);
 					taskViewHolders.put(task.getId(), tvh);
 
 					HashMap<String, Object> taskData = tvh.getListFields();
-					HashMap<String, Object> taskEvents = tvh.getListEvents();
 
 					contextChildData.add(taskData);
-					contextChildEvents.add(taskEvents);
 				}
 				childrenData_tasks.add(contextChildData);
-				childrenEvents_tasks.add(contextChildEvents);
 			}
 
 			this.setListAdapter(new ExpandableNestedMixedListAdapter(
@@ -392,14 +381,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					R.layout.project_item, 
 					new String[] {"name", "description", "status_text", "status_icon"},
 					new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
-					null, 
 					new RowDisplayListener() {
 						@Override
 						public void onViewSetUp(View view, HashMap<String, Object> data) {
 							Project project = (Project)data.get("_BASE_");
 							ViewHolder tvh = projectViewHolders.get(project.getId());
 							tvh.setView(view);
-							//tvh.updateView();
+							tvh.updateView();
 						}
 					},
 
@@ -407,7 +395,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					R.layout.task_item, 
 					new String[] {"name", "description", "status_check"},
 					new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check}, 
-					childrenEvents_tasks, 
 					new RowDisplayListener() {
 						@Override
 						public void onViewSetUp(View view, HashMap<String, Object> data) {
@@ -481,21 +468,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
-			if (resultCode == RESULT_OK) {
-			} else if (this.triggerViewHolder != null) {
+		    if (this.triggerViewHolder != null) {
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
 				projectViewHolder.updateView();
 			}
 		} else if (requestCode == ActivityUtils.TASK_ACTIVITY) {
 			if (resultCode == RESULT_OK) {
 				// task saved
-				if (data.getBooleanExtra(FULL_RELOAD, false)) {
+				if (data.getBooleanExtra(TaskActivity.FULL_RELOAD, false)) {
 					this.initializeUI();
 				} else {
 					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 					taskViewHolder.updateView();
 				}
-			} else if (resultCode != RESULT_CANCELED && this.triggerViewHolder != null) {
+			} else if (this.triggerViewHolder != null) {
+				// always refresh view, its status may change 
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView();
 			}

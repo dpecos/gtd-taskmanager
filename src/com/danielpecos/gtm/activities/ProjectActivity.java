@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -83,17 +85,26 @@ public class ProjectActivity extends ListActivity {
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
 		
 		ArrayList<HashMap<String, Object>> itemsData = new ArrayList<HashMap<String, Object>>();
-		ArrayList<HashMap<String, Object>> itemsEvents = new ArrayList<HashMap<String, Object>>();
 		for (final Task task : project) {
 			
 			TaskViewHolder tvh = new TaskViewHolder(null, task);
+			
+			tvh.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
+					new OnCheckedChangeListener() {
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+							if (projectViewHolder != null) {
+								projectViewHolder.updateView();
+							}
+						}
+					}
+			});
+			
 			taskViewHolders.put(task.getId(), tvh);
 			
 			HashMap<String, Object> taskData = tvh.getListFields();
-			HashMap<String, Object> taskEvents = tvh.getListEvents(projectViewHolder);
 			
 			itemsData.add(taskData);
-			itemsEvents.add(taskEvents);
 		}
 
 		SimpleListAdapter adapter = new SimpleListAdapter(
@@ -102,7 +113,6 @@ public class ProjectActivity extends ListActivity {
 				R.layout.task_item, 
 				new String[] {"name", "description", "status_check"},
 				new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check},
-				itemsEvents,
 				new RowDisplayListener() {
 					@Override
 					public void onViewSetUp(View view, HashMap<String, Object> data) {
@@ -129,15 +139,77 @@ public class ProjectActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.TASK_ACTIVITY) {
-			if (this.triggerViewHolder != null) {
-				
+			if (resultCode == RESULT_OK) {
+				// task saved
+				if (data.getBooleanExtra(TaskActivity.FULL_RELOAD, false)) {
+					this.initializeUI();
+				} else {
+					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
+					taskViewHolder.updateView();
+				}
+			} else if (this.triggerViewHolder != null) {
+				// always refresh view, its status may change 
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView();
-				
-				projectViewHolder.updateView();
 			}
 		}
-		
+
 		this.triggerViewHolder = null;
 	}
+	
+	/*@Override
+	public void onBackPressed() {
+		this.close();
+	}*/
+	
+	private void close() {
+		/*if (task.hashCode() != this.originalTask.hashCode()) {
+			Log.d(TaskManager.TAG, "TaskActivity: task was modified");
+			new AlertDialog.Builder(this)
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.setTitle(R.string.task_quit_title)
+			.setMessage(R.string.task_quit_message)
+			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					closeSavingChanges();
+				}
+			})
+			.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					closeAndDiscardChanges();
+				}
+			})
+			.show();
+		} else {
+			Log.d(TaskManager.TAG, "TaskActivity: task wasn't modified");
+			this.finish();
+		}*/
+	}
+	
+	/*private void closeSavingChanges() {
+		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
+		task.store(TaskActivity.this);
+		Intent resultIntent = new Intent();
+		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
+				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
+				&& task.getPriority().equals(originalTask.getPriority())) {
+			
+			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
+			resultIntent.putExtra(ContextActivity.FULL_RELOAD, false);
+		} else {
+			Log.d(TaskManager.TAG, "TaskActivity: full reload required");
+			resultIntent.putExtra(ContextActivity.FULL_RELOAD, true);
+		}
+		this.setResult(RESULT_OK, resultIntent);
+		this.finish();  
+	}
+	
+	private void closeAndDiscardChanges() {
+		Log.d(TaskManager.TAG, "TaskActivity: close activity discarding changes");
+		task.reload(TaskActivity.this);
+		TaskActivity.this.setResult(RESULT_CANCELED);
+		TaskActivity.this.finish();   
+	}*/
 }
