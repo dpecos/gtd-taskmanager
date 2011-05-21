@@ -28,8 +28,9 @@
     <string name="task_duetime_label">Task time date:</string>
     <string name="task_duedate_button">Change Due date</string>
     <string name="task_duetime_button">Change Due time</string>
-    <string name="task_changeName_button">Change Name</string>
-    <string name="task_changeDescription_button">Change Description</string>
+    <string name="task_save">Save</string>
+    <string name="task_delete">Delete</string>
+    <string name="task_revert">Revert changes</string>
     <string name="task_quit_title">Do you want to save changes?</string>
     <string name="task_quit_message">If you leave without saving, all changes applied to this task will be lost!</string>
 	<string name="textbox_title_name">Set task name</string>
@@ -72,10 +73,10 @@
 	<string name="error_creatingProject">Error creating project</string>
 	<string name="error_creatingTask">Error creating task</string>
 	<string-array name="task_priorities">
-		<item>Low</item>
-		<item>Normal</item>
-		<item>Important</item>
 		<item>Critical</item>
+		<item>Important</item>
+		<item>Normal</item>
+		<item>Low</item>
 	</string-array>
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string-array name="settings_task_order_labels">

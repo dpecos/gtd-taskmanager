@@ -13,7 +13,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -181,23 +180,23 @@ public class TaskViewHolder extends ViewHolder {
 
 					switch (pos) {
 					case 0:
-						if (task.getPriority() != Task.Priority.Low) {
-							task.setPriority(Task.Priority.Low);
+						if (task.getPriority() != Task.Priority.Critical) {
+							task.setPriority(Task.Priority.Critical);
 						}
 						break;
 					case 1:
-						if (task.getPriority() != Task.Priority.Normal) {
-							task.setPriority(Task.Priority.Normal);
-						}
-						break;
-					case 2:
 						if (task.getPriority() != Task.Priority.Important) {
 							task.setPriority(Task.Priority.Important);
 						}
 						break;
+					case 2:
+						if (task.getPriority() != Task.Priority.Normal) {
+							task.setPriority(Task.Priority.Normal);
+						}
+						break;
 					case 3:
-						if (task.getPriority() != Task.Priority.Critical) {
-							task.setPriority(Task.Priority.Critical);
+						if (task.getPriority() != Task.Priority.Low) {
+							task.setPriority(Task.Priority.Low);
 						}
 						break;
 					}
@@ -364,16 +363,16 @@ public class TaskViewHolder extends ViewHolder {
 		if (this.spinner_taskPriority != null) {
 			switch (task.getPriority()) {
 			case Low:
-				this.spinner_taskPriority.setSelection(0);
+				this.spinner_taskPriority.setSelection(3);
 				break;
 			case Normal:
-				this.spinner_taskPriority.setSelection(1);
-				break;
-			case Important:
 				this.spinner_taskPriority.setSelection(2);
 				break;
+			case Important:
+				this.spinner_taskPriority.setSelection(1);
+				break;
 			case Critical:
-				this.spinner_taskPriority.setSelection(3);
+				this.spinner_taskPriority.setSelection(0);
 				break;
 			}
 

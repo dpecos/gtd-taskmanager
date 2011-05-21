@@ -51,6 +51,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	private static final String LIST_POSITION_KEY = "listPosition";
 	private static final String ITEM_POSITION_KEY = "itemPosition";
 
+	private Parcelable mListState = null;
+	private int mListPosition = 0;
+	private int mItemPosition = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,7 +94,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.context_options_menu, menu);
+		inflater.inflate(R.menu.context_activity_menu, menu);
 		return true;
 	}
 
@@ -225,23 +229,22 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			case R.id.context_contextMenu_addTask: {
 				final Project project = (Project)child;
 
-				OnDismissListener listener = new OnDismissListener() {
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-						if (project.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
-							initializeUI();
-						} else {
-							ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
-						}
-					}
-				};
 				ActivityUtils.showTextBoxDialog(
 						this, 
 						this.getResources().getString(R.string.textbox_addTask_title), 
 						this.getResources().getString(R.string.textbox_addTask_label), 
 						null,
-						listener);
+						new OnDismissListener() {
+							@Override
+							public void onDismiss(DialogInterface dialog) {
+								String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+								if (project.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
+									initializeUI();
+								} else {
+									ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+								}
+							}
+						});
 				return true;
 			}
 			}
@@ -300,23 +303,22 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				return true;
 			}
 			case R.id.context_contextMenu_addTask: {
-				OnDismissListener listener = new OnDismissListener() {
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
-						if (context.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
-							initializeUI();
-						} else {
-							ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
-						}
-					}
-				};
 				ActivityUtils.showTextBoxDialog(
 						this, 
 						this.getResources().getString(R.string.textbox_addTask_title), 
 						this.getResources().getString(R.string.textbox_addTask_label), 
 						null,
-						listener);
+						new OnDismissListener() {
+							@Override
+							public void onDismiss(DialogInterface dialog) {
+								String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+								if (context.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
+									initializeUI();
+								} else {
+									ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+								}
+							}
+						});
 				return true;
 			}
 			}
@@ -328,9 +330,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	private void initializeUI() {
 		ExpandableListView listView = this.getExpandableListView();
-		View itemView = listView.getChildAt(0);
+		/*View itemView = listView.getChildAt(0);
 	    int mListPosition = listView.getFirstVisiblePosition();
-	    int mItemPosition = itemView == null ? 0 : itemView.getTop();
+	    int mItemPosition = itemView == null ? 0 : itemView.getTop();*/
 		
 		setContentView(R.layout.context_layout);
 
@@ -500,6 +502,49 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		}
 
 		this.triggerViewHolder = null;
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle state) {
+	    super.onRestoreInstanceState(state);
+
+	    // Retrieve list state and list/item positions
+	    mListState = state.getParcelable(LIST_STATE_KEY);
+	    mListPosition = state.getInt(LIST_POSITION_KEY);
+	    mItemPosition = state.getInt(ITEM_POSITION_KEY);
+	}
+
+	@Override
+	protected void onResume() {
+	    super.onResume();
+
+	    // Load data from DB and put it onto the list
+	    this.taskManager = TaskManager.getInstance(this);
+
+	    // Restore list state and list/item positions
+	    ExpandableListView listView = getExpandableListView();
+	    if (mListState != null)
+	        listView.onRestoreInstanceState(mListState);
+	    listView.setSelectionFromTop(mListPosition, mItemPosition);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+	    super.onSaveInstanceState(state);
+
+	    // Save list state
+	    ExpandableListView listView = getExpandableListView();
+	    mListState = listView.onSaveInstanceState();
+	    state.putParcelable(LIST_STATE_KEY, mListState);
+
+	    // Save position of first visible item
+	    mListPosition = listView.getFirstVisiblePosition();
+	    state.putInt(LIST_POSITION_KEY, mListPosition);
+
+	    // Save scroll position of item
+	    View itemView = listView.getChildAt(0);
+	    mItemPosition = itemView == null ? 0 : itemView.getTop();
+	    state.putInt(ITEM_POSITION_KEY, mItemPosition);
 	}
 
 }

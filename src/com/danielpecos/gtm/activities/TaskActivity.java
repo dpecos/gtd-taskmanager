@@ -70,34 +70,18 @@ public class TaskActivity extends TabActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.menu_changeName:
-			ActivityUtils.showTextBoxDialog(
-					this, 
-					this.getResources().getString(R.string.textbox_title_name), 
-					this.getResources().getString(R.string.textbox_label_name), 
-					task.getName(),
-					new OnDismissListener() {
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							task.setName(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							taskInfoViewHolder.updateView();
-						}
-					});
+		case R.id.menu_save: {
+			closeSavingChanges();
 			return true;
-		case R.id.menu_changeDescription:
-			ActivityUtils.showTextBoxDialog(
-					this, 
-					this.getResources().getString(R.string.textbox_title_description), 
-					this.getResources().getString(R.string.textbox_label_description), 
-					task.getDescription(),
-					new OnDismissListener() {
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							task.setDescription(((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString());
-							taskInfoViewHolder.updateView();
-						}
-					});
+		}
+		/*case R.id.menu_delete: {
+			closeAndDiscardChanges();
 			return true;
+		}*/
+		case R.id.menu_revert: {
+			closeAndDiscardChanges();
+			return true;
+		}
 		}
 		return false;
 	}
