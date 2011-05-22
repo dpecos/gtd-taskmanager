@@ -2,10 +2,8 @@ package com.danielpecos.gtm.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -14,9 +12,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TabHost;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 
 import com.danielpecos.gtm.R;
@@ -24,7 +21,6 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
-import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {

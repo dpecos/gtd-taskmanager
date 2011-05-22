@@ -9,10 +9,12 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -22,6 +24,9 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,6 +54,7 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDueTime;
 	private Button button_changeDueTime;
 	private Button button_takePicture;
+	private LinearLayout layout_taskIcons;
 
 	private List<TextView> textViews_labels;
 
@@ -339,6 +345,8 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			});
 		}
+
+		this.layout_taskIcons = (LinearLayout)getView(R.id.task_icons);
 	}
 
 	@Override
@@ -413,6 +421,14 @@ public class TaskViewHolder extends ViewHolder {
 				this.toggleButton_taskDiscarded.setChecked(task.getStatus() != Task.Status.Discarded && task.getStatus() != Task.Status.Discarded_Completed);
 			}
 
+			if (this.layout_taskIcons != null) {
+				this.layout_taskIcons.removeAllViews();
+				if (this.task.getDueDate() != null) {
+					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_notify_alarm));
+//					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_sys_gps_on));
+				}
+			}
+
 			if (this.textView_taskDueDate != null && this.textView_taskDueTime != null) { 
 
 				if (task.getDueDate() != null) {
@@ -435,6 +451,9 @@ public class TaskViewHolder extends ViewHolder {
 							new StringBuilder()
 							.append(mHour <= 9 ? "0" + mHour : mHour).append(":")
 							.append(mMinute <= 9 ? "0" + mMinute : mMinute));
+				} else {
+					this.textView_taskDueDate.setText("-");
+					this.textView_taskDueTime.setText("-");
 				}
 
 			}
@@ -539,6 +558,25 @@ public class TaskViewHolder extends ViewHolder {
 				this.setCallbacksEnabled(true);
 			}
 		}
+	}
+	
+	private ImageView newTaskIcon(int drawableId) {
+		ImageView icon = new ImageView(view.getContext());
+		icon.setImageResource(drawableId);
+		
+		icon.setAlpha(128);
+		
+		Matrix matrix = new Matrix();
+		matrix.postScale(0.7f, 0.7f);
+		icon.setImageMatrix(matrix);
+		icon.setScaleType(ScaleType.MATRIX);
+		
+		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		frame.width = (int) (38 * 0.7);
+		frame.height = (int) (38 * 0.7);
+		icon.setLayoutParams(frame);
+		
+		return icon;
 	}
 
 }

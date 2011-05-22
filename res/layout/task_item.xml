@@ -38,4 +38,11 @@
         android:textColor="#ff444444"      
         android:textSize="11dip" 
         android:ellipsize="end"/>
+    <LinearLayout
+    	android:id="@+id/task_icons"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" 
+		android:orientation="vertical"
+		android:layout_alignParentRight="true" 
+		android:layout_margin="5dip"/>
 </RelativeLayout>

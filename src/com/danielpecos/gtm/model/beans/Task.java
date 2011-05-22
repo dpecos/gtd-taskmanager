@@ -141,6 +141,8 @@ public class Task implements Persistable, Cloneable {
 			String date = cursor.getString(i++);
 			if (date != null && !date.equalsIgnoreCase("")) {
 				this.dueDate = iso8601Format.parse(date);
+			} else {
+				this.dueDate = null;
 			}
 		} catch (ParseException e) {
 			Log.e(TaskManager.TAG, e.getMessage());
