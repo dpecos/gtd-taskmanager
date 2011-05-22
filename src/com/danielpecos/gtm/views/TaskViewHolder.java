@@ -423,7 +423,7 @@ public class TaskViewHolder extends ViewHolder {
 
 			if (this.layout_taskIcons != null) {
 				this.layout_taskIcons.removeAllViews();
-				if (this.task.getDueDate() != null) {
+				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
 					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_notify_alarm));
 //					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_sys_gps_on));
 				}

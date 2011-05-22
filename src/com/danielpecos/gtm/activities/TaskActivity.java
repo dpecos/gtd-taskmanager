@@ -1,7 +1,11 @@
 package com.danielpecos.gtm.activities;
 
+import java.util.Calendar;
+
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +25,7 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.receivers.AlarmReceiver;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {
@@ -206,6 +211,7 @@ public class TaskActivity extends TabActivity {
 	private void closeSavingChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
 		task.store(TaskActivity.this);
+		this.setAlarm();
 		Intent resultIntent = new Intent();
 		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
 				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
@@ -221,6 +227,19 @@ public class TaskActivity extends TabActivity {
 		this.finish();  
 	}
 	
+	private void setAlarm() {
+		Intent intent = new Intent(this, AlarmReceiver.class);
+		intent.putExtra("task_id", task.getId());
+		intent.putExtra("project_id", project != null ? project.getId() : null);
+		intent.putExtra("context_id", context.getId());
+		
+		PendingIntent appIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+		
+		AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
+		am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
+		
+	}
+
 	private void closeAndDiscardChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity discarding changes");
 		task.reload(TaskActivity.this);

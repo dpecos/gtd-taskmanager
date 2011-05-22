@@ -151,6 +151,8 @@ public final class R {
         public static final int error_deletingTask=0x7f05003b;
         public static final int error_loadingData=0x7f050038;
         public static final int no=0x7f050002;
+        public static final int notification_msg=0x7f050045;
+        public static final int notification_title=0x7f050044;
         public static final int project_optionsMenu_changeDescription=0x7f050040;
         public static final int project_optionsMenu_renameProject=0x7f05003f;
         public static final int settings_task_order_default=0x7f050042;

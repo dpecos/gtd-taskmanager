@@ -26,6 +26,8 @@
 		<activity android:name=".activities.CameraActivity" />
 
 		<activity android:name=".activities.SettingsActivity" />
+		
+		<receiver android:name=".receivers.AlarmReceiver" android:process=":remote"/>
 	</application>
 
 </manifest>

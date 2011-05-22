@@ -39,6 +39,12 @@ public class Task implements Persistable, Cloneable {
 		this.status = Status.Active;
 		this.type = Type.Normal;
 	}
+	
+	public Task(android.content.Context ctx, long task_id) {
+		this();
+		this.id = task_id;
+		this.reload(ctx);
+	}
 
 	Task(String name, String description, Priority priority) {
 		this();
