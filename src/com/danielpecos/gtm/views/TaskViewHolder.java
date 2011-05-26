@@ -42,6 +42,7 @@ import com.danielpecos.gtm.utils.ActivityUtils;
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
 
+	private LinearLayout layout_taskIcons;
 	private TextView textView_taskName;
 	private EditText editText_taskName;
 	private TextView textView_taskDescription;
@@ -50,14 +51,15 @@ public class TaskViewHolder extends ViewHolder {
 	private CheckBox checkbox_taskStatus;
 	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
-	private TextView textView_taskDueDate;
-	private Button button_changeDueDate;
-	private TextView textView_taskDueTime;
-	private Button button_changeDueTime;
 	private Button button_takePicture;
 	private Button button_deletePicture;
 	private ImageView imageView_picture;
-	private LinearLayout layout_taskIcons;
+
+	private TextView textView_taskDueDate;
+	private TextView textView_taskDueTime;
+	private Button button_changeDueDate;
+	private Button button_changeDueTime;
+	private Button button_changeMapPosition;
 
 	private List<TextView> textViews_labels;
 
@@ -337,6 +339,17 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			});
 		}
+		
+		this.button_changeMapPosition = (Button)getView(R.id.button_changeMapPosition);
+		if (this.button_changeMapPosition != null) {
+			this.button_changeMapPosition.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ActivityUtils.showMapActivity(activity, task);
+				}
+			});
+		}
+		
 
 		this.button_takePicture = (Button)getView(R.id.task_take_picture);
 		if (this.button_takePicture != null) {

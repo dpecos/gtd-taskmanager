@@ -106,11 +106,6 @@ public class TaskActivity extends TabActivity {
 				.setContent(intent);
 		tabHost.addTab(spec);
 
-		/*spec = tabHost.newTabSpec("map").setIndicator(getString(R.string.task_tab_map),
-                res.getDrawable(android.R.drawable.ic_menu_mapmode))
-                .setContent(intent);
-	    tabHost.addTab(spec);*/
-
 		intent = new Intent().setClass(this, TaskTabReminderActivity.class);
 		spec = tabHost.newTabSpec("reminder").setIndicator(getString(R.string.task_tab_reminder),
 				res.getDrawable(android.R.drawable.ic_popup_reminder))

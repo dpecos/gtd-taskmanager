@@ -23,24 +23,23 @@ public class TaskMapActivity extends MapActivity {
 		mapView.setBuiltInZoomControls(true);
 		mapView.setHapticFeedbackEnabled(true);
 
-//		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
-//		String tipoMapa = p.getString("pref_tipo_mapa", null);
-//		Log.i(TaskManager.TAG, "Mapa: Modo de mapa: " + tipoMapa);
-//
-//		Boolean tipoMapaSatelite = tipoMapa != null && tipoMapa.equalsIgnoreCase(this.getString(R.string.pref_default_tipo_mapa));
-//		mapView.setSatellite(tipoMapaSatelite);
-//		mapView.setTraffic(!tipoMapaSatelite);
+		//		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
+		//		String tipoMapa = p.getString("pref_tipo_mapa", null);
+		//		Log.i(TaskManager.TAG, "Mapa: Modo de mapa: " + tipoMapa);
+		//
+		//		Boolean tipoMapaSatelite = tipoMapa != null && tipoMapa.equalsIgnoreCase(this.getString(R.string.pref_default_tipo_mapa));
+		//		mapView.setSatellite(tipoMapaSatelite);
+		//		mapView.setTraffic(!tipoMapaSatelite);
 
-		
+
 		//Drawable task_position = this.getResources().getDrawable(R.drawable.entrada);
 		//itemizedOverlay = new CustomItemizedOverlay(drawable, this);
 
 
 		//Log.d(TaskManager.TAG, "Mapa: Fijo el nivel de zoom predeterminado");
 		int maxZoom = mapView.getMaxZoomLevel();
-		int initZoom = maxZoom-5;
-		MapController mapControl = mapView.getController();
-		mapControl.setZoom(initZoom);
+		final int initZoom = maxZoom-5;
+		final MapController mapControl = mapView.getController();
 
 		//		Log.d(HomeActivity.TAG, "Mapa: Añado la capa con el dibujo de la puerta");
 		//		GeoPoint point = new GeoPoint(latitud,longitud);
@@ -51,12 +50,21 @@ public class TaskMapActivity extends MapActivity {
 
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		mapOverlays.clear();
-		
-		MyLocationOverlay overlay = new MyLocationOverlay(this, mapView);
+
+		final MyLocationOverlay overlay = new MyLocationOverlay(this, mapView);
+		overlay.enableMyLocation();
+
+		overlay.runOnFirstFix(new Runnable() {
+			public void run() {
+				mapControl.setZoom(initZoom);
+				mapControl.animateTo(overlay.getMyLocation());
+			}
+		});
+
 		mapOverlays.add(overlay);
 
-//		Log.d(TaskManager.TAG, "Mapa: Posiciono la puerta en el centro de la pantalla");
-		mapControl.animateTo(overlay.getMyLocation()); 
+		//		Log.d(TaskManager.TAG, "Mapa: Posiciono la puerta en el centro de la pantalla");
+		//		mapControl.animateTo(overlay.getMyLocation()); 
 	}
 
 	@Override

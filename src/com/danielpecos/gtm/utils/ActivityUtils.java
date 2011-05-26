@@ -17,6 +17,7 @@ import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.activities.CameraActivity;
 import com.danielpecos.gtm.activities.ProjectActivity;
 import com.danielpecos.gtm.activities.TaskActivity;
+import com.danielpecos.gtm.activities.TaskMapActivity;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
@@ -25,6 +26,7 @@ public class ActivityUtils {
 	public static final int PROJECT_ACTIVITY = 0;
 	public static final int TASK_ACTIVITY = 1;
 	public static final int CAMERA_ACTIVITY = 2;
+	public static final int MAP_ACTIVITY = 3;
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);
@@ -48,6 +50,15 @@ public class ActivityUtils {
 		activity.startActivityForResult(intent, CAMERA_ACTIVITY);
 
 	}
+	
+	public static void showMapActivity(Activity activity, Task task) {
+		Intent i = new Intent(activity.getBaseContext(), TaskMapActivity.class);    	    	
+//		i.putExtra(XML_LATITUD, this.latitud);
+//		i.putExtra(XML_LONGITUD, this.longitud);
+//		i.putExtra(XML_ENTRADA_MISION, aEntradas.get(iEntradaSeleccionada).getMision());
+//		i.putExtra(XML_ENTRADA_DIRECCION, aEntradas.get(iEntradaSeleccionada).getDireccion());
+		activity.startActivityForResult(i, MAP_ACTIVITY);
+	} 
 
 	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {
 
@@ -95,6 +106,6 @@ public class ActivityUtils {
 
 	public static void showMessage(android.content.Context ctx, int resId) {
 		Toast.makeText(ctx, resId, Toast.LENGTH_SHORT).show();
-	} 
+	}
 
 }
