@@ -368,7 +368,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							Project project = (Project)data.get("_BASE_");
 							ViewHolder tvh = projectViewHolders.get(project.getId());
 							tvh.setView(view);
-							tvh.updateView();
+							tvh.updateView(ContextActivity.this);
 						}
 					},
 
@@ -382,7 +382,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							Task task = (Task)data.get("_BASE_");
 							ViewHolder tvh = taskViewHolders.get(task.getId());
 							tvh.setView(view);
-							tvh.updateView();
+							tvh.updateView(ContextActivity.this);
 						}
 					}
 			));
@@ -451,7 +451,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
 		    if (this.triggerViewHolder != null) {
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
-				projectViewHolder.updateView();
+				projectViewHolder.updateView(this);
 			}
 		} else if (requestCode == ActivityUtils.TASK_ACTIVITY) {
 			if (resultCode == RESULT_OK) {
@@ -460,12 +460,12 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					this.initializeUI();
 				} else {
 					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
-					taskViewHolder.updateView();
+					taskViewHolder.updateView(this);
 				}
 			} else if (this.triggerViewHolder != null) {
 				// always refresh view, its status may change 
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
-				taskViewHolder.updateView();
+				taskViewHolder.updateView(this);
 			}
 		}
 

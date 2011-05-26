@@ -2,6 +2,7 @@ package com.danielpecos.gtm.views;
 
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.view.View;
 
 public abstract class ViewHolder {
@@ -12,7 +13,7 @@ public abstract class ViewHolder {
 	
 	public abstract HashMap<String, Object> getListFields();
 	
-	public abstract void updateView();
+	public abstract void updateView(Activity activity);
 	
 	public void setCallbacksEnabled(boolean callbacksEnabled) {
 		this.callbacksEnabled = callbacksEnabled;

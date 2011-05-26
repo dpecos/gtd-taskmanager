@@ -92,7 +92,7 @@ public class ProjectActivity extends ListActivity {
 		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
 		//findViewById(R.id.project_details).setVisibility(View.GONE);
 
-		projectViewHolder.updateView();
+		projectViewHolder.updateView(this);
 
 		//projectItemView.setTag(projectViewHolder);
 
@@ -109,7 +109,7 @@ public class ProjectActivity extends ListActivity {
 						@Override
 						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
 							if (projectViewHolder != null) {
-								projectViewHolder.updateView();
+								projectViewHolder.updateView(ProjectActivity.this);
 							}
 						}
 					}
@@ -134,7 +134,7 @@ public class ProjectActivity extends ListActivity {
 						Task task = (Task)data.get("_BASE_");
 						ViewHolder tvh = taskViewHolders.get(task.getId());
 						tvh.setView(view);
-						tvh.updateView();
+						tvh.updateView(ProjectActivity.this);
 					}
 				}
 		);
@@ -157,7 +157,7 @@ public class ProjectActivity extends ListActivity {
 							String projectName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
 							project.setName(projectName);
 							project.store(ProjectActivity.this);
-							projectViewHolder.updateView();
+							projectViewHolder.updateView(ProjectActivity.this);
 						}
 					});
 			break;
@@ -174,7 +174,7 @@ public class ProjectActivity extends ListActivity {
 							String projectDescription = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
 							project.setDescription(projectDescription);
 							project.store(ProjectActivity.this);
-							projectViewHolder.updateView();
+							projectViewHolder.updateView(ProjectActivity.this);
 						}
 					});
 			break;
@@ -201,12 +201,12 @@ public class ProjectActivity extends ListActivity {
 					this.initializeUI();
 				} else {
 					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
-					taskViewHolder.updateView();
+					taskViewHolder.updateView(this);
 				}
 			} else if (this.triggerViewHolder != null) {
 				// always refresh view, its status may change 
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
-				taskViewHolder.updateView();
+				taskViewHolder.updateView(this);
 			}
 		}
 

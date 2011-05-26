@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.activities.CameraActivity;
 import com.danielpecos.gtm.activities.ProjectActivity;
 import com.danielpecos.gtm.activities.TaskActivity;
 import com.danielpecos.gtm.model.beans.Context;
@@ -23,6 +24,7 @@ import com.danielpecos.gtm.model.beans.Task;
 public class ActivityUtils {
 	public static final int PROJECT_ACTIVITY = 0;
 	public static final int TASK_ACTIVITY = 1;
+	public static final int CAMERA_ACTIVITY = 2;
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);
@@ -38,6 +40,12 @@ public class ActivityUtils {
 			intent.putExtra("project_id", project.getId());
 		intent.putExtra("task_id", task.getId());
 		activity.startActivityForResult(intent, TASK_ACTIVITY);
+
+	}
+	
+	public static void showCameraActivity(Activity activity) {
+		Intent intent = new Intent(activity.getBaseContext(), CameraActivity.class);
+		activity.startActivityForResult(intent, CAMERA_ACTIVITY);
 
 	}
 

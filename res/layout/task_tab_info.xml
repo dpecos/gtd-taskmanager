@@ -139,14 +139,34 @@
 	        android:textStyle="bold" 
 	        android:text="@string/task_picture_label"/> 
 		
-		<Button 
-			android:id="@+id/task_take_picture"
+		<ImageView
+			android:id="@+id/task_picture" 
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/task_take_picture"
-			android:layout_width="120dip" 
-			android:layout_gravity="center|center_vertical" 
-			android:drawableTop="@+android:drawable/ic_menu_camera"/>  		
-		          
+			android:layout_gravity="center|center_vertical"/>
+					
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"	
+			android:orientation="horizontal"
+			android:weightSum="2">
+			<Button 
+				android:id="@+id/task_take_picture"
+				android:layout_height="wrap_content"
+				android:text="@string/task_take_picture"
+				android:layout_width="120dip" 
+				android:drawableTop="@+android:drawable/ic_menu_camera"
+				android:layout_weight="1"/>
+				
+			<Button 
+				android:id="@+id/task_delete_picture"
+				android:layout_height="wrap_content"
+				android:text="@string/task_delete_picture"
+				android:layout_width="120dip" 
+				android:drawableTop="@+android:drawable/ic_menu_delete"
+				android:layout_weight="1"/>
+		</LinearLayout>  		
+					          
 	</LinearLayout>
 
 </ScrollView>

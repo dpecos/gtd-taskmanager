@@ -2,6 +2,7 @@ package com.danielpecos.gtm.views;
 
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class ProjectViewHolder extends ViewHolder {
 	}
 
 	@Override
-	public void updateView() {
+	public void updateView(Activity activity) {
 		int completedTasks = project.getCompletedTasksCount();
 		int totalTasks = project.getTasksCount() - project.getDiscardedTasksCount();
 

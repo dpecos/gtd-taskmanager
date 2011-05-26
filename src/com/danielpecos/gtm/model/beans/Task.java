@@ -33,6 +33,7 @@ public class Task implements Persistable, Cloneable {
 	Date dueDate;
 	GeoPoint location;
 	Type type;
+	byte[] picture;
 
 	Task() {
 		this.priority = Priority.Normal;
@@ -97,6 +98,14 @@ public class Task implements Persistable, Cloneable {
 		this.dueDate = dueDate;
 	}
 
+	public byte[] getPicture() {
+		return picture;
+	}
+
+	public void setPicture(byte[] picture) {
+		this.picture = picture;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
@@ -111,11 +120,8 @@ public class Task implements Persistable, Cloneable {
 		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
 		values.put(GTDSQLHelper.TASK_STATUS, this.status.toString());
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
-		if (this.getDueDate() != null) {
-			values.put(GTDSQLHelper.TASK_DUEDATETIME, iso8601Format.format(this.getDueDate()));
-			//		} else {
-			//			values.put(GTDSQLHelper.TASK_DUEDATETIME, null);
-		}
+		values.put(GTDSQLHelper.TASK_DUEDATETIME, this.getDueDate() != null ? iso8601Format.format(this.getDueDate()) : null);
+		values.put(GTDSQLHelper.TASK_PICTURE, this.getPicture() != null ? this.getPicture() : null);
 
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
@@ -153,6 +159,7 @@ public class Task implements Persistable, Cloneable {
 		} catch (ParseException e) {
 			Log.e(TaskManager.TAG, e.getMessage());
 		}
+		this.picture = cursor.getBlob(i++);
 		return true;
 	}
 
@@ -169,7 +176,8 @@ public class Task implements Persistable, Cloneable {
 		while (cursor.moveToNext()) {
 			result = this.load(db, cursor);
 		}
-
+		cursor.close();
+		
 		db.close();
 
 		return result;
@@ -209,8 +217,9 @@ public class Task implements Persistable, Cloneable {
 				this.description + 
 				this.status + 
 				this.priority + 
-				this.dueDate + 
-				this.location
+				this.dueDate +
+				this.location + 
+				this.picture 
 		).hashCode();
 	}
 

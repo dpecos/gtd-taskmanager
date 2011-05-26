@@ -5,10 +5,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,8 +36,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
-import com.danielpecos.gtm.activities.CameraActivity;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.utils.ActivityUtils;
 
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
@@ -54,6 +55,8 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDueTime;
 	private Button button_changeDueTime;
 	private Button button_takePicture;
+	private Button button_deletePicture;
+	private ImageView imageView_picture;
 	private LinearLayout layout_taskIcons;
 
 	private List<TextView> textViews_labels;
@@ -81,7 +84,7 @@ public class TaskViewHolder extends ViewHolder {
 		return taskData;
 	}
 
-	private void setUpView() {
+	private void setUpView(final Activity activity) {
 		this.textViews_labels = new ArrayList<TextView>();
 		if (getView(R.id.task_priority_label) != null) { 
 			this.textViews_labels.add((TextView)getView(R.id.task_priority_label));
@@ -189,7 +192,7 @@ public class TaskViewHolder extends ViewHolder {
 							}
 						}
 
-						updateView();
+						updateView(activity);
 					}
 				}
 			});
@@ -227,7 +230,7 @@ public class TaskViewHolder extends ViewHolder {
 							break;
 						}
 						if (pIni != task.getPriority()) {
-							updateView();
+							updateView(activity);
 						}
 					}
 				}
@@ -257,7 +260,7 @@ public class TaskViewHolder extends ViewHolder {
 								task.setStatus(Task.Status.Active);
 							}
 						}
-						updateView();
+						updateView(activity);
 					}
 				}
 			});
@@ -290,7 +293,7 @@ public class TaskViewHolder extends ViewHolder {
 							c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 							task.setDueDate(c.getTime());
 
-							updateView();
+							updateView(activity);
 						}
 					}, mYear, mMonth, mDay).show();
 
@@ -327,7 +330,7 @@ public class TaskViewHolder extends ViewHolder {
 							c.set(Calendar.MINUTE, minute);
 							task.setDueDate(c.getTime());
 
-							updateView();
+							updateView(activity);
 						}
 					}, mHour, mMinute, true).show();
 
@@ -340,17 +343,29 @@ public class TaskViewHolder extends ViewHolder {
 			this.button_takePicture.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent i = new Intent(v.getContext(), CameraActivity.class);    	    	
-					v.getContext().startActivity(i);
+					ActivityUtils.showCameraActivity(activity);
 				}
 			});
 		}
+
+		this.button_deletePicture = (Button)getView(R.id.task_delete_picture);
+		if (this.button_deletePicture != null) {
+			this.button_deletePicture.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					task.setPicture(null);
+					updateView(activity);
+				}
+			});
+		}
+
+		this.imageView_picture = (ImageView)getView(R.id.task_picture);
 
 		this.layout_taskIcons = (LinearLayout)getView(R.id.task_icons);
 	}
 
 	@Override
-	public void updateView() {
+	public void updateView(Activity activity) {
 
 		if (this.isCallbacksEnabled()) {
 
@@ -360,7 +375,7 @@ public class TaskViewHolder extends ViewHolder {
 				disableCallbacks = true;
 				this.setCallbacksEnabled(false);
 
-				this.setUpView();
+				this.setUpView(activity);
 			}
 
 			final Resources res = this.view.getResources();
@@ -425,7 +440,9 @@ public class TaskViewHolder extends ViewHolder {
 				this.layout_taskIcons.removeAllViews();
 				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
 					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_notify_alarm));
-//					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_sys_gps_on));
+				}
+				if (this.task.getPicture() != null) {
+					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.ic_menu_camera_little));
 				}
 			}
 
@@ -456,6 +473,21 @@ public class TaskViewHolder extends ViewHolder {
 					this.textView_taskDueTime.setText("-");
 				}
 
+			}
+
+			if (this.button_deletePicture != null) {
+				this.button_deletePicture.setEnabled(task.getPicture() != null);
+			}
+
+			if (this.imageView_picture != null) {
+				byte[] bb = task.getPicture();
+				if (bb != null) {
+					this.imageView_picture.setVisibility(View.VISIBLE);
+					this.imageView_picture.setImageBitmap(BitmapFactory.decodeByteArray(bb, 0, bb.length));	
+				} else {
+					this.imageView_picture.setVisibility(View.GONE);
+				}
+				
 			}
 
 			if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {
@@ -559,23 +591,23 @@ public class TaskViewHolder extends ViewHolder {
 			}
 		}
 	}
-	
+
 	private ImageView newTaskIcon(int drawableId) {
 		ImageView icon = new ImageView(view.getContext());
 		icon.setImageResource(drawableId);
-		
+
 		icon.setAlpha(128);
-		
+
 		Matrix matrix = new Matrix();
 		matrix.postScale(0.7f, 0.7f);
 		icon.setImageMatrix(matrix);
 		icon.setScaleType(ScaleType.MATRIX);
-		
+
 		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		frame.width = (int) (38 * 0.7);
-		frame.height = (int) (38 * 0.7);
+		frame.width = (int) (38 * 0.5);
+		frame.height = (int) (38 * 0.5);
 		icon.setLayoutParams(frame);
-		
+
 		return icon;
 	}
 

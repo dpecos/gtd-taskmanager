@@ -33,12 +33,11 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TASK_STATUS = "status";
 	public static final String TASK_PRIORITY = "priority";
 	public static final String TASK_DUEDATETIME = "due_datetime";
+	public static final String TASK_PICTURE = "due_picture";
 
 	public static final String CONTEXT_ID = "context_id";
 	public static final String PROJECT_ID = "project_id";
 	public static final String TASK_ID = "task_id";
-
-
 
 	public GTDSQLHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -72,7 +71,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ TASK_DESCRIPTION + " text, "
 			+ TASK_STATUS + " text not null, "
 			+ TASK_PRIORITY + " text not null, "
-			+ TASK_DUEDATETIME + " datetime "
+			+ TASK_DUEDATETIME + " datetime, "
+			+ TASK_PICTURE + " blob "
 			+ ");";
 			db.execSQL(sql);
 

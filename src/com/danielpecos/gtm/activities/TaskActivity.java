@@ -1,5 +1,7 @@
 package com.danielpecos.gtm.activities;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -24,11 +26,13 @@ import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.receivers.AlarmReceiver;
+import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.FileUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {
-	public static final int DATE_DIALOG_ID = 0;
 	public static final String FULL_RELOAD = "full_reload";
+	public static final String FILE_NAME = "file_name";
 
 	private TaskManager taskManager;
 	private Context context;
@@ -57,7 +61,7 @@ public class TaskActivity extends TabActivity {
 			task = context.getTask(task_id);
 		}
 
-		this.originalTask = (Task)task.clone();
+		originalTask = (Task)task.clone();
 
 		this.initializeUI();
 	}
@@ -117,9 +121,9 @@ public class TaskActivity extends TabActivity {
 			@Override
 			public void onTabChanged(String tabId) {
 				if (tabId.equalsIgnoreCase("details")) {
-					taskInfoViewHolder.updateView();
+					taskInfoViewHolder.updateView(TaskActivity.this);
 				} else if (tabId.equalsIgnoreCase("reminder")) {
-					taskReminderViewHolder.updateView();
+					taskReminderViewHolder.updateView(TaskActivity.this);
 				}
 			}
 		});
@@ -134,7 +138,7 @@ public class TaskActivity extends TabActivity {
 
 			taskInfoViewHolder = new TaskViewHolder(null, task);
 			taskInfoViewHolder.setView(findViewById(android.R.id.content));
-			
+
 			taskInfoViewHolder.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
 					new OnCheckedChangeListener() {
 						@Override
@@ -143,8 +147,8 @@ public class TaskActivity extends TabActivity {
 						}
 					}
 			});
-			
-			taskInfoViewHolder.updateView();
+
+			taskInfoViewHolder.updateView(this);
 
 		}
 
@@ -153,6 +157,27 @@ public class TaskActivity extends TabActivity {
 			getParent().onBackPressed();
 		}
 
+		@Override
+		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+			if (requestCode == ActivityUtils.CAMERA_ACTIVITY) {
+				if (resultCode == RESULT_OK) {
+					String fileName = data.getStringExtra(TaskActivity.FILE_NAME);
+
+					Log.d(TaskManager.TAG, "Picture taken: " + fileName);
+
+					byte fileContent[] = FileUtils.ReadByteImage(new File(fileName));
+
+					if (!new File(fileName).delete()) {
+						Log.w(TaskManager.TAG, "Temp file not deleted!");
+					}
+
+					task.setPicture(fileContent);
+					taskInfoViewHolder.updateView(this);
+
+					Log.d(TaskManager.TAG, "Picture read and viewHolder refreshed");
+				}
+			}
+		}
 	}
 
 	public static class TaskTabReminderActivity extends Activity {
@@ -163,7 +188,7 @@ public class TaskActivity extends TabActivity {
 
 			taskReminderViewHolder = new TaskViewHolder(null, task);
 			taskReminderViewHolder.setView(findViewById(android.R.id.content));
-			taskReminderViewHolder.updateView();
+			taskReminderViewHolder.updateView(this);
 
 		}
 
@@ -178,9 +203,9 @@ public class TaskActivity extends TabActivity {
 		//Handle the back button
 		this.close();
 	}
-	
+
 	private void close() {
-		if (task.hashCode() != this.originalTask.hashCode()) {
+		if (task.hashCode() != originalTask.hashCode()) {
 			Log.d(TaskManager.TAG, "TaskActivity: task was modified");
 			new AlertDialog.Builder(this)
 			.setIcon(android.R.drawable.ic_dialog_alert)
@@ -205,7 +230,7 @@ public class TaskActivity extends TabActivity {
 			this.finish();
 		}
 	}
-	
+
 	private void closeSavingChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
 		task.store(TaskActivity.this);
@@ -214,7 +239,7 @@ public class TaskActivity extends TabActivity {
 		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
 				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
 				&& task.getPriority().equals(originalTask.getPriority())) {
-			
+
 			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
 			resultIntent.putExtra(TaskActivity.FULL_RELOAD, false);
 		} else {
@@ -224,18 +249,19 @@ public class TaskActivity extends TabActivity {
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();  
 	}
-	
+
 	private void setAlarm() {
-		Intent intent = new Intent(this, AlarmReceiver.class);
-		intent.putExtra("task_id", task.getId());
-		intent.putExtra("project_id", project != null ? project.getId() : null);
-		intent.putExtra("context_id", context.getId());
-		
-		PendingIntent appIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-		
-		AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
-		am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
-		
+		if (task.getDueDate() != null) {
+			Intent intent = new Intent(this, AlarmReceiver.class);
+			intent.putExtra("task_id", task.getId());
+			intent.putExtra("project_id", project != null ? project.getId() : null);
+			intent.putExtra("context_id", context.getId());
+
+			PendingIntent appIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+			AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
+			am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
+		}
 	}
 
 	private void closeAndDiscardChanges() {

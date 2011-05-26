@@ -1,9 +1,9 @@
 package com.danielpecos.gtm.activities;
 
+import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -17,28 +17,21 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.utils.FileUtils;
 
 public class CameraActivity extends Activity implements SurfaceHolder.Callback, OnClickListener {
-	static final int FOTO_MODE = 0;
-	private static final String TAG = "CameraTest";
 	Camera mCamera;
 	boolean mPreviewRunning = false;
-	private Context mContext = this;
 
-
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-
-		Log.e(TAG, "onCreate");
-
-		Bundle extras = getIntent().getExtras();
-
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.surface_camera);
+		
 		mSurfaceView = (SurfaceView) findViewById(R.id.surface_camera);
 		mSurfaceView.setOnClickListener(this);
 		mSurfaceHolder = mSurfaceView.getHolder();
@@ -46,52 +39,37 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-	}
-
 	Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
 		public void onPictureTaken(byte[] imageData, Camera c) {
-
 			if (imageData != null) {
+				mCamera.stopPreview();
+				
+				File file = null;
+				try {
+					file = File.createTempFile("photo_", ".jpg", null);
+				} catch (IOException ioe) {
+					Log.e(TaskManager.TAG, "Exception while creating temp file " + ioe.getMessage(), ioe);
+				}
+				
+				Log.d(TaskManager.TAG, "Using picture temp file: " + file.getAbsolutePath());
+				FileUtils.StoreByteImage(imageData, 50, file);
 
-				Intent mIntent = new Intent();
-
-				FileUtils.StoreByteImage(mContext, imageData, 50, "ImageName");
-				mCamera.startPreview();
-
-				setResult(FOTO_MODE,mIntent);
+				Intent intent = new Intent();
+				intent.putExtra(TaskActivity.FILE_NAME, file.getAbsolutePath());
+				
+				setResult(RESULT_OK, intent);
 				finish();
-
-
+				
+				Log.d(TaskManager.TAG, "Closing CameraActivity");
 			}
 		}
 	};
 
-	protected void onResume() {
-		Log.e(TAG, "onResume");
-		super.onResume();
-	}
-
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
-	protected void onStop() {
-		Log.e(TAG, "onStop");
-		super.onStop();
-	}
-
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.e(TAG, "surfaceCreated");
 		mCamera = Camera.open();
-
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		Log.e(TAG, "surfaceChanged");
-
 		// XXX stopPreview() will crash if preview is not running
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
@@ -103,15 +81,13 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		try {
 			mCamera.setPreviewDisplay(holder);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TaskManager.TAG, "Error with camera: " + e.getMessage(), e);
 		}
 		mCamera.startPreview();
 		mPreviewRunning = true;
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.e(TAG, "surfaceDestroyed");
 		mCamera.stopPreview();
 		mPreviewRunning = false;
 		mCamera.release();
@@ -121,9 +97,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	private SurfaceHolder mSurfaceHolder;
 
 	public void onClick(View arg0) {
-
 		mCamera.takePicture(null, mPictureCallback, mPictureCallback);
-
 	}
 
 }

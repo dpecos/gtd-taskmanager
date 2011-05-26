@@ -1,6 +1,5 @@
 package com.danielpecos.gtm.model;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,13 +10,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
-import com.danielpecos.gtm.utils.GoogleTasksClient;
 
 
 public class TaskManager {
