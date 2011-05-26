@@ -2,9 +2,7 @@ package com.danielpecos.gtm.model.beans;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -18,6 +16,7 @@ import com.danielpecos.gtm.model.persistence.Persistable;
 public class Context extends TaskContainer implements Persistable {
 	long id;
 	String name;
+	String googleId;
 
 	LinkedHashMap<Long, Project> projects;
 
@@ -46,6 +45,14 @@ public class Context extends TaskContainer implements Persistable {
 	public void setName(android.content.Context ctx, String name) {
 		this.name = name;
 		this.store(ctx);
+	}
+
+	public String getGoogleId() {
+		return googleId;
+	}
+
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
 	}
 
 	void addProject(Project project) {
@@ -96,12 +103,14 @@ public class Context extends TaskContainer implements Persistable {
 			// insert
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
+			values.put(GTDSQLHelper.CONTEXT_GOOGLE_ID, this.googleId);
 			this.id = db.insert(GTDSQLHelper.TABLE_CONTEXTS, null, values);
 			result = this.id;
 		} else {
 			// update
 			ContentValues values = new ContentValues();
 			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
+			values.put(GTDSQLHelper.CONTEXT_GOOGLE_ID, this.googleId);
 			if (db.update(GTDSQLHelper.TABLE_CONTEXTS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
 				result = this.id;
 			} else {
@@ -161,6 +170,7 @@ public class Context extends TaskContainer implements Persistable {
 		int i = 0;
 		this.id = cursor.getLong(i++);
 		this.name = cursor.getString(i++);
+		this.googleId = cursor.getString(i++);
 
 		Cursor cursor_projects = null;
 		try {

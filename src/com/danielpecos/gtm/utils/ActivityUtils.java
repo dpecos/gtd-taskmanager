@@ -2,8 +2,6 @@ package com.danielpecos.gtm.utils;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.view.LayoutInflater;

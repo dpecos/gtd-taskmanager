@@ -30,20 +30,21 @@ public final class R {
     }
     public static final class drawable {
         public static final int expander_ic_minimized=0x7f020000;
-        public static final int ic_menu_archive=0x7f020001;
-        public static final int ic_menu_compose=0x7f020002;
-        public static final int ic_menu_edit=0x7f020003;
-        public static final int ic_menu_mark=0x7f020004;
-        public static final int ic_menu_refresh=0x7f020005;
-        public static final int icon=0x7f020006;
-        public static final int stat_notify_alarm=0x7f020007;
-        public static final int stat_sys_gps_on=0x7f020008;
-        public static final int stat_sys_signal_0=0x7f020009;
-        public static final int stat_sys_signal_1=0x7f02000a;
-        public static final int stat_sys_signal_2=0x7f02000b;
-        public static final int stat_sys_signal_3=0x7f02000c;
-        public static final int stat_sys_signal_4=0x7f02000d;
-        public static final int stat_sys_warning=0x7f02000e;
+        public static final int google=0x7f020001;
+        public static final int ic_menu_archive=0x7f020002;
+        public static final int ic_menu_compose=0x7f020003;
+        public static final int ic_menu_edit=0x7f020004;
+        public static final int ic_menu_mark=0x7f020005;
+        public static final int ic_menu_refresh=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int stat_notify_alarm=0x7f020008;
+        public static final int stat_sys_gps_on=0x7f020009;
+        public static final int stat_sys_signal_0=0x7f02000a;
+        public static final int stat_sys_signal_1=0x7f02000b;
+        public static final int stat_sys_signal_2=0x7f02000c;
+        public static final int stat_sys_signal_3=0x7f02000d;
+        public static final int stat_sys_signal_4=0x7f02000e;
+        public static final int stat_sys_warning=0x7f02000f;
     }
     public static final class id {
         public static final int button_changeDueDate=0x7f090024;

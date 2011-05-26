@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
-import android.view.View;
 
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;

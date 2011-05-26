@@ -1,7 +1,6 @@
 package com.danielpecos.gtm.views;
 
 import java.util.HashMap;
-import java.util.List;
 
 import android.view.View;
 

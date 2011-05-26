@@ -1,12 +1,12 @@
 package com.danielpecos.gtm.model.persistence;
 
-import com.danielpecos.gtm.model.TaskManager;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
+
+import com.danielpecos.gtm.model.TaskManager;
 
 public class GTDSQLHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
@@ -21,6 +21,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 
 	// Columns
+	public static final String CONTEXT_GOOGLE_ID = "googleId";
 	public static final String CONTEXT_NAME = "name";
 
 	public static final String PROJECT_NAME = "name";
@@ -51,7 +52,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 		try {
 			String sql = "create table " + TABLE_CONTEXTS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, " 
-			+ CONTEXT_NAME + " text not null "
+			+ CONTEXT_NAME + " text not null, "
+			+ CONTEXT_GOOGLE_ID + " integer "
 			+ ");";
 			db.execSQL(sql);
 

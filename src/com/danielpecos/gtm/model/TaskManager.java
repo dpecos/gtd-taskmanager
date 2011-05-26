@@ -1,5 +1,6 @@
 package com.danielpecos.gtm.model;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,11 +11,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.GoogleTasksClient;
 
 
 public class TaskManager {
@@ -38,11 +41,11 @@ public class TaskManager {
 
 	private TaskManager(android.content.Context ctx) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
-		
+
 		this.contexts = new LinkedHashMap<Long, Context>();
 		this.loadDatabase(ctx);
 	}
-	
+
 	public static SharedPreferences getPreferences() {
 		return preferences;
 	}
@@ -86,7 +89,7 @@ public class TaskManager {
 				}
 			}
 			return true;
-			
+
 		} catch (SQLException e) {
 			return false;
 		} finally {
@@ -109,5 +112,16 @@ public class TaskManager {
 		Context ctx = (Context)this.getContexts().toArray()[contextPosition];
 		return ctx;
 	}
+
+	/*public boolean synchronizeGTasks(android.content.Context ctx, Context context, GoogleTasksClient client) throws IOException {
+		String taskListId = client.createTaskList(context.getName());
+		if (taskListId != null) {
+			context.setGoogleId(taskListId);
+			context.store(ctx);
+		}
+
+
+		return true;
+	}*/
 
 }

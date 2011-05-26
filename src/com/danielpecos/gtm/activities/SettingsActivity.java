@@ -1,9 +1,7 @@
 package com.danielpecos.gtm.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.danielpecos.gtm.R;

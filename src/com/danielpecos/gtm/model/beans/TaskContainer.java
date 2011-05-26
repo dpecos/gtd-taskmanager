@@ -9,11 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.content.ContentValues;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.danielpecos.gtm.model.TaskManager;
