@@ -59,6 +59,9 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDueTime;
 	private Button button_changeDueDate;
 	private Button button_changeDueTime;
+	
+	private TextView textView_locationLat;
+	private TextView textView_locationLong;
 	private Button button_changeMapPosition;
 
 	private List<TextView> textViews_labels;
@@ -340,6 +343,8 @@ public class TaskViewHolder extends ViewHolder {
 			});
 		}
 		
+		this.textView_locationLat = (TextView)getView(R.id.task_location_lat);
+		this.textView_locationLong = (TextView)getView(R.id.task_location_long);
 		this.button_changeMapPosition = (Button)getView(R.id.button_changeMapPosition);
 		if (this.button_changeMapPosition != null) {
 			this.button_changeMapPosition.setOnClickListener(new OnClickListener() {
@@ -486,6 +491,16 @@ public class TaskViewHolder extends ViewHolder {
 					this.textView_taskDueTime.setText("-");
 				}
 
+			}
+			
+			if (this.textView_locationLat != null && this.textView_locationLong != null) {
+				if (task.getLocation() != null) {
+					this.textView_locationLat.setText("" + (task.getLocation().getLatitudeE6() / 1E6));
+					this.textView_locationLong.setText("" + (task.getLocation().getLongitudeE6() / 1E6));
+				} else {
+					this.textView_locationLat.setText("-");
+					this.textView_locationLong.setText("-");
+				}
 			}
 
 			if (this.button_deletePicture != null) {

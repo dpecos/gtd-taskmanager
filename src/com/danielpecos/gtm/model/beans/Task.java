@@ -13,6 +13,7 @@ import android.util.Log;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.model.persistence.Persistable;
+import com.google.android.maps.GeoPoint;
 
 public class Task implements Persistable, Cloneable {
 	public enum Type {
@@ -106,6 +107,14 @@ public class Task implements Persistable, Cloneable {
 		this.picture = picture;
 	}
 
+	public GeoPoint getLocation() {
+		return location;
+	}
+
+	public void setLocation(GeoPoint location) {
+		this.location = location;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
@@ -122,7 +131,9 @@ public class Task implements Persistable, Cloneable {
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
 		values.put(GTDSQLHelper.TASK_DUEDATETIME, this.getDueDate() != null ? iso8601Format.format(this.getDueDate()) : null);
 		values.put(GTDSQLHelper.TASK_PICTURE, this.getPicture() != null ? this.getPicture() : null);
-
+		values.put(GTDSQLHelper.TASK_LOCATION_LAT, this.getLocation() != null ? this.getLocation().getLatitudeE6() : null);
+		values.put(GTDSQLHelper.TASK_LOCATION_LONG, this.getLocation() != null ? this.getLocation().getLongitudeE6() : null);
+		
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 			result = this.id;
@@ -160,6 +171,7 @@ public class Task implements Persistable, Cloneable {
 			Log.e(TaskManager.TAG, e.getMessage());
 		}
 		this.picture = cursor.getBlob(i++);
+		this.location = new GeoPoint(cursor.getInt(i++), cursor.getInt(i++));
 		return true;
 	}
 

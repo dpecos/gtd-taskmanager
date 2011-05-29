@@ -29,6 +29,7 @@ import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.receivers.AlarmReceiver;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
+import com.google.android.maps.GeoPoint;
 
 public class TaskActivity extends TabActivity {
 	public static final String FULL_RELOAD = "full_reload";
@@ -192,6 +193,19 @@ public class TaskActivity extends TabActivity {
 		}
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case ActivityUtils.MAP_ACTIVITY:
+			if (resultCode == Activity.RESULT_OK) {
+				GeoPoint point = new GeoPoint(data.getIntExtra(TaskMapActivity.LATITUD, 0), data.getIntExtra(TaskMapActivity.LONGITUD, 0));
+				task.setLocation(point);
+				taskReminderViewHolder.updateView(this);
+			}
+		}
+	}
+	
 	@Override
 	public void onBackPressed() {
 		//Handle the back button

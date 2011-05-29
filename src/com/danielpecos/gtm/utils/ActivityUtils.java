@@ -51,12 +51,9 @@ public class ActivityUtils {
 
 
 	public static void showMapActivity(Activity activity, Task task) {
-		Intent i = new Intent(activity.getBaseContext(), TaskMapActivity.class);    	    	
-		//		i.putExtra(XML_LATITUD, this.latitud);
-		//		i.putExtra(XML_LONGITUD, this.longitud);
-		//		i.putExtra(XML_ENTRADA_MISION, aEntradas.get(iEntradaSeleccionada).getMision());
-		//		i.putExtra(XML_ENTRADA_DIRECCION, aEntradas.get(iEntradaSeleccionada).getDireccion());
-		activity.startActivityForResult(i, MAP_ACTIVITY);
+		Intent intent = new Intent(activity.getBaseContext(), TaskMapActivity.class);   
+		intent.putExtra("task_id", task.getId());
+		activity.startActivityForResult(intent, MAP_ACTIVITY);
 	} 
 
 	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {

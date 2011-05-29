@@ -30,6 +30,8 @@
     <string name="task_duetime_button">Change Due time</string>
 	<string name="task_map_label">Task location:</string>    
 	<string name="task_map_button">Change location</string>
+	<string name="task_location_latitude_label">Latitud:</string>
+	<string name="task_location_longitud_label">Longitud:</string> 
     <string name="task_save">Save</string>
     <string name="task_delete">Delete</string>
     <string name="task_revert">Revert changes</string>
