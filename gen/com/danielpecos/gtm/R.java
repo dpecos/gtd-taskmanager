@@ -30,23 +30,22 @@ public final class R {
     }
     public static final class drawable {
         public static final int expander_ic_minimized=0x7f020000;
-        public static final int google=0x7f020001;
-        public static final int ic_menu_archive=0x7f020002;
-        public static final int ic_menu_camera_little=0x7f020003;
-        public static final int ic_menu_compose=0x7f020004;
-        public static final int ic_menu_edit=0x7f020005;
-        public static final int ic_menu_mapmode=0x7f020006;
-        public static final int ic_menu_mark=0x7f020007;
-        public static final int ic_menu_refresh=0x7f020008;
-        public static final int icon=0x7f020009;
-        public static final int stat_notify_alarm=0x7f02000a;
-        public static final int stat_sys_gps_on=0x7f02000b;
-        public static final int stat_sys_signal_0=0x7f02000c;
-        public static final int stat_sys_signal_1=0x7f02000d;
-        public static final int stat_sys_signal_2=0x7f02000e;
-        public static final int stat_sys_signal_3=0x7f02000f;
-        public static final int stat_sys_signal_4=0x7f020010;
-        public static final int stat_sys_warning=0x7f020011;
+        public static final int ic_menu_archive=0x7f020001;
+        public static final int ic_menu_camera_little=0x7f020002;
+        public static final int ic_menu_compose=0x7f020003;
+        public static final int ic_menu_edit=0x7f020004;
+        public static final int ic_menu_mapmode=0x7f020005;
+        public static final int ic_menu_mark=0x7f020006;
+        public static final int ic_menu_refresh=0x7f020007;
+        public static final int icon=0x7f020008;
+        public static final int stat_notify_alarm=0x7f020009;
+        public static final int stat_sys_gps_on=0x7f02000a;
+        public static final int stat_sys_signal_0=0x7f02000b;
+        public static final int stat_sys_signal_1=0x7f02000c;
+        public static final int stat_sys_signal_2=0x7f02000d;
+        public static final int stat_sys_signal_3=0x7f02000e;
+        public static final int stat_sys_signal_4=0x7f02000f;
+        public static final int stat_sys_warning=0x7f020010;
     }
     public static final class id {
         public static final int button_changeDueDate=0x7f090027;
@@ -155,15 +154,16 @@ public final class R {
         public static final int error_deletingContext=0x7f05003b;
         public static final int error_deletingProject=0x7f05003c;
         public static final int error_deletingTask=0x7f05003d;
+        public static final int error_initializingCamera=0x7f050041;
         public static final int error_loadingData=0x7f05003a;
         public static final int no=0x7f050002;
-        public static final int notification_msg=0x7f050047;
-        public static final int notification_title=0x7f050046;
-        public static final int project_optionsMenu_changeDescription=0x7f050042;
-        public static final int project_optionsMenu_renameProject=0x7f050041;
-        public static final int settings_task_order_default=0x7f050044;
-        public static final int settings_task_order_summary=0x7f050045;
-        public static final int settings_task_order_tittle=0x7f050043;
+        public static final int notification_msg=0x7f050048;
+        public static final int notification_title=0x7f050047;
+        public static final int project_optionsMenu_changeDescription=0x7f050043;
+        public static final int project_optionsMenu_renameProject=0x7f050042;
+        public static final int settings_task_order_default=0x7f050045;
+        public static final int settings_task_order_summary=0x7f050046;
+        public static final int settings_task_order_tittle=0x7f050044;
         public static final int task_delete=0x7f050015;
         public static final int task_delete_picture=0x7f05000e;
         public static final int task_description_label=0x7f050007;

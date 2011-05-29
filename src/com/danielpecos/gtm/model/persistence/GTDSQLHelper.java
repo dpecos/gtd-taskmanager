@@ -33,7 +33,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TASK_STATUS = "status";
 	public static final String TASK_PRIORITY = "priority";
 	public static final String TASK_DUEDATETIME = "due_datetime";
-	public static final String TASK_PICTURE = "due_picture";
+	public static final String TASK_PICTURE = "picture";
 
 	public static final String CONTEXT_ID = "context_id";
 	public static final String PROJECT_ID = "project_id";

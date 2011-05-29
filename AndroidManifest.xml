@@ -5,7 +5,6 @@
 	
 	<uses-sdk android:minSdkVersion="7" />
 
-	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,8 +27,6 @@
 		<activity android:name=".activities.TaskActivity$TaskTabInfoActivity" />
 		<activity android:name=".activities.TaskActivity$TaskTabReminderActivity" />
        
-		<activity android:name=".activities.CameraActivity" />
-
         <activity android:name=".activities.TaskMapActivity" /> 
 
 		<activity android:name=".activities.SettingsActivity" />

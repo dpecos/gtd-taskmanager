@@ -1,6 +1,6 @@
 package com.danielpecos.gtm.activities;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -10,6 +10,7 @@ import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,7 +28,6 @@ import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.receivers.AlarmReceiver;
 import com.danielpecos.gtm.utils.ActivityUtils;
-import com.danielpecos.gtm.utils.FileUtils;
 import com.danielpecos.gtm.views.TaskViewHolder;
 
 public class TaskActivity extends TabActivity {
@@ -154,22 +154,21 @@ public class TaskActivity extends TabActivity {
 
 		@Override
 		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-			if (requestCode == ActivityUtils.CAMERA_ACTIVITY) {
-				if (resultCode == RESULT_OK) {
-					String fileName = data.getStringExtra(TaskActivity.FILE_NAME);
+			super.onActivityResult(requestCode, resultCode, data);
+			switch (requestCode) {
+			case ActivityUtils.CAMERA_ACTIVITY:
+				if (resultCode == Activity.RESULT_OK) {
 
-					Log.d(TaskManager.TAG, "Picture taken: " + fileName);
+					Bitmap bitmap = (Bitmap) data.getExtras().get("data");
 
-					byte fileContent[] = FileUtils.ReadByteImage(new File(fileName));
-
-					if (!new File(fileName).delete()) {
-						Log.w(TaskManager.TAG, "Temp file not deleted!");
-					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+					byte [] fileContent = baos.toByteArray();
 
 					task.setPicture(fileContent);
 					taskInfoViewHolder.updateView(this);
-
 					Log.d(TaskManager.TAG, "Picture read and viewHolder refreshed");
+
 				}
 			}
 		}

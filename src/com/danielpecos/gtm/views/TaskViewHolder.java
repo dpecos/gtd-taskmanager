@@ -356,7 +356,7 @@ public class TaskViewHolder extends ViewHolder {
 			this.button_takePicture.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					ActivityUtils.showCameraActivity(activity);
+					ActivityUtils.callDefaultCameraApp(activity);
 				}
 			});
 		}

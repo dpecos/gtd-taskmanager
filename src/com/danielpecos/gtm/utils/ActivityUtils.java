@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
-import com.danielpecos.gtm.activities.CameraActivity;
 import com.danielpecos.gtm.activities.ProjectActivity;
 import com.danielpecos.gtm.activities.TaskActivity;
 import com.danielpecos.gtm.activities.TaskMapActivity;
@@ -44,19 +43,19 @@ public class ActivityUtils {
 		activity.startActivityForResult(intent, TASK_ACTIVITY);
 
 	}
-	
-	public static void showCameraActivity(Activity activity) {
-		Intent intent = new Intent(activity.getBaseContext(), CameraActivity.class);
-		activity.startActivityForResult(intent, CAMERA_ACTIVITY);
 
+	public static void callDefaultCameraApp(Activity activity) {
+		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+		activity.startActivityForResult(intent, CAMERA_ACTIVITY);
 	}
-	
+
+
 	public static void showMapActivity(Activity activity, Task task) {
 		Intent i = new Intent(activity.getBaseContext(), TaskMapActivity.class);    	    	
-//		i.putExtra(XML_LATITUD, this.latitud);
-//		i.putExtra(XML_LONGITUD, this.longitud);
-//		i.putExtra(XML_ENTRADA_MISION, aEntradas.get(iEntradaSeleccionada).getMision());
-//		i.putExtra(XML_ENTRADA_DIRECCION, aEntradas.get(iEntradaSeleccionada).getDireccion());
+		//		i.putExtra(XML_LATITUD, this.latitud);
+		//		i.putExtra(XML_LONGITUD, this.longitud);
+		//		i.putExtra(XML_ENTRADA_MISION, aEntradas.get(iEntradaSeleccionada).getMision());
+		//		i.putExtra(XML_ENTRADA_DIRECCION, aEntradas.get(iEntradaSeleccionada).getDireccion());
 		activity.startActivityForResult(i, MAP_ACTIVITY);
 	} 
 
@@ -67,7 +66,7 @@ public class ActivityUtils {
 				WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
 				WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 		textboxDialog.setTitle(title);
-		
+
 		//textboxDialog.setOnDismissListener(listener);
 
 		LayoutInflater li = (LayoutInflater) context.getSystemService(android.content.Context.LAYOUT_INFLATER_SERVICE);
