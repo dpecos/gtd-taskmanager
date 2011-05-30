@@ -8,9 +8,10 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<!-- uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
-	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" /-->
+	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<activity android:name=".activities.ContextActivity" android:theme="@android:style/Theme.Light"
@@ -30,6 +31,8 @@
         <activity android:name=".activities.TaskMapActivity" /> 
 
 		<activity android:name=".activities.SettingsActivity" />
+		
+		<activity android:name=".activities.GoogleAccountActivity" />
 		
 		<receiver android:name=".receivers.AlarmReceiver" android:process=":remote"/>
 		

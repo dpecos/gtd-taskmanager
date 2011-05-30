@@ -1,5 +1,12 @@
 package com.danielpecos.gtm.utils;
 
+import java.io.IOException;
+
+import com.danielpecos.gtm.model.beans.Task;
+import com.google.api.services.tasks.v1.Tasks;
+import com.google.api.services.tasks.v1.model.TaskList;
+import com.google.api.services.tasks.v1.model.TaskLists;
+
 
 
 /* 
@@ -8,7 +15,7 @@ package com.danielpecos.gtm.utils;
 
 public class GoogleTasksClient {
 
-	/*private Tasks service;
+	private Tasks service;
 
 	public GoogleTasksClient(Tasks service) {
 		this.service = service;
@@ -34,6 +41,4 @@ public class GoogleTasksClient {
 
 		return result.id;
 	}
-*/
-
 }

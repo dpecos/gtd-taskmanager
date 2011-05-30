@@ -1,5 +1,6 @@
 package com.danielpecos.gtm.model;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,6 +16,7 @@ import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
+import com.danielpecos.gtm.utils.GoogleTasksClient;
 
 
 public class TaskManager {
@@ -110,15 +112,14 @@ public class TaskManager {
 		return ctx;
 	}
 
-	/*public boolean synchronizeGTasks(android.content.Context ctx, Context context, GoogleTasksClient client) throws IOException {
+	public boolean synchronizeGTasks(android.content.Context ctx, Context context, GoogleTasksClient client) throws IOException {
 		String taskListId = client.createTaskList(context.getName());
 		if (taskListId != null) {
 			context.setGoogleId(taskListId);
 			context.store(ctx);
-		}
-
+		} 
 
 		return true;
-	}*/
+	}
 
 }

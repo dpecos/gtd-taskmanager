@@ -171,7 +171,12 @@ public class Task implements Persistable, Cloneable {
 			Log.e(TaskManager.TAG, e.getMessage());
 		}
 		this.picture = cursor.getBlob(i++);
-		this.location = new GeoPoint(cursor.getInt(i++), cursor.getInt(i++));
+		
+//		int latitude = cursor.getInt(i++);
+//		int longitude = cursor.getInt(i++);
+		if (!cursor.isNull(i+1)) {
+			this.location = new GeoPoint(cursor.getInt(i++), cursor.getInt(i++));
+		}
 		return true;
 	}
 
