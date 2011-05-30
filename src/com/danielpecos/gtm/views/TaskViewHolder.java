@@ -10,6 +10,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,7 +43,9 @@ import com.danielpecos.gtm.utils.ActivityUtils;
 public class TaskViewHolder extends ViewHolder {
 	private Task task;
 
-	private LinearLayout layout_taskIcons;
+	private LinearLayout layout_taskIcons_1;
+	private LinearLayout layout_taskIcons_2;
+	
 	private TextView textView_taskName;
 	private EditText editText_taskName;
 	private TextView textView_taskDescription;
@@ -379,7 +382,8 @@ public class TaskViewHolder extends ViewHolder {
 
 		this.imageView_picture = (ImageView)getView(R.id.task_picture);
 
-		this.layout_taskIcons = (LinearLayout)getView(R.id.task_icons);
+		this.layout_taskIcons_1 = (LinearLayout)getView(R.id.task_icons_1);
+		this.layout_taskIcons_2 = (LinearLayout)getView(R.id.task_icons_2);
 	}
 
 	@Override
@@ -454,13 +458,41 @@ public class TaskViewHolder extends ViewHolder {
 				this.toggleButton_taskDiscarded.setChecked(task.getStatus() != Task.Status.Discarded && task.getStatus() != Task.Status.Discarded_Completed);
 			}
 
-			if (this.layout_taskIcons != null) {
-				this.layout_taskIcons.removeAllViews();
+			if (this.layout_taskIcons_1 != null) {
+				this.layout_taskIcons_1.removeAllViews();
+				this.layout_taskIcons_2.removeAllViews();
+				
+				ArrayList<View> views = new ArrayList<View>();
+				
 				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
-					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.stat_notify_alarm));
+					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm));
 				}
 				if (this.task.getPicture() != null) {
-					this.layout_taskIcons.addView(this.newTaskIcon(R.drawable.ic_menu_camera_little));
+					views.add(this.newTaskIcon(R.drawable.ic_menu_camera_little));
+				}
+				if (this.task.getLocation() != null) {
+					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on));
+				}
+				
+				if (views.size() > 0) {
+					this.layout_taskIcons_1.setVisibility(View.VISIBLE);
+					
+					if (views.size() <= 2) {
+						this.layout_taskIcons_2.setVisibility(View.GONE);
+					} else {
+						this.layout_taskIcons_2.setVisibility(View.VISIBLE);
+					}
+				} else {
+					this.layout_taskIcons_1.setVisibility(View.GONE);
+					this.layout_taskIcons_2.setVisibility(View.GONE);
+				}
+				
+				for (int i=0; i<views.size(); i++) {
+					if (i < 2) {
+						this.layout_taskIcons_1.addView(views.get(i));
+					} else {
+						this.layout_taskIcons_2.addView(views.get(i));
+					}
 				}
 			}
 
@@ -632,8 +664,8 @@ public class TaskViewHolder extends ViewHolder {
 		icon.setScaleType(ScaleType.MATRIX);
 
 		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		frame.width = (int) (38 * 0.5);
-		frame.height = (int) (38 * 0.5);
+		frame.width = (int) (38 * 0.7);
+		frame.height = (int) (38 * 0.7);
 		icon.setLayoutParams(frame);
 
 		return icon;

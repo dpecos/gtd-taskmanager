@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -26,7 +27,7 @@ import de.android1.overlaymanager.OverlayManager;
 public class TaskMapActivity extends MapActivity {
 	public static final String LATITUD = "latitud";
 	public static final String LONGITUD = "longitud";
-	
+
 	private Task task;
 	private GeoPoint point;
 	private ManagedOverlayItem item;
@@ -40,7 +41,7 @@ public class TaskMapActivity extends MapActivity {
 
 		setContentView(R.layout.task_map);
 
-		MapView mapView = (MapView) findViewById(R.id.task_mapview);
+		final MapView mapView = (MapView) findViewById(R.id.task_mapview);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setHapticFeedbackEnabled(true);
 
@@ -60,39 +61,41 @@ public class TaskMapActivity extends MapActivity {
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		mapOverlays.clear();
 
-		OverlayManager overlayManager = new OverlayManager(this, mapView);
 		Drawable marker = this.getResources().getDrawable(R.drawable.marker);
-		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+		//marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+
+		final OverlayManager overlayManager = new OverlayManager(this, mapView);
 		final ManagedOverlay managedOverlay = overlayManager.createOverlay(marker);
 		if (task.getLocation() != null) {
 			this.item = managedOverlay.createItem(task.getLocation(), task.getName(), task.getDescription());
 		}
+		overlayManager.populate();
 
-		final MyLocationOverlay myLocationOverlay = new MyLocationOverlay(this, mapView) {
+		managedOverlay.setOnGestureListener(new GestureDetector.SimpleOnGestureListener(){
 			@Override
-			public boolean onTouchEvent(MotionEvent event, MapView mapView) 
-			{   
-				//---when user lifts his finger---
-				if (event.getAction() == 1) {                
-					point = mapView.getProjection().fromPixels(
-							(int) event.getX(),
-							(int) event.getY()
-					);
+			public boolean onSingleTapUp(MotionEvent event) {
+				point = mapView.getProjection().fromPixels(
+						(int) event.getX(),
+						(int) event.getY()
+				);
 
-					Toast.makeText(getBaseContext(), 
-							point.getLatitudeE6() / 1E6 + "," + 
-							point.getLongitudeE6() /1E6 , 
-							Toast.LENGTH_SHORT).show();
+				Toast.makeText(getBaseContext(), 
+						point.getLatitudeE6() / 1E6 + "," + 
+						point.getLongitudeE6() /1E6 , 
+						Toast.LENGTH_SHORT).show();
 
-					if (item != null) {
-						managedOverlay.remove(item);
-						Log.d(TaskManager.TAG, "Removed previous map marker");
-					}
-					item = managedOverlay.createItem(point, task.getName(), task.getDescription());
-				}                            
+				if (item != null) {
+					managedOverlay.remove(item);
+					Log.d(TaskManager.TAG, "Removed previous map marker");
+				}
+				item = managedOverlay.createItem(point, task.getName(), task.getDescription());
+				overlayManager.populate();
+
 				return false;
-			}        
-		};
+			}
+		});
+
+		final MyLocationOverlay myLocationOverlay = new MyLocationOverlay(this, mapView);
 		myLocationOverlay.enableMyLocation();
 
 		myLocationOverlay.runOnFirstFix(new Runnable() {

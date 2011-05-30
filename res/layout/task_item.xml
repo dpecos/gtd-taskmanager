@@ -38,11 +38,22 @@
         android:textColor="#ff444444"      
         android:textSize="11dip" 
         android:ellipsize="end"/>
+   	<LinearLayout
+    	android:id="@+id/task_icons_2"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" 
+		android:orientation="vertical"
+		android:layout_toLeftOf="@+id/task_icons_1"
+		android:layout_marginLeft="5dip"
+		android:layout_marginTop="5dip"
+		android:layout_marginBottom="5dip"/>
     <LinearLayout
-    	android:id="@+id/task_icons"
+    	android:id="@+id/task_icons_1"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" 
 		android:orientation="vertical"
 		android:layout_alignParentRight="true" 
-		android:layout_margin="5dip"/>
+		android:layout_marginRight="5dip"
+		android:layout_marginTop="5dip"
+		android:layout_marginBottom="5dip" />
 </RelativeLayout>
