@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
@@ -32,6 +33,7 @@ import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
+import com.danielpecos.gtm.views.ContextViewHolder;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
@@ -41,9 +43,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	private ViewHolder triggerViewHolder;
 
+	private HashMap<Long, ContextViewHolder> contextViewHolders;
 	private HashMap<Long, ProjectViewHolder> projectViewHolders;
 	private HashMap<Long, TaskViewHolder> taskViewHolders;
-	
+
 	private static final String LIST_STATE_KEY = "listState";
 	private static final String LIST_POSITION_KEY = "listPosition";
 	private static final String ITEM_POSITION_KEY = "itemPosition";
@@ -51,7 +54,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	private Parcelable mListState = null;
 	private int mListPosition = 0;
 	private int mItemPosition = 0;
-	
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -151,6 +155,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.getItem(1).setVisible(false);
 			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
+			menu.getItem(6).setVisible(false);
 		} else if (itemId == R.id.task_item) {
 			menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_mark);
@@ -159,6 +164,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.getItem(2).setVisible(false);
 			menu.getItem(4).setVisible(false);
 			menu.getItem(5).setVisible(false);
+			menu.getItem(6).setVisible(false);
 		}
 
 	}
@@ -168,7 +174,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		ExpandableListContextMenuInfo  menuInfo = (ExpandableListContextMenuInfo) item.getMenuInfo();
 		int type = ExpandableListView.getPackedPositionType(menuInfo.packedPosition);
-		
+
 		if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 			int groupPos = ExpandableListView.getPackedPositionGroup(menuInfo.packedPosition); 
 			int childPos = ExpandableListView.getPackedPositionChild(menuInfo.packedPosition); 
@@ -180,7 +186,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			case R.id.context_contextMenu_deleteProject: {
 				final Project project = (Project)child;
 				String projectName = project.getName();
-				
+
 				if (context.deleteProject(ContextActivity.this, project)) {
 					initializeUI();
 					Toast.makeText(this, "Project \"" + projectName + "\" successfully deleted", Toast.LENGTH_SHORT).show();
@@ -299,10 +305,35 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
+			case R.id.context_contextMenu_synchronizeGTasks: {
+				// TODO: UI Start
+				final Handler handler = new Handler();
+				new Thread(new Runnable() {
+					public void run() {
+						if (taskManager.synchronizeGTasks(ContextActivity.this, context)) {
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									// TODO: UI finished
+								}
+							});
+						} else {
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									// TODO: UI error
+								}
+							});
+						}
+					}
+				}).run();
+				
+				return true;
+			}			
 			}
 			return false;
 		}
-		
+
 		return false;
 	}
 
@@ -311,6 +342,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		ExpandableListView listView = this.getExpandableListView();
 
+		this.contextViewHolders = new HashMap<Long, ContextViewHolder>();
 		this.projectViewHolders = new HashMap<Long, ProjectViewHolder>();
 		this.taskViewHolders = new HashMap<Long, TaskViewHolder>();
 
@@ -322,10 +354,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			Collection<Context> contexts = taskManager.getContexts();
 
 			for (Context ctx : contexts) {
-				HashMap<String, Object> contextData = new HashMap<String, Object>();
-				contextData.put("id", ctx.getId());
-				contextData.put("name", ctx.getName());
-				groupData.add(contextData);
+				ContextViewHolder cvh = new ContextViewHolder(null, ctx);
+				this.contextViewHolders.put(ctx.getId(), cvh);
+				groupData.add(cvh.getListFields());
 
 				// PROJECTS LIST
 				ArrayList<HashMap<String, Object>> contextChildData = new ArrayList<HashMap<String,Object>>();
@@ -357,6 +388,15 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					R.layout.context_item, 
 					new String[] {"name"}, 
 					new int[] {R.id.context_name}, 
+					new RowDisplayListener() {
+						@Override
+						public void onViewSetUp(View view, HashMap<String, Object> data) {
+							Context context = (Context)data.get("_BASE_");
+							ViewHolder cvh = contextViewHolders.get(context.getId());
+							cvh.setView(view);
+							cvh.updateView(ContextActivity.this);
+						}
+					},
 
 					childrenData_projects, 
 					R.layout.project_item, 
@@ -449,7 +489,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
-		    if (this.triggerViewHolder != null) {
+			if (this.triggerViewHolder != null) {
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
 				projectViewHolder.updateView(this);
 			}
@@ -467,52 +507,59 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView(this);
 			}
+		} else if (requestCode == ActivityUtils.GOOGLE_ACCOUNT_ACTIVITY) {
+			if (resultCode == RESULT_OK) {
+				Long contextId = data.getLongExtra("context_id", -1);
+				Context context = taskManager.getContext(contextId);
+							
+				taskManager.synchronizeGTasks(this, context);
+			}
 		}
 
 		this.triggerViewHolder = null;
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle state) {
-	    super.onRestoreInstanceState(state);
+		super.onRestoreInstanceState(state);
 
-	    // Retrieve list state and list/item positions
-	    mListState = state.getParcelable(LIST_STATE_KEY);
-	    mListPosition = state.getInt(LIST_POSITION_KEY);
-	    mItemPosition = state.getInt(ITEM_POSITION_KEY);
+		// Retrieve list state and list/item positions
+		mListState = state.getParcelable(LIST_STATE_KEY);
+		mListPosition = state.getInt(LIST_POSITION_KEY);
+		mItemPosition = state.getInt(ITEM_POSITION_KEY);
 	}
 
 	@Override
 	protected void onResume() {
-	    super.onResume();
+		super.onResume();
 
-	    // Load data from DB and put it onto the list
-	    this.taskManager = TaskManager.getInstance(this);
+		// Load data from DB and put it onto the list
+		this.taskManager = TaskManager.getInstance(this);
 
-	    // Restore list state and list/item positions
-	    ExpandableListView listView = getExpandableListView();
-	    if (mListState != null)
-	        listView.onRestoreInstanceState(mListState);
-	    listView.setSelectionFromTop(mListPosition, mItemPosition);
+		// Restore list state and list/item positions
+		ExpandableListView listView = getExpandableListView();
+		if (mListState != null)
+			listView.onRestoreInstanceState(mListState);
+		listView.setSelectionFromTop(mListPosition, mItemPosition);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle state) {
-	    super.onSaveInstanceState(state);
+		super.onSaveInstanceState(state);
 
-	    // Save list state
-	    ExpandableListView listView = getExpandableListView();
-	    mListState = listView.onSaveInstanceState();
-	    state.putParcelable(LIST_STATE_KEY, mListState);
+		// Save list state
+		ExpandableListView listView = getExpandableListView();
+		mListState = listView.onSaveInstanceState();
+		state.putParcelable(LIST_STATE_KEY, mListState);
 
-	    // Save position of first visible item
-	    mListPosition = listView.getFirstVisiblePosition();
-	    state.putInt(LIST_POSITION_KEY, mListPosition);
+		// Save position of first visible item
+		mListPosition = listView.getFirstVisiblePosition();
+		state.putInt(LIST_POSITION_KEY, mListPosition);
 
-	    // Save scroll position of item
-	    View itemView = listView.getChildAt(0);
-	    mItemPosition = itemView == null ? 0 : itemView.getTop();
-	    state.putInt(ITEM_POSITION_KEY, mItemPosition);
+		// Save scroll position of item
+		View itemView = listView.getChildAt(0);
+		mItemPosition = itemView == null ? 0 : itemView.getTop();
+		state.putInt(ITEM_POSITION_KEY, mItemPosition);
 	}
 
 }

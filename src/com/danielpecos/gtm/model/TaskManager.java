@@ -1,22 +1,26 @@
 package com.danielpecos.gtm.model;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
+import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.GoogleTasksClient;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
 
 
 public class TaskManager {
@@ -25,6 +29,8 @@ public class TaskManager {
 	private static SharedPreferences preferences;
 
 	HashMap<Long, Context> contexts;
+
+	private static final String PREF = "com.danielpecos.gtm_preferences";
 
 	public static TaskManager getInstance(android.content.Context ctx) {
 		if (instance == null) {
@@ -112,14 +118,72 @@ public class TaskManager {
 		return ctx;
 	}
 
-	public boolean synchronizeGTasks(android.content.Context ctx, Context context, GoogleTasksClient client) throws IOException {
-		String taskListId = client.createTaskList(context.getName());
-		if (taskListId != null) {
-			context.setGoogleId(taskListId);
-			context.store(ctx);
-		} 
+	public boolean synchronizeGTasks(Activity activity, Context context) {
 
-		return true;
+		SharedPreferences settings = activity.getSharedPreferences(PREF, Activity.MODE_WORLD_READABLE);
+		String accountName = settings.getString("google_accountName", null);
+
+		if (accountName == null) {
+			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
+		} else {
+			String authToken = settings.getString("google_authToken", null);
+
+			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
+
+			try {
+				String taskListId = null;
+				if (context.getGoogleId() != null) {
+					taskListId = context.getGoogleId();
+					if (!client.updateTaskList(taskListId, context.getName())) {
+						Log.e(TaskManager.TAG, "GTasks: Error updating context/taskList");
+					}
+				} else {
+					taskListId = client.createTaskList(context.getName());
+					if (taskListId != null) {
+						context.setGoogleId(taskListId);
+						context.store(activity.getBaseContext());
+					}
+				}
+				
+//				for (Project project : context.getProjects()) {
+//					String taskId = null;
+//					if (project.getGoogleId() != null) {
+//						taskId = project.getGoogleId();
+//						if (!client.updateTask(project.getName(), project.getDescription(), null, taskListId)) {
+//							Log.e(TaskManager.TAG, "GTasks: Error updating project/task");
+//						}
+//					} else {
+//						taskId = client.createTask(project.getName(), project.getDescription(), null, taskListId);
+//						if (taskId != null) {
+//							project.setGoogleId(taskId);
+//							project.store(activity.getBaseContext());
+//						}
+//					}
+//				}
+
+
+				return true;
+
+			} catch (Exception e) {
+				if (e instanceof HttpResponseException) {
+					HttpResponse response = ((HttpResponseException) e).response;
+					int statusCode = response.statusCode;
+					
+					if (statusCode == 400) {
+						Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
+						//TOAST
+					} else {
+						Log.e(TaskManager.TAG, "GTasks: error in communication (maybe token has expired)", e);
+						ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.TRUE);	
+					}
+				} else {
+					Log.e(TaskManager.TAG, "GTasks: unknown error: " + e.getMessage(), e);
+				}
+			}
+		}
+
+		return false;
+
 	}
 
 }

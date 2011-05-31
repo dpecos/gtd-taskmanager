@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,9 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.activities.GoogleAccountActivity;
 import com.danielpecos.gtm.activities.ProjectActivity;
 import com.danielpecos.gtm.activities.TaskActivity;
 import com.danielpecos.gtm.activities.TaskMapActivity;
+import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
@@ -26,6 +29,7 @@ public class ActivityUtils {
 	public static final int TASK_ACTIVITY = 1;
 	public static final int CAMERA_ACTIVITY = 2;
 	public static final int MAP_ACTIVITY = 3;
+	public static final int GOOGLE_ACCOUNT_ACTIVITY = 4;
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);
@@ -55,6 +59,14 @@ public class ActivityUtils {
 		intent.putExtra("task_id", task.getId());
 		activity.startActivityForResult(intent, MAP_ACTIVITY);
 	} 
+	
+	public static void showGoogleAccountActivity(Activity activity, Context context, Boolean invalidate) {
+		Intent intent = new Intent(activity.getBaseContext(), GoogleAccountActivity.class);   
+		intent.putExtra("invalidate_token", invalidate);
+		intent.putExtra("context_id", context.getId());
+		Log.d(TaskManager.TAG, "GTasks: invoking GoogleAccountActivity");
+		activity.startActivityForResult(intent, GOOGLE_ACCOUNT_ACTIVITY);
+	}	
 
 	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {
 

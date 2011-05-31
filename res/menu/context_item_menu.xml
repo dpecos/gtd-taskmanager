@@ -24,4 +24,8 @@
 		android:id="@+id/context_contextMenu_addTask"
     	android:title="@string/context_contextMenu_addTask"
 		android:icon="@android:drawable/ic_menu_add"/>
+	<item 
+		android:id="@+id/context_contextMenu_synchronizeGTasks"
+    	android:title="@string/context_contextMenu_synchronizeGTasks"
+		android:icon="@drawable/ic_menu_refresh"/>		
 </menu>

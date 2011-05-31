@@ -58,9 +58,10 @@
 	<string name="context_contextMenu_deleteTask">Delete Task</string>
     <string name="context_contextMenu_addProject">Add Project...</string>
     <string name="context_contextMenu_addTask">Add Task...</string>
+    <string name="context_contextMenu_synchronizeGTasks">Synchronize Google Tasks</string>
     <string name="textbox_addContext_title">Create new Context</string>
     <string name="textbox_addContext_label">Context name:</string>
-    <string name="textbox_renameContext_title">Create new Context</string>
+    <string name="textbox_renameContext_title">Rename Context</string>
     <string name="textbox_renameContext_label">Context name:</string>
     <string name="textbox_addProject_title">Create new Project</string>
 	<string name="textbox_addProject_label">Project name:</string>

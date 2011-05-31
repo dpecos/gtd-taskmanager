@@ -36,13 +36,13 @@ public class GoogleAccountActivity extends Activity {
 	private static final int REQUEST_AUTHENTICATE = 0;
 	private static final int DIALOG_ACCOUNTS = 0;
 
-	private static String apiKey = "AIzaSyB9Uw7kh3jdyoO9FkzTjAtAkf48on1HI8U";
-
 	private static final String PREF = "com.danielpecos.gtm_preferences";
 
 	// TODO(yanivi): save auth token in preferences
 	public String authToken;
 	public GoogleAccountManager accountManager;
+	
+	private Long contextId;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,11 @@ public class GoogleAccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		accountManager = new GoogleAccountManager(this);
 		Logger.getLogger("com.google.api.client").setLevel(Level.ALL);
-		gotAccount(false);
+		
+		Boolean invalidate = (Boolean)getIntent().getSerializableExtra("invalidate_token");
+		contextId = (Long)getIntent().getSerializableExtra("context_id");
+		
+		gotAccount(invalidate);
 	}
 
 	@Override
@@ -79,8 +83,12 @@ public class GoogleAccountActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(PREF, 0);
 		String accountName = settings.getString("google_accountName", null);
 		Account account = accountManager.getAccountByName(accountName);
+		
 		if (account != null) {
+			authToken = settings.getString("google_authToken", null);
+			
 			if (tokenExpired) {
+				Log.i(TaskManager.TAG, "GTasks: invalidating authToken: " + authToken);
 				accountManager.invalidateAuthToken(authToken);
 				authToken = null;
 			}
@@ -107,6 +115,7 @@ public class GoogleAccountActivity extends Activity {
 								startActivityForResult(intent, REQUEST_AUTHENTICATE);
 							} else if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
 								authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+								Log.i(TaskManager.TAG, "GTasks: got a new authToken: " + authToken);
 								onAuthToken();
 							}
 						} catch (Exception e) {
@@ -131,7 +140,8 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void handleException(Exception e) {
-		e.printStackTrace();
+//		e.printStackTrace();
+		Log.e(TaskManager.TAG, e.getMessage(), e);
 		if (e instanceof HttpResponseException) {
 			HttpResponse response = ((HttpResponseException) e).response;
 			int statusCode = response.statusCode;
@@ -142,41 +152,25 @@ public class GoogleAccountActivity extends Activity {
 			}
 			// TODO(yanivi): should only try this once to avoid infinite loop
 			if (statusCode == 401) {
+				Log.w(TaskManager.TAG, "GTasks: authToken invalid! " + statusCode);
 				gotAccount(true);
 				return;
 			}
 		}
-		Log.e(TaskManager.TAG, e.getMessage(), e);
 	}
 
 	private void onAuthToken() {
-
 		SharedPreferences settings = getSharedPreferences(PREF, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString("google_authToken", authToken);
 		editor.commit();
 		
-		new GoogleAccessProtectedResource(authToken) {
-			@Override
-			protected void onAccessToken(String accessToken) {
-				gotAccount(true);
-			}
-		};
-
-		HttpTransport transport = AndroidHttp.newCompatibleTransport();
-		JacksonFactory jsonFactory = new JacksonFactory();
-		Tasks service = new Tasks("Google-TaskSample/1.0", transport, jsonFactory);
-
-		service.setAccessToken(authToken);
-		service.accessKey = apiKey;
-
-		GoogleTasksClient client = new GoogleTasksClient(service);
-		TaskManager tm = TaskManager.getInstance(this);
-
-		try {
-			tm.synchronizeGTasks(this, tm.elementAt(0), client);
-		} catch (Exception e) {
-			handleException(e);
-		}
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra("context_id", contextId);
+		
+		Log.d(TaskManager.TAG, "GTasks: finishing GoogleAccountActivity");
+		
+		this.setResult(RESULT_OK, resultIntent);
+		this.finish();
 	}
 }
