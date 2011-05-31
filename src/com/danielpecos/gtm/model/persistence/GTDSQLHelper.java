@@ -19,14 +19,14 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TABLE_CONTEXTS_TASKS = "contexts_tasks";
 	public static final String TABLE_PROJECTS_TASKS = "projects_tasks";
 
-
 	// Columns
-	public static final String CONTEXT_GOOGLE_ID = "googleId";
 	public static final String CONTEXT_NAME = "name";
+	public static final String CONTEXT_GOOGLE_ID = "googleId";
 
 	public static final String PROJECT_NAME = "name";
 	public static final String PROJECT_DESCRIPTION = "description";
 	public static final String PROJECT_CONTEXTID = "context_id";
+	public static final String PROJECT_GOOGLE_ID = "googleId";
 
 	public static final String TASK_NAME = "name";
 	public static final String TASK_DESCRIPTION = "description";
@@ -36,6 +36,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TASK_PICTURE = "picture";
 	public static final String TASK_LOCATION_LAT = "location_lat";
 	public static final String TASK_LOCATION_LONG = "location_long";	
+	public static final String TASK_GOOGLE_ID = "googleId";
 
 	public static final String CONTEXT_ID = "context_id";
 	public static final String PROJECT_ID = "project_id";
@@ -54,7 +55,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			String sql = "create table " + TABLE_CONTEXTS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, " 
 			+ CONTEXT_NAME + " text not null, "
-			+ CONTEXT_GOOGLE_ID + " integer "
+			+ CONTEXT_GOOGLE_ID + " text "
 			+ ");";
 			db.execSQL(sql);
 
@@ -62,7 +63,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ BaseColumns._ID + " integer primary key autoincrement, "
 			+ PROJECT_NAME + " text not null, "
 			+ PROJECT_DESCRIPTION + " text, "
-			+ PROJECT_CONTEXTID + " integer, "
+			+ PROJECT_GOOGLE_ID + " text, "
+			+ PROJECT_CONTEXTID + " integer not null, "
 			+ "FOREIGN KEY(" + PROJECT_CONTEXTID + ") REFERENCES " + TABLE_CONTEXTS + "(id) "
 			+ ");";
 			db.execSQL(sql);
@@ -76,14 +78,15 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ TASK_DUEDATETIME + " datetime, "
 			+ TASK_PICTURE + " blob, "
 			+ TASK_LOCATION_LAT + " integer, "
-			+ TASK_LOCATION_LONG + " integer "
+			+ TASK_LOCATION_LONG + " integer, "
+			+ TASK_GOOGLE_ID + " text "
 			+ ");";
 			db.execSQL(sql);
 
 			sql = "create table " + TABLE_CONTEXTS_TASKS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, "
-			+ CONTEXT_ID + " integer, "
-			+ TASK_ID + " integer, "
+			+ CONTEXT_ID + " integer not null, "
+			+ TASK_ID + " integer not null, "
 			+ "FOREIGN KEY(" + CONTEXT_ID + ") REFERENCES " + TABLE_CONTEXTS + "(id), "
 			+ "FOREIGN KEY(" + TASK_ID + ") REFERENCES " + TABLE_TASKS + "(id) "
 			+ ");";
@@ -91,8 +94,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 			sql = "create table " + TABLE_PROJECTS_TASKS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, "
-			+ PROJECT_ID + " integer, "
-			+ TASK_ID + " integer, "
+			+ PROJECT_ID + " integer not null, "
+			+ TASK_ID + " integer not null, "
 			+ "FOREIGN KEY(" + PROJECT_ID + ") REFERENCES " + TABLE_PROJECTS + "(id), "
 			+ "FOREIGN KEY(" + TASK_ID + ") REFERENCES " + TABLE_TASKS + "(id) "
 			+ ");";

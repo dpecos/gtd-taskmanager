@@ -1,5 +1,6 @@
 package com.danielpecos.gtm.model;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,10 +13,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
+import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.beans.TaskContainer;
 import com.danielpecos.gtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.GoogleTasksClient;
@@ -122,7 +126,7 @@ public class TaskManager {
 
 		SharedPreferences settings = activity.getSharedPreferences(PREF, Activity.MODE_WORLD_READABLE);
 		String accountName = settings.getString("google_accountName", null);
-
+		
 		if (accountName == null) {
 			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
 		} else {
@@ -130,37 +134,58 @@ public class TaskManager {
 
 			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
 
+			boolean forceCreate = false;
+			
 			try {
-				String taskListId = null;
+				boolean elementUpdated = false;
+				String contextListId = null;
 				if (context.getGoogleId() != null) {
-					taskListId = context.getGoogleId();
-					if (!client.updateTaskList(taskListId, context.getName())) {
+					contextListId = context.getGoogleId();
+					elementUpdated = client.updateTaskList(contextListId, context.getName());
+					if (!elementUpdated) {
 						Log.e(TaskManager.TAG, "GTasks: Error updating context/taskList");
+						forceCreate = true;
 					}
-				} else {
-					taskListId = client.createTaskList(context.getName());
-					if (taskListId != null) {
-						context.setGoogleId(taskListId);
+				}
+				if (!elementUpdated) {
+					contextListId = client.createTaskList(context.getName());
+					if (contextListId != null) {
+						context.setGoogleId(contextListId);
 						context.store(activity.getBaseContext());
+					} else {
+						Log.e(TaskManager.TAG, "GTasks: Error creating context/taskList");
 					}
 				}
 				
-//				for (Project project : context.getProjects()) {
-//					String taskId = null;
-//					if (project.getGoogleId() != null) {
-//						taskId = project.getGoogleId();
-//						if (!client.updateTask(project.getName(), project.getDescription(), null, taskListId)) {
-//							Log.e(TaskManager.TAG, "GTasks: Error updating project/task");
-//						}
-//					} else {
-//						taskId = client.createTask(project.getName(), project.getDescription(), null, taskListId);
-//						if (taskId != null) {
-//							project.setGoogleId(taskId);
-//							project.store(activity.getBaseContext());
-//						}
-//					}
-//				}
-
+				String previousProjectId = null;
+				for (Project project : context.getProjects()) {
+					elementUpdated = false;
+					String projectId = null;
+					if (project.getGoogleId() != null && !forceCreate) {
+						projectId = project.getGoogleId();
+						elementUpdated = client.updateTask(contextListId, project.getGoogleId(), project.getName(), project.getDescription(), null, null);
+						if (!elementUpdated) {
+							Log.e(TaskManager.TAG, "GTasks: Error updating project/task");
+							forceCreate = true;
+						} else {
+							previousProjectId = projectId;
+						}
+					}
+					if (!elementUpdated) {
+						projectId = client.createTask(contextListId, null, previousProjectId, project.getName(), project.getDescription(), null, null);
+						previousProjectId = projectId;
+						if (projectId != null) {
+							project.setGoogleId(projectId);
+							project.store(activity.getBaseContext());
+						} else {
+							Log.e(TaskManager.TAG, "GTasks: Error creating project/task");
+						}
+					}
+					
+					exportTasks(activity, client, contextListId, project, null, forceCreate);
+				}
+				
+				exportTasks(activity, client, contextListId, context, previousProjectId, forceCreate);
 
 				return true;
 
@@ -171,7 +196,7 @@ public class TaskManager {
 					
 					if (statusCode == 400) {
 						Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
-						//TOAST
+						Toast.makeText(activity, R.string.gtasks_errorInRequest, Toast.LENGTH_SHORT);
 					} else {
 						Log.e(TaskManager.TAG, "GTasks: error in communication (maybe token has expired)", e);
 						ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.TRUE);	
@@ -184,6 +209,38 @@ public class TaskManager {
 
 		return false;
 
+	}
+
+	private void exportTasks(Activity activity, GoogleTasksClient client, String contextListId, TaskContainer parent, String previousId, boolean forceCreate) throws IOException {
+		String parentId = null;
+		if (parent instanceof Project) {
+			parentId = ((Project) parent).getGoogleId();
+		}
+		String previousTaskId = previousId;
+		
+		for (Task task : parent) {
+			boolean elementUpdated = false;
+			String taskId = null;
+			if (task.getGoogleId() != null && !forceCreate) {
+				taskId = task.getGoogleId();
+				elementUpdated = client.updateTask(contextListId, task.getGoogleId(), task.getName(), task.getDescription(), task.getDueDate(), task.getStatus());
+				if (!elementUpdated) {
+					Log.e(TaskManager.TAG, "GTasks: Error updating task");
+				} else {
+					previousTaskId = taskId;
+				}
+			}
+			if (!elementUpdated) {
+				taskId = client.createTask(contextListId, parentId, previousTaskId, task.getName(), task.getDescription(), task.getDueDate(), task.getStatus());
+				previousTaskId = taskId;
+				if (taskId != null) {
+					task.setGoogleId(taskId);
+					task.store(activity.getBaseContext());
+				} else {
+					Log.e(TaskManager.TAG, "GTasks: Error creating task");
+				}
+			}
+		}
 	}
 
 }

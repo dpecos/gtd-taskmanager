@@ -166,6 +166,9 @@ public final class R {
         public static final int error_deletingTask=0x7f050040;
         public static final int error_initializingCamera=0x7f050044;
         public static final int error_loadingData=0x7f05003d;
+        public static final int gtasks_errorInRequest=0x7f05004c;
+        public static final int gtasks_synchronizationFinished=0x7f05004e;
+        public static final int gtasks_synchronizing=0x7f05004d;
         public static final int no=0x7f050002;
         public static final int notification_msg=0x7f05004b;
         public static final int notification_title=0x7f05004a;

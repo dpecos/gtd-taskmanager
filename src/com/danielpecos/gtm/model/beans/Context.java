@@ -167,10 +167,11 @@ public class Context extends TaskContainer implements Persistable {
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
-		int i = 0;
-		this.id = cursor.getLong(i++);
-		this.name = cursor.getString(i++);
-		this.googleId = cursor.getString(i++);
+		this.id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+		this.name = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_NAME));
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_GOOGLE_ID))) {
+			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_GOOGLE_ID));
+		}
 
 		Cursor cursor_projects = null;
 		try {

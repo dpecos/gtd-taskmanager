@@ -15,6 +15,7 @@ public class Project extends TaskContainer implements Persistable {
 	long context_id;
 	String name;
 	String description;
+	String googleId;
 
 	Project(SQLiteDatabase db, Cursor cursor) {
 		this.load(db, cursor);
@@ -48,6 +49,14 @@ public class Project extends TaskContainer implements Persistable {
 		this.description = description;
 	}
 
+	public String getGoogleId() {
+		return googleId;
+	}
+
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
@@ -56,10 +65,11 @@ public class Project extends TaskContainer implements Persistable {
 		ContentValues values = new ContentValues();
 		values.put(GTDSQLHelper.PROJECT_NAME, this.name);
 		values.put(GTDSQLHelper.PROJECT_DESCRIPTION, this.description);
+		values.put(GTDSQLHelper.PROJECT_GOOGLE_ID, this.googleId);
 		values.put(GTDSQLHelper.PROJECT_CONTEXTID, this.context_id);
 
 		long result = 0;
-		
+
 		if (this.id == 0) {
 			// insert
 			this.id = db.insert(GTDSQLHelper.TABLE_PROJECTS, null, values);
@@ -79,7 +89,7 @@ public class Project extends TaskContainer implements Persistable {
 
 	@Override
 	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
-		
+
 		SQLiteDatabase db = null;
 
 		if (dbParent == null) {
@@ -90,7 +100,7 @@ public class Project extends TaskContainer implements Persistable {
 		}
 
 		boolean result = false;
-		
+
 		db.beginTransaction();
 		try {
 			if (this.id != 0) {
@@ -109,17 +119,21 @@ public class Project extends TaskContainer implements Persistable {
 				db.close();
 			}
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
-		int i = 0;
-		this.id = cursor.getLong(i++);
-		this.name = cursor.getString(i++);
-		this.description = cursor.getString(i++);
-		this.context_id = cursor.getLong(i++);
+		this.id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+		this.name = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_NAME));
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.PROJECT_DESCRIPTION))) {
+			this.description = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_DESCRIPTION));
+		}
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.PROJECT_GOOGLE_ID))) {
+			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_GOOGLE_ID));
+		}
+		this.context_id = cursor.getLong(cursor.getColumnIndex(GTDSQLHelper.PROJECT_CONTEXTID));
 		return true;
 	}
 

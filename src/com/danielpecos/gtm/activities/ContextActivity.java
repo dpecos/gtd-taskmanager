@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
@@ -33,6 +32,7 @@ import com.danielpecos.gtm.model.beans.Task;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
+import com.danielpecos.gtm.utils.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtm.views.ContextViewHolder;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 import com.danielpecos.gtm.views.TaskViewHolder;
@@ -306,27 +306,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				return true;
 			}
 			case R.id.context_contextMenu_synchronizeGTasks: {
-				// TODO: UI Start
-				final Handler handler = new Handler();
-				new Thread(new Runnable() {
-					public void run() {
-						if (taskManager.synchronizeGTasks(ContextActivity.this, context)) {
-							handler.post(new Runnable() {
-								@Override
-								public void run() {
-									// TODO: UI finished
-								}
-							});
-						} else {
-							handler.post(new Runnable() {
-								@Override
-								public void run() {
-									// TODO: UI error
-								}
-							});
-						}
-					}
-				}).run();
+				synchronizeGoogleTasks(context);
 				
 				return true;
 			}			
@@ -512,7 +492,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				Long contextId = data.getLongExtra("context_id", -1);
 				Context context = taskManager.getContext(contextId);
 							
-				taskManager.synchronizeGTasks(this, context);
+				synchronizeGoogleTasks(context);
 			}
 		}
 
@@ -561,5 +541,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		mItemPosition = itemView == null ? 0 : itemView.getTop();
 		state.putInt(ITEM_POSITION_KEY, mItemPosition);
 	}
-
+	
+	private void synchronizeGoogleTasks(final Context context) {
+		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context);
+		googleTasksClientAsyncTask.execute();
+	}
 }

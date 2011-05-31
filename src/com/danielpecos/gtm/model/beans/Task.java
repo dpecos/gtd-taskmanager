@@ -16,6 +16,8 @@ import com.danielpecos.gtm.model.persistence.Persistable;
 import com.google.android.maps.GeoPoint;
 
 public class Task implements Persistable, Cloneable {
+	private static SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public enum Type {
 		Normal, Web, Call_SMS, Email, Location 
 	}
@@ -35,13 +37,14 @@ public class Task implements Persistable, Cloneable {
 	GeoPoint location;
 	Type type;
 	byte[] picture;
+	String googleId;
 
 	Task() {
 		this.priority = Priority.Normal;
 		this.status = Status.Active;
 		this.type = Type.Normal;
 	}
-	
+
 	public Task(android.content.Context ctx, long task_id) {
 		this();
 		this.id = task_id;
@@ -115,14 +118,20 @@ public class Task implements Persistable, Cloneable {
 		this.location = location;
 	}
 
+	public String getGoogleId() {
+		return googleId;
+	}
+
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
 
 		long result = 0;
-
-		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		ContentValues values = new ContentValues();
 		values.put(GTDSQLHelper.TASK_NAME, this.name);
@@ -133,7 +142,8 @@ public class Task implements Persistable, Cloneable {
 		values.put(GTDSQLHelper.TASK_PICTURE, this.getPicture() != null ? this.getPicture() : null);
 		values.put(GTDSQLHelper.TASK_LOCATION_LAT, this.getLocation() != null ? this.getLocation().getLatitudeE6() : null);
 		values.put(GTDSQLHelper.TASK_LOCATION_LONG, this.getLocation() != null ? this.getLocation().getLongitudeE6() : null);
-		
+		values.put(GTDSQLHelper.TASK_GOOGLE_ID, this.googleId);
+
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 			result = this.id;
@@ -152,31 +162,38 @@ public class Task implements Persistable, Cloneable {
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
-		SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-		int i = 0;
-		this.id = cursor.getLong(i++);
-		this.name = cursor.getString(i++);
-		this.description = cursor.getString(i++);
-		this.status = Status.valueOf(cursor.getString(i++));
-		this.priority = Priority.valueOf(cursor.getString(i++));
-		try {
-			String date = cursor.getString(i++);
-			if (date != null && !date.equalsIgnoreCase("")) {
-				this.dueDate = iso8601Format.parse(date);
-			} else {
-				this.dueDate = null;
+		this.id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
+		this.name = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_NAME));
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_DESCRIPTION))) {
+			this.description = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_DESCRIPTION));
+		}
+		this.status = Status.valueOf(cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_STATUS)));
+		this.priority = Priority.valueOf(cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_PRIORITY)));
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_DUEDATETIME))) {
+			try {
+				String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_DUEDATETIME));
+				if (date != null && !date.equalsIgnoreCase("")) {
+					this.dueDate = iso8601Format.parse(date);
+				} else {
+					this.dueDate = null;
+				}
+			} catch (ParseException e) {
+				Log.e(TaskManager.TAG, e.getMessage(), e);
 			}
-		} catch (ParseException e) {
-			Log.e(TaskManager.TAG, e.getMessage());
 		}
-		this.picture = cursor.getBlob(i++);
-		
-//		int latitude = cursor.getInt(i++);
-//		int longitude = cursor.getInt(i++);
-		if (!cursor.isNull(i+1)) {
-			this.location = new GeoPoint(cursor.getInt(i++), cursor.getInt(i++));
+
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_PICTURE))) {
+			this.picture = cursor.getBlob(cursor.getColumnIndex(GTDSQLHelper.TASK_PICTURE));
 		}
+
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LAT))) {
+			this.location = new GeoPoint(cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LAT)), cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LONG)));
+		}
+
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID))) {
+			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID));
+		}
+
 		return true;
 	}
 
@@ -194,7 +211,7 @@ public class Task implements Persistable, Cloneable {
 			result = this.load(db, cursor);
 		}
 		cursor.close();
-		
+
 		db.close();
 
 		return result;

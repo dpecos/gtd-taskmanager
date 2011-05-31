@@ -100,4 +100,7 @@
 	<string name="settings_task_order_summary">Select a criteria to sort tasks\' lists</string>
 	<string name="notification_title">Task is about to expire</string>
 	<string name="notification_msg"> is about to expire</string>
+	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
+	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
+	<string name="gtasks_synchronizationFinished">Synchronization finished</string>
 </resources>

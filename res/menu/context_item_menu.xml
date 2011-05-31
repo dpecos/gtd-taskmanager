@@ -2,30 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item 
 		android:id="@+id/context_contextMenu_renameContext"
-    	android:title="@string/context_contextMenu_renameContext"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
+    	android:title="@string/context_contextMenu_renameContext"/>
 	<item 
 		android:id="@+id/context_contextMenu_deleteContext"
-    	android:title="@string/context_contextMenu_deleteContext"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
+    	android:title="@string/context_contextMenu_deleteContext"/>
 	<item 
 		android:id="@+id/context_contextMenu_deleteProject"
-    	android:title="@string/context_contextMenu_deleteProject"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>
+    	android:title="@string/context_contextMenu_deleteProject"/>
 	<item 
 		android:id="@+id/context_contextMenu_deleteTask"
-    	android:title="@string/context_contextMenu_deleteTask"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel"/>				
+    	android:title="@string/context_contextMenu_deleteTask"/>				
     <item 
 		android:id="@+id/context_contextMenu_addProject"
-    	android:title="@string/context_contextMenu_addProject"
-		android:icon="@android:drawable/ic_menu_add"/>
+    	android:title="@string/context_contextMenu_addProject"/>
     <item 
 		android:id="@+id/context_contextMenu_addTask"
-    	android:title="@string/context_contextMenu_addTask"
-		android:icon="@android:drawable/ic_menu_add"/>
+    	android:title="@string/context_contextMenu_addTask"/>
 	<item 
 		android:id="@+id/context_contextMenu_synchronizeGTasks"
-    	android:title="@string/context_contextMenu_synchronizeGTasks"
-		android:icon="@drawable/ic_menu_refresh"/>		
+    	android:title="@string/context_contextMenu_synchronizeGTasks"/>		
 </menu>
