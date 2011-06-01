@@ -10,22 +10,28 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.beans.Task.Status;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
 import com.danielpecos.gtm.utils.SimpleListAdapter;
@@ -60,24 +66,24 @@ public class ProjectActivity extends ListActivity {
 
 		setResult(RESULT_OK, getIntent());
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.project_activity_menu, menu);
+		inflater.inflate(R.menu.options_menu_project_activity, menu);
 		return true;
 	}
 
 
 	private void initializeUI() {
-		setContentView(R.layout.project_layout);
+		setContentView(R.layout.activity_layout_project);
 
 		this.setTitle(project.getName());
 
 		// PROJECT 
 		LayoutInflater mInflater = (LayoutInflater) getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-		View projectItemView = mInflater.inflate(R.layout.project_item, null);
+		View projectItemView = mInflater.inflate(R.layout.item_project, null);
 		projectItemView.setMinimumHeight(projectItemView.getMeasuredHeight() + 8);
 		projectItemView.setPadding(0, 6, 0, 0);
 
@@ -85,8 +91,8 @@ public class ProjectActivity extends ListActivity {
 		header.addView(projectItemView);
 
 		this.projectViewHolder = new ProjectViewHolder(projectItemView, project);
-//		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
-//		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
+		//		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
+		//		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
 
 		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
 		//findViewById(R.id.project_details).setVisibility(View.GONE);
@@ -124,13 +130,14 @@ public class ProjectActivity extends ListActivity {
 		SimpleListAdapter adapter = new SimpleListAdapter(
 				this,
 				itemsData, 
-				R.layout.task_item, 
+				R.layout.item_task, 
 				new String[] {"name", "description", "status_check"},
 				new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check},
 				new RowDisplayListener() {
 					@Override
 					public void onViewSetUp(View view, HashMap<String, Object> data) {
 						Task task = (Task)data.get("_BASE_");
+						view.findViewById(R.id.task_status_check).setClickable(false);
 						ViewHolder tvh = taskViewHolders.get(task.getId());
 						tvh.setView(view);
 						tvh.updateView(ProjectActivity.this);
@@ -139,6 +146,8 @@ public class ProjectActivity extends ListActivity {
 		);
 
 		this.setListAdapter(adapter);
+
+		this.registerForContextMenu(this.getListView());
 	}
 
 	@Override
@@ -187,8 +196,13 @@ public class ProjectActivity extends ListActivity {
 		super.onListItemClick(parent, view, position, id);
 
 		Task task = project.elementAt(position);
-		this.triggerViewHolder = this.taskViewHolders.get(task.getId());
-		ActivityUtils.showTaskActivity(this, this.context, this.project, task);
+		if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
+			((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
+
+			if (task.store(view.getContext()) < 0) {
+				Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 
 	@Override
@@ -207,8 +221,58 @@ public class ProjectActivity extends ListActivity {
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView(this);
 			}
+			projectViewHolder.updateView(this);
 		}
 
 		this.triggerViewHolder = null;
 	}
+
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.context_menu_task_item, menu);
+
+		menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
+		menu.setHeaderIcon(R.drawable.ic_menu_mark);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+		final Task task = project.elementAt(info.position);
+
+		switch (item.getItemId()) {
+		case R.id.context_contextMenu_deleteTask: {
+
+			ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_task).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (project.deleteTask(ProjectActivity.this, task)) {
+						initializeUI();
+						Toast.makeText(ProjectActivity.this, "Task \"" + task.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(ProjectActivity.this, R.string.error_deletingTask, Toast.LENGTH_SHORT).show();
+					}
+				}
+			}).show();
+			return true;
+		}
+
+		case R.id.context_contextMenu_editTask: {
+			this.triggerViewHolder = this.taskViewHolders.get(task.getId());
+			ActivityUtils.showTaskActivity(this, context, project, task);
+
+			return true;
+		}
+		}
+
+		return false;
+
+	}
+
+
 }

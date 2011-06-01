@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dip"
+    android:gravity="center"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:background="#ffdddddd">
+
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/app_name" 
+    		  android:layout_marginBottom="10dip" 
+    		  android:textSize="24dip"
+    		  android:textStyle="bold|italic">
+    </TextView>   
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/app_url" 
+    		  android:layout_marginBottom="20dip" 
+    		  android:textSize="16dip">
+    </TextView>     
+    <ImageView android:layout_height="wrap_content" 
+    		   android:layout_width="wrap_content" 
+    		   android:src="@drawable/logo">
+    </ImageView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/author" 
+    		  android:layout_marginBottom="20dip" 
+    		  android:layout_marginTop="20dip" 
+    		  android:textSize="20dip"
+    		  android:textStyle="bold">
+    </TextView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/author_email" 
+    		  android:textSize="16dip">
+    </TextView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/author_twitter" 
+    		  android:layout_marginTop="10dip"
+    		  android:textSize="16dip">
+    </TextView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/author_uned" 
+    		  android:layout_marginTop="10dip" 
+    		  android:textSize="16dip">
+    </TextView>
+</LinearLayout>

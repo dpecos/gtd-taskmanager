@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GTD Task Manager</string>
+    <string name="app_url">http://danielpecos.com/....</string>
+    
+    <string name="author">Daniel Pecos Martínez</string>
+    <string name="author_twitter">twitter: @danielpecos</string>  
+    <string name="author_email">contact@danielpecos.com</string>     
+    <string name="author_uned">mo10076</string>
+    
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="clear">Clear</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    
+   	<string-array name="task_priorities">
+		<item>Critical</item>
+		<item>Important</item>
+		<item>Normal</item>
+		<item>Low</item>
+	</string-array>
+    
     <color name="Task_PriorityLow">#ff53A656</color>
     <color name="Task_PriorityNormal">#ff6380D6</color>
     <color name="Task_PriorityImportant">#ffE0B528</color>
@@ -12,10 +29,9 @@
     <color name="Context_Item_Foreground">#ff23409E</color>
     <color name="Context_Item_Background">#ffC9C9C9</color>
     <color name="Project_Item_Background">#ffD3D8E8</color>
-    <!-- color name="task_info_label_foreground">#ff23409E</color-->
     <color name="task_info_label_background">#ffE8E8E8</color>
+    
     <string name="task_tab_details">Details</string>
-    <string name="task_tab_map">Map</string>
     <string name="task_tab_reminder">Reminder</string>
     <string name="task_description_label">Task description:</string>
     <string name="task_priority_label">Task priority:</string>
@@ -30,25 +46,22 @@
     <string name="task_duetime_button">Change Due time</string>
 	<string name="task_map_label">Task location:</string>    
 	<string name="task_map_button">Change location</string>
-	<string name="task_location_latitude_label">Latitud:</string>
-	<string name="task_location_longitud_label">Longitud:</string> 
+	<string name="task_location_latitude_label">Latitude:</string>
+	<string name="task_location_longitud_label">Longitude:</string> 
     <string name="task_save">Save</string>
     <string name="task_delete">Delete</string>
     <string name="task_revert">Revert changes</string>
     <string name="task_quit_title">Do you want to save changes?</string>
     <string name="task_quit_message">If you leave without saving, all changes applied to this task will be lost!</string>
-	<string name="textbox_title_name">Set task name</string>
-	<string name="textbox_label_name">Task name:</string>
-	<string name="textbox_title_description">Set task description</string>
-	<string name="textbox_label_description">Task description:</string>
-	<string name="textbox_cancel">Cancel</string>
-    <string name="textbox_ok">OK</string>
+        
     <string name="context_loadDemo_title">Load demo data?</string>
     <string name="context_loadDemo_message">You haven\'t created any context list. Do you want to load some demo data?</string>
+    
     <string name="context_optionsMenu_addContext">Add Context...</string>
     <string name="context_optionsMenu_reloadData">Reload data</string>
     <string name="context_optionsMenu_settings">Settings</string>
     <string name="context_optionsMenu_about">About</string>
+    
     <string name="context_contextMenu_contextTitle">Context actions</string>
     <string name="context_contextMenu_projectTitle">Project actions</string>
     <string name="context_contextMenu_taskTitle">Task actions</string>
@@ -57,9 +70,10 @@
 	<string name="context_contextMenu_deleteProject">Delete Project</string>
 	<string name="context_contextMenu_deleteTask">Delete Task</string>
 	<string name="context_contextMenu_editTask">Edit Task</string>
-    <string name="context_contextMenu_addProject">Add Project...</string>
-    <string name="context_contextMenu_addTask">Add Task...</string>
+    <string name="context_contextMenu_addProject">Add Project</string>
+    <string name="context_contextMenu_addTask">Add Task</string>
     <string name="context_contextMenu_synchronizeGTasks">Synchronize Google Tasks</string>
+    
     <string name="textbox_addContext_title">Create new Context</string>
     <string name="textbox_addContext_label">Context name:</string>
     <string name="textbox_renameContext_title">Rename Context</string>
@@ -72,6 +86,7 @@
     <string name="textbox_changeProjectDescription_label">Project description:</string>	    
     <string name="textbox_addTask_title">Set task name</string>
 	<string name="textbox_addTask_label">Task name:</string>
+	
 	<string name="error_loadingData">Error loading data</string>
 	<string name="error_deletingContext">Error deleting context</string>
 	<string name="error_deletingProject">Error deleting project</string>
@@ -80,14 +95,21 @@
 	<string name="error_creatingProject">Error creating project</string>
 	<string name="error_creatingTask">Error creating task</string>
 	<string name="error_initializingCamera">Error initializing camera app</string>
-	<string-array name="task_priorities">
-		<item>Critical</item>
-		<item>Important</item>
-		<item>Normal</item>
-		<item>Low</item>
-	</string-array>
+	
+	<string name="confirm_delete_context">Are you sure you want to delete this context?</string>
+	<string name="confirm_delete_project">Are you sure you want to delete this project?</string>
+	<string name="confirm_delete_task">Are you sure you want to delete this task?</string>
+
 	<string name="project_optionsMenu_renameProject">Rename Project</string>
 	<string name="project_optionsMenu_changeDescription">Change description</string>
+	
+	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
+	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
+	<string name="gtasks_synchronizationFinished">Synchronization finished</string>
+	
+	<string name="notification_title">Task is about to expire</string>
+	<string name="notification_msg"> is about to expire</string>
+	
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string-array name="settings_task_order_labels">
 		<item>Sort by priority</item>
@@ -99,9 +121,6 @@
 	</string-array>	
 	<string name="settings_task_order_default">priority</string>	
 	<string name="settings_task_order_summary">Select a criteria to sort tasks\' lists</string>
-	<string name="notification_title">Task is about to expire</string>
-	<string name="notification_msg"> is about to expire</string>
-	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
-	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
-	<string name="gtasks_synchronizationFinished">Synchronization finished</string>
+	
+	
 </resources>

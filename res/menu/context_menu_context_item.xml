@@ -6,12 +6,6 @@
 	<item 
 		android:id="@+id/context_contextMenu_deleteContext"
     	android:title="@string/context_contextMenu_deleteContext"/>
-	<item 
-		android:id="@+id/context_contextMenu_deleteProject"
-    	android:title="@string/context_contextMenu_deleteProject"/>
-	<item 
-		android:id="@+id/context_contextMenu_deleteTask"
-    	android:title="@string/context_contextMenu_deleteTask"/>				
     <item 
 		android:id="@+id/context_contextMenu_addProject"
     	android:title="@string/context_contextMenu_addProject"/>
@@ -21,7 +15,4 @@
 	<item 
 		android:id="@+id/context_contextMenu_synchronizeGTasks"
     	android:title="@string/context_contextMenu_synchronizeGTasks"/>		
-	<item 
-		android:id="@+id/context_contextMenu_editTask"
-    	android:title="@string/context_contextMenu_editTask"/>		    	
 </menu>

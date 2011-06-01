@@ -30,6 +30,7 @@ import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
+import com.danielpecos.gtm.model.beans.Task.Status;
 import com.danielpecos.gtm.utils.ActivityUtils;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
@@ -47,15 +48,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	private HashMap<Long, ContextViewHolder> contextViewHolders;
 	private HashMap<Long, ProjectViewHolder> projectViewHolders;
 	private HashMap<Long, TaskViewHolder> taskViewHolders;
-
-	private static final String LIST_STATE_KEY = "listState";
-	private static final String LIST_POSITION_KEY = "listPosition";
-	private static final String ITEM_POSITION_KEY = "itemPosition";
-
-	private Parcelable mListState = null;
-	private int mListPosition = 0;
-	private int mItemPosition = 0;
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +88,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.context_activity_menu, menu);
+		inflater.inflate(R.menu.options_menu_context_activity, menu);
 		return true;
 	}
 
@@ -116,7 +108,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							if (taskManager.createContext(ContextActivity.this, contextName) != null) {
 								initializeUI();
 							} else {
-								ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingContext);
+								Toast.makeText(ContextActivity.this, R.string.error_creatingContext, Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -130,6 +122,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			startActivity(i);
 			break;
 		case R.id.context_optionsMenu_about:
+			i = new Intent(this, AboutActivity.class);  
+			startActivity(i);
 			break;
 		}
 		return true;
@@ -140,34 +134,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.context_item_menu, menu);
 
 		int itemId = ((ExpandableListContextMenuInfo) menuInfo).targetView.getId();
 
 		if (itemId == R.id.context_item) {
+			inflater.inflate(R.menu.context_menu_context_item, menu);
 			menu.setHeaderTitle(R.string.context_contextMenu_contextTitle);
 			menu.setHeaderIcon(android.R.drawable.ic_menu_agenda);
-			menu.getItem(2).setVisible(false);
-			menu.getItem(3).setVisible(false);
-			menu.getItem(7).setVisible(false);
 		} if (itemId == R.id.project_item) {
+			inflater.inflate(R.menu.context_menu_project_item, menu);
 			menu.setHeaderTitle(R.string.context_contextMenu_projectTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_archive);
-			menu.getItem(0).setVisible(false);
-			menu.getItem(1).setVisible(false);
-			menu.getItem(3).setVisible(false);
-			menu.getItem(4).setVisible(false);
-			menu.getItem(6).setVisible(false);
-			menu.getItem(7).setVisible(false);
 		} else if (itemId == R.id.task_item) {
+			inflater.inflate(R.menu.context_menu_task_item, menu);
 			menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_mark);
-			menu.getItem(0).setVisible(false);
-			menu.getItem(1).setVisible(false);
-			menu.getItem(2).setVisible(false);
-			menu.getItem(4).setVisible(false);
-			menu.getItem(5).setVisible(false);
-			menu.getItem(6).setVisible(false);
 		}
 
 	}
@@ -188,27 +169,33 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			switch (item.getItemId()) {
 			case R.id.context_contextMenu_deleteProject: {
 				final Project project = (Project)child;
-				String projectName = project.getName();
-
-				if (context.deleteProject(ContextActivity.this, project)) {
-					initializeUI();
-					Toast.makeText(this, "Project \"" + projectName + "\" successfully deleted", Toast.LENGTH_SHORT).show();
-				} else {
-					ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingProject);
-				}
+				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_project).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (context.deleteProject(ContextActivity.this, project)) {
+							initializeUI();
+							Toast.makeText(ContextActivity.this, "Project \"" + project.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(ContextActivity.this, R.string.error_deletingProject, Toast.LENGTH_SHORT).show();
+						}
+					}
+				}).show();
 
 				return true;
 			}
 			case R.id.context_contextMenu_deleteTask: {
 				final Task task = (Task)child;
-				String taskName = task.getName();
-
-				if (context.deleteTask(ContextActivity.this, task)) {
-					initializeUI();
-					Toast.makeText(this, "Task \"" + taskName + "\" successfully deleted", Toast.LENGTH_SHORT).show();
-				} else {
-					ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingTask);
-				}
+				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_task).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (context.deleteTask(ContextActivity.this, task)) {
+							initializeUI();
+							Toast.makeText(ContextActivity.this, "Task \"" + task.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(ContextActivity.this, R.string.error_deletingTask, Toast.LENGTH_SHORT).show();
+						}
+					}
+				}).show();
 
 				return true;
 			}
@@ -228,7 +215,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 								if (project.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
 									initializeUI();
 								} else {
-									ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+									Toast.makeText(ContextActivity.this, R.string.error_creatingTask, Toast.LENGTH_SHORT).show();
 								}
 							}
 						});
@@ -236,10 +223,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			}
 			case R.id.context_contextMenu_editTask: {
 				final Task task = (Task)child;
-				
+
 				this.triggerViewHolder = this.taskViewHolders.get(task.getId());
 				ActivityUtils.showTaskActivity(this, context, null, task);
-				
+
 				return true;
 			}
 			}
@@ -247,6 +234,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			return false;
 
 		} else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+
 			int groupPos = ExpandableListView.getPackedPositionGroup(menuInfo.packedPosition); 
 
 			final Context context = taskManager.elementAt(groupPos);
@@ -269,13 +257,17 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				return true;
 			}
 			case R.id.context_contextMenu_deleteContext: {
-				String contextName = context.getName();
-				if (taskManager.deleteContext(ContextActivity.this, context)) {
-					initializeUI();
-					Toast.makeText(this, "Context \"" + contextName + "\" successfully deleted", Toast.LENGTH_SHORT).show();
-				} else {
-					ActivityUtils.showMessage(ContextActivity.this, R.string.error_deletingContext);
-				}
+				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_context).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (taskManager.deleteContext(ContextActivity.this, context)) {
+							initializeUI();
+							Toast.makeText(ContextActivity.this, "Context \"" + context.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(ContextActivity.this, R.string.error_deletingContext, Toast.LENGTH_SHORT).show();
+						}
+					}
+				}).show();
 				return true;
 			}
 			case R.id.context_contextMenu_addProject: {
@@ -291,7 +283,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 								if (context.createProject(ContextActivity.this, projectName, null) != null) {
 									initializeUI();
 								} else {
-									ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingProject);
+									Toast.makeText(ContextActivity.this, R.string.error_creatingProject, Toast.LENGTH_SHORT).show();
 								}
 							}
 						});
@@ -310,7 +302,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 								if (context.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
 									initializeUI();
 								} else {
-									ActivityUtils.showMessage(ContextActivity.this, R.string.error_creatingTask);
+									Toast.makeText(ContextActivity.this, R.string.error_creatingTask, Toast.LENGTH_SHORT).show();
 								}
 							}
 						});
@@ -329,7 +321,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	}
 
 	private void initializeUI() {
-		setContentView(R.layout.context_layout);
+		setContentView(R.layout.activity_layout_context);
 
 		ExpandableListView listView = this.getExpandableListView();
 
@@ -376,7 +368,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			this.setListAdapter(new ExpandableNestedMixedListAdapter(
 					this, 
 					groupData, 
-					R.layout.context_item, 
+					R.layout.item_context, 
 					new String[] {"name"}, 
 					new int[] {R.id.context_name}, 
 					new RowDisplayListener() {
@@ -390,7 +382,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					},
 
 					childrenData_projects, 
-					R.layout.project_item, 
+					R.layout.item_project, 
 					new String[] {"name", "description", "status_text", "status_icon"},
 					new int[] {R.id.project_name, R.id.project_description, R.id.project_status_text, R.id.project_status_icon},
 					new RowDisplayListener() {
@@ -404,22 +396,22 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					},
 
 					childrenData_tasks, 
-					R.layout.task_item, 
+					R.layout.item_task, 
 					new String[] {"name", "description", "status_check"},
 					new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check}, 
 					new RowDisplayListener() {
 						@Override
 						public void onViewSetUp(View view, HashMap<String, Object> data) {
 							Task task = (Task)data.get("_BASE_");
-							ViewHolder tvh = taskViewHolders.get(task.getId());
 							view.findViewById(R.id.task_status_check).setClickable(false);
+							ViewHolder tvh = taskViewHolders.get(task.getId());
 							tvh.setView(view);
 							tvh.updateView(ContextActivity.this);
 						}
 					}
 			));
 
-			listView.setSelectionFromTop(mListPosition, mItemPosition);
+			//			listView.setSelectionFromTop(mListPosition, mItemPosition);
 		}
 
 		this.registerForContextMenu(listView);
@@ -470,11 +462,12 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			ActivityUtils.showProjectActivity(this, ctx, project);
 		} else {
 			Task task = (Task) child;
-			
-			((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
+			if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
+				((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
 
-			if (task.store(view.getContext()) < 0) {
-				Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+				if (task.store(view.getContext()) < 0) {
+					Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 
@@ -515,51 +508,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		this.triggerViewHolder = null;
 	}
 
-	@Override
-	protected void onRestoreInstanceState(Bundle state) {
-		super.onRestoreInstanceState(state);
-
-		// Retrieve list state and list/item positions
-		mListState = state.getParcelable(LIST_STATE_KEY);
-		mListPosition = state.getInt(LIST_POSITION_KEY);
-		mItemPosition = state.getInt(ITEM_POSITION_KEY);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		// Load data from DB and put it onto the list
-		this.taskManager = TaskManager.getInstance(this);
-
-		// Restore list state and list/item positions
-		ExpandableListView listView = getExpandableListView();
-		if (mListState != null)
-			listView.onRestoreInstanceState(mListState);
-		listView.setSelectionFromTop(mListPosition, mItemPosition);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle state) {
-		super.onSaveInstanceState(state);
-
-		// Save list state
-		ExpandableListView listView = getExpandableListView();
-		mListState = listView.onSaveInstanceState();
-		state.putParcelable(LIST_STATE_KEY, mListState);
-
-		// Save position of first visible item
-		mListPosition = listView.getFirstVisiblePosition();
-		state.putInt(LIST_POSITION_KEY, mListPosition);
-
-		// Save scroll position of item
-		View itemView = listView.getChildAt(0);
-		mItemPosition = itemView == null ? 0 : itemView.getTop();
-		state.putInt(ITEM_POSITION_KEY, mItemPosition);
-	}
-
 	private void synchronizeGoogleTasks(final Context context) {
-		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context);
+		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context, this.contextViewHolders.get(context.getId()));
 		googleTasksClientAsyncTask.execute();
 	}
 }

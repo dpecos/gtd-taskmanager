@@ -91,7 +91,7 @@ public class TaskManager {
 			while (cursor.moveToNext()) {
 				Context c = new Context(db, cursor);
 				if (c.getId() < 0) {
-					ActivityUtils.showMessage(ctx, R.string.error_loadingData);
+					Toast.makeText(ctx, R.string.error_loadingData, Toast.LENGTH_SHORT).show();
 					return false;
 				} else {
 					this.contexts.put(c.getId(), c);

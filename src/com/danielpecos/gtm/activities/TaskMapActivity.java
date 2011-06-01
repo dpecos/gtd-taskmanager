@@ -39,7 +39,7 @@ public class TaskMapActivity extends MapActivity {
 		Long task_id = (Long)getIntent().getSerializableExtra("task_id");
 		this.task = new Task(this.getBaseContext(), task_id);
 
-		setContentView(R.layout.task_map);
+		setContentView(R.layout.activity_layout_task_map);
 
 		final MapView mapView = (MapView) findViewById(R.id.task_mapview);
 		mapView.setBuiltInZoomControls(true);

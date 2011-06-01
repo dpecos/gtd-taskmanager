@@ -1,7 +1,9 @@
 package com.danielpecos.gtm.utils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.util.Log;
@@ -59,7 +61,7 @@ public class ActivityUtils {
 		intent.putExtra("task_id", task.getId());
 		activity.startActivityForResult(intent, MAP_ACTIVITY);
 	} 
-	
+
 	public static void showGoogleAccountActivity(Activity activity, Context context, Boolean invalidate) {
 		Intent intent = new Intent(activity.getBaseContext(), GoogleAccountActivity.class);   
 		intent.putExtra("invalidate_token", invalidate);
@@ -79,7 +81,7 @@ public class ActivityUtils {
 		//textboxDialog.setOnDismissListener(listener);
 
 		LayoutInflater li = (LayoutInflater) context.getSystemService(android.content.Context.LAYOUT_INFLATER_SERVICE);
-		View dialogView = li.inflate(R.layout.textbox_dialog, null);
+		View dialogView = li.inflate(R.layout.dialog_textbox, null);
 		textboxDialog.setContentView(dialogView);
 
 		textboxDialog.show();
@@ -112,8 +114,20 @@ public class ActivityUtils {
 
 	}
 
-	public static void showMessage(android.content.Context ctx, int resId) {
-		Toast.makeText(ctx, resId, Toast.LENGTH_SHORT).show();
+	public static AlertDialog.Builder createConfirmDialog(android.content.Context context, int msgId) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(msgId)
+		.setCancelable(false)
+		.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.dismiss();
+			}
+		})
+		.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		return builder;
 	}
-
 }

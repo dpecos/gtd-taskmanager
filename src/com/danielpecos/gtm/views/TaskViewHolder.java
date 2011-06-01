@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -549,14 +550,7 @@ public class TaskViewHolder extends ViewHolder {
 					label.setTextColor(res.getColor(R.color.Task_PriorityDiscarded));
 				}
 
-				if (this.checkbox_taskStatus != null) 
-					this.checkbox_taskStatus.setEnabled(false);
-				if (this.spinner_taskPriority != null)
-					this.spinner_taskPriority.setEnabled(false);
-				if (this.button_changeDueDate != null)
-					this.button_changeDueDate.setEnabled(false);
-				if (this.button_changeDueTime != null)
-					this.button_changeDueTime.setEnabled(false);
+				setInterfaceEnabled(false);
 			} else {
 				switch(task.getPriority()) {
 				case Low: 
@@ -617,16 +611,7 @@ public class TaskViewHolder extends ViewHolder {
 					break;
 				}
 
-				if (this.checkbox_taskStatus != null) 
-					this.checkbox_taskStatus.setEnabled(true);
-				if (this.spinner_taskPriority != null)
-					this.spinner_taskPriority.setEnabled(true);
-				if (this.button_changeDueDate != null)
-					this.button_changeDueDate.setEnabled(true);
-				if (this.button_changeDueTime != null)
-					this.button_changeDueTime.setEnabled(true);
-				if (this.button_takePicture != null)
-					this.button_takePicture.setEnabled(true);
+				setInterfaceEnabled(true);
 			}
 
 			this.view.requestLayout();
@@ -635,6 +620,40 @@ public class TaskViewHolder extends ViewHolder {
 				this.setCallbacksEnabled(true);
 			}
 		}
+	}
+
+	private void setInterfaceEnabled(boolean enabled) {
+		if (this.checkbox_taskStatus != null) 
+			this.checkbox_taskStatus.setEnabled(enabled);
+		if (this.editText_taskName != null) {
+			this.editText_taskName.setEnabled(enabled);
+			this.editText_taskName.setInputType(enabled ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL);
+			this.editText_taskName.setCursorVisible(enabled); 
+		}
+		
+		if (this.editText_taskDescription != null) {
+			this.editText_taskDescription.setEnabled(enabled);
+			this.editText_taskDescription.setInputType(enabled ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL);
+			this.editText_taskDescription.setCursorVisible(enabled); 
+		}
+		if (this.button_taskDescriptionClear != null)
+			this.button_taskDescriptionClear.setEnabled(enabled);
+		
+		if (this.spinner_taskPriority != null)
+			this.spinner_taskPriority.setEnabled(enabled);
+		
+		if (this.button_takePicture != null) 
+			this.button_takePicture.setEnabled(enabled);
+		if (this.button_deletePicture != null) 
+			this.button_deletePicture.setEnabled(enabled && task.getPicture() != null);
+		
+		if (this.button_changeDueDate != null)
+			this.button_changeDueDate.setEnabled(enabled);
+		if (this.button_changeDueTime != null)
+			this.button_changeDueTime.setEnabled(enabled);
+		
+		if (this.button_changeMapPosition != null)
+			this.button_changeMapPosition.setEnabled(enabled);
 	}
 
 	private ImageView newTaskIcon(int drawableId) {

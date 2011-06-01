@@ -8,17 +8,20 @@ import android.widget.Toast;
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.model.beans.Context;
+import com.danielpecos.gtm.views.ContextViewHolder;
 
 public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boolean>{
 
 	private Activity activity;
 	private Context context;
+	private ContextViewHolder contextViewHolder;
 
 	ProgressDialog progressDialog;
 
-	public GoogleTasksClientAsyncTask(Activity activity, Context context) {
+	public GoogleTasksClientAsyncTask(Activity activity, Context context, ContextViewHolder contextViewHolder) {
 		this.activity = activity;
 		this.context = context;
+		this.contextViewHolder = contextViewHolder;
 	}
 
 	@Override
@@ -38,6 +41,9 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 	protected void onPostExecute(Boolean response) {
 		super.onPostExecute(response);
 		progressDialog.dismiss();
-		Toast.makeText(activity, activity.getString(R.string.gtasks_synchronizationFinished), Toast.LENGTH_SHORT).show();
+		if (response) {
+			Toast.makeText(activity, activity.getString(R.string.gtasks_synchronizationFinished), Toast.LENGTH_SHORT).show();
+		}
+		this.contextViewHolder.updateView(activity);
 	}
 }

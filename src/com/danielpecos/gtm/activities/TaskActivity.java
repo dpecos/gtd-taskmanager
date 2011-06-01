@@ -1,7 +1,5 @@
 package com.danielpecos.gtm.activities;
 
-import java.io.ByteArrayOutputStream;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -10,7 +8,6 @@ import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -36,11 +33,12 @@ public class TaskActivity extends TabActivity {
 	private TaskManager taskManager;
 	private Context context;
 	private Project project;
-	private static Task task;
+	
+	public static Task task;
 	private static Task originalTask;
 
-	private static TaskViewHolder taskInfoViewHolder;
-	private static TaskViewHolder taskReminderViewHolder;
+	public static TaskViewHolder taskInfoViewHolder;
+	public static TaskViewHolder taskReminderViewHolder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,7 @@ public class TaskActivity extends TabActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.task_activity_menu, menu);
+		inflater.inflate(R.menu.options_menu_task_activity, menu);
 		return true;
 	}
 
@@ -93,8 +91,10 @@ public class TaskActivity extends TabActivity {
 	}
 
 	private void initializeUI() {
-		setContentView(R.layout.task_layout);
+		setContentView(R.layout.activity_layout_task);
 
+		this.setTitle(task.getName());
+		
 		Resources res = getResources(); 
 		TabHost tabHost = getTabHost(); 
 		TabHost.TabSpec spec;  
@@ -122,73 +122,6 @@ public class TaskActivity extends TabActivity {
 			}
 		});
 
-	}
-
-	public static class TaskTabInfoActivity extends Activity {
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.task_tab_info);
-
-			taskInfoViewHolder = new TaskViewHolder(null, task);
-			taskInfoViewHolder.setView(findViewById(android.R.id.content));
-
-			/*taskInfoViewHolder.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
-					new OnCheckedChangeListener() {
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
-							originalTask.setStatus(task.getStatus());
-						}
-					}
-			});*/
-
-			taskInfoViewHolder.updateView(this);
-
-		}
-
-		@Override
-		public void onBackPressed() {
-			getParent().onBackPressed();
-		}
-
-		@Override
-		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-			switch (requestCode) {
-			case ActivityUtils.CAMERA_ACTIVITY:
-				if (resultCode == Activity.RESULT_OK) {
-
-					Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-					byte [] fileContent = baos.toByteArray();
-
-					task.setPicture(fileContent);
-					taskInfoViewHolder.updateView(this);
-					Log.d(TaskManager.TAG, "Picture read and viewHolder refreshed");
-
-				}
-			}
-		}
-	}
-
-	public static class TaskTabReminderActivity extends Activity {
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.task_tab_reminder);
-
-			taskReminderViewHolder = new TaskViewHolder(null, task);
-			taskReminderViewHolder.setView(findViewById(android.R.id.content));
-			taskReminderViewHolder.updateView(this);
-
-		}
-
-		@Override
-		public void onBackPressed() {
-			getParent().onBackPressed();
-		}
 	}
 
 	@Override
@@ -243,7 +176,7 @@ public class TaskActivity extends TabActivity {
 		this.setAlarm();
 		Intent resultIntent = new Intent();
 		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
-				&& task.getDescription().equalsIgnoreCase(originalTask.getDescription()) 
+				&& (task.getDescription() == null || task.getDescription().equalsIgnoreCase(originalTask.getDescription())) 
 				&& task.getPriority().equals(originalTask.getPriority())) {
 
 			Log.d(TaskManager.TAG, "TaskActivity: taskViewHolder refresh required");
