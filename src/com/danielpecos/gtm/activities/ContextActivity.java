@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
@@ -148,6 +149,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.setHeaderIcon(android.R.drawable.ic_menu_agenda);
 			menu.getItem(2).setVisible(false);
 			menu.getItem(3).setVisible(false);
+			menu.getItem(7).setVisible(false);
 		} if (itemId == R.id.project_item) {
 			menu.setHeaderTitle(R.string.context_contextMenu_projectTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_archive);
@@ -156,6 +158,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			menu.getItem(3).setVisible(false);
 			menu.getItem(4).setVisible(false);
 			menu.getItem(6).setVisible(false);
+			menu.getItem(7).setVisible(false);
 		} else if (itemId == R.id.task_item) {
 			menu.setHeaderTitle(R.string.context_contextMenu_taskTitle);
 			menu.setHeaderIcon(R.drawable.ic_menu_mark);
@@ -229,6 +232,14 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 								}
 							}
 						});
+				return true;
+			}
+			case R.id.context_contextMenu_editTask: {
+				final Task task = (Task)child;
+				
+				this.triggerViewHolder = this.taskViewHolders.get(task.getId());
+				ActivityUtils.showTaskActivity(this, context, null, task);
+				
 				return true;
 			}
 			}
@@ -307,7 +318,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			}
 			case R.id.context_contextMenu_synchronizeGTasks: {
 				synchronizeGoogleTasks(context);
-				
+
 				return true;
 			}			
 			}
@@ -401,6 +412,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						public void onViewSetUp(View view, HashMap<String, Object> data) {
 							Task task = (Task)data.get("_BASE_");
 							ViewHolder tvh = taskViewHolders.get(task.getId());
+							view.findViewById(R.id.task_status_check).setClickable(false);
 							tvh.setView(view);
 							tvh.updateView(ContextActivity.this);
 						}
@@ -453,13 +465,17 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		Object child = ctx.elementAt(childPosition);
 
 		if (child instanceof Project) {
-			long projectId = ((Project) child).getId();
-			this.triggerViewHolder = this.projectViewHolders.get(projectId);
-			ActivityUtils.showProjectActivity(this, ctx, ctx.getProject(projectId));
+			Project project = (Project) child;
+			this.triggerViewHolder = this.projectViewHolders.get(project.getId());
+			ActivityUtils.showProjectActivity(this, ctx, project);
 		} else {
-			long taskId = ((Task) child).getId();
-			this.triggerViewHolder = this.taskViewHolders.get(taskId);
-			ActivityUtils.showTaskActivity(this, ctx, null, ctx.getTask(taskId));
+			Task task = (Task) child;
+			
+			((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
+
+			if (task.store(view.getContext()) < 0) {
+				Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+			}
 		}
 
 		return result;
@@ -491,7 +507,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			if (resultCode == RESULT_OK) {
 				Long contextId = data.getLongExtra("context_id", -1);
 				Context context = taskManager.getContext(contextId);
-							
+
 				synchronizeGoogleTasks(context);
 			}
 		}
@@ -541,7 +557,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		mItemPosition = itemView == null ? 0 : itemView.getTop();
 		state.putInt(ITEM_POSITION_KEY, mItemPosition);
 	}
-	
+
 	private void synchronizeGoogleTasks(final Context context) {
 		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context);
 		googleTasksClientAsyncTask.execute();

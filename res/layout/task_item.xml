@@ -20,7 +20,8 @@
 		android:layout_centerInParent="true"
 		android:layout_toRightOf="@+id/task_priority"
 		android:paddingRight="5dip" 
-		android:focusable="false"/>
+		android:focusable="false"
+		android:clickable="true"/>
 	<TextView 
 		android:id="@+id/task_name" 
 		android:layout_height="wrap_content"

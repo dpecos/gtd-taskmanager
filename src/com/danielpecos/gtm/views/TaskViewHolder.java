@@ -10,7 +10,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,7 +32,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtm.R;
@@ -45,7 +43,7 @@ public class TaskViewHolder extends ViewHolder {
 
 	private LinearLayout layout_taskIcons_1;
 	private LinearLayout layout_taskIcons_2;
-	
+
 	private TextView textView_taskName;
 	private EditText editText_taskName;
 	private TextView textView_taskDescription;
@@ -62,7 +60,7 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDueTime;
 	private Button button_changeDueDate;
 	private Button button_changeDueTime;
-	
+
 	private TextView textView_locationLat;
 	private TextView textView_locationLong;
 	private Button button_changeMapPosition;
@@ -165,33 +163,15 @@ public class TaskViewHolder extends ViewHolder {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if (isCallbacksEnabled()) {
-						Task.Status previousStatus = task.getStatus();
 
-						boolean needToBeUpdated = false;
-						if (isChecked && (previousStatus == Task.Status.Completed || previousStatus == Task.Status.Discarded_Completed)) {
-							needToBeUpdated = false;
-						} else if (isChecked && (previousStatus == Task.Status.Completed || previousStatus == Task.Status.Discarded_Completed)) {
-							needToBeUpdated = false;
-						} else {
-							needToBeUpdated = true;
-						}
-
-						if (isChecked) {
-							if (task.getStatus() == Task.Status.Discarded) {
-								task.setStatus(Task.Status.Discarded_Completed);
-							} else {
-								task.setStatus(Task.Status.Completed);
-							}
-						} else {
-							if (task.getStatus() == Task.Status.Discarded_Completed) {
-								task.setStatus(Task.Status.Discarded);
-							} else {
-								task.setStatus(Task.Status.Active);
-							}
-						}
-
-						if (needToBeUpdated && task.store(view.getContext()) < 0) {
-							Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
+						if (task.getStatus() == Task.Status.Discarded) {
+							task.setStatus(Task.Status.Discarded_Completed);
+						} else if (task.getStatus() == Task.Status.Discarded_Completed) {
+							task.setStatus(Task.Status.Discarded);
+						} else if (task.getStatus() == Task.Status.Active) {
+							task.setStatus(Task.Status.Completed);
+						} else if (task.getStatus() == Task.Status.Completed) {
+							task.setStatus(Task.Status.Active);
 						}
 
 						if (viewListeners != null && viewListeners.get(R.id.task_status_check) != null) {
@@ -345,7 +325,7 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			});
 		}
-		
+
 		this.textView_locationLat = (TextView)getView(R.id.task_location_lat);
 		this.textView_locationLong = (TextView)getView(R.id.task_location_long);
 		this.button_changeMapPosition = (Button)getView(R.id.button_changeMapPosition);
@@ -357,7 +337,7 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			});
 		}
-		
+
 
 		this.button_takePicture = (Button)getView(R.id.task_take_picture);
 		if (this.button_takePicture != null) {
@@ -431,9 +411,14 @@ public class TaskViewHolder extends ViewHolder {
 			}
 
 			if (this.checkbox_taskStatus != null) {
-				this.checkbox_taskStatus.setChecked(task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
-
+				boolean callbacksEnabled = this.isCallbacksEnabled();
+				this.setCallbacksEnabled(false);
+				
+				boolean completed = (task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
+				this.checkbox_taskStatus.setChecked(completed);
 				this.checkbox_taskStatus.requestLayout();
+				
+				this.setCallbacksEnabled(callbacksEnabled);
 			}
 
 			if (this.spinner_taskPriority != null) {
@@ -461,9 +446,9 @@ public class TaskViewHolder extends ViewHolder {
 			if (this.layout_taskIcons_1 != null) {
 				this.layout_taskIcons_1.removeAllViews();
 				this.layout_taskIcons_2.removeAllViews();
-				
+
 				ArrayList<View> views = new ArrayList<View>();
-				
+
 				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
 					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm));
 				}
@@ -473,10 +458,10 @@ public class TaskViewHolder extends ViewHolder {
 				if (this.task.getLocation() != null) {
 					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on));
 				}
-				
+
 				if (views.size() > 0) {
 					this.layout_taskIcons_1.setVisibility(View.VISIBLE);
-					
+
 					if (views.size() <= 2) {
 						this.layout_taskIcons_2.setVisibility(View.GONE);
 					} else {
@@ -486,7 +471,7 @@ public class TaskViewHolder extends ViewHolder {
 					this.layout_taskIcons_1.setVisibility(View.GONE);
 					this.layout_taskIcons_2.setVisibility(View.GONE);
 				}
-				
+
 				for (int i=0; i<views.size(); i++) {
 					if (i < 2) {
 						this.layout_taskIcons_1.addView(views.get(i));
@@ -524,7 +509,7 @@ public class TaskViewHolder extends ViewHolder {
 				}
 
 			}
-			
+
 			if (this.textView_locationLat != null && this.textView_locationLong != null) {
 				if (task.getLocation() != null) {
 					this.textView_locationLat.setText("" + (task.getLocation().getLatitudeE6() / 1E6));
@@ -547,7 +532,7 @@ public class TaskViewHolder extends ViewHolder {
 				} else {
 					this.imageView_picture.setVisibility(View.GONE);
 				}
-				
+
 			}
 
 			if (task.getStatus() == Task.Status.Discarded || task.getStatus() == Task.Status.Discarded_Completed) {

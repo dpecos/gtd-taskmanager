@@ -20,7 +20,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.danielpecos.gtm.R;
 import com.danielpecos.gtm.model.TaskManager;
@@ -86,8 +85,8 @@ public class ProjectActivity extends ListActivity {
 		header.addView(projectItemView);
 
 		this.projectViewHolder = new ProjectViewHolder(projectItemView, project);
-		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
-		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
+//		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
+//		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
 
 		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
 		//findViewById(R.id.project_details).setVisibility(View.GONE);

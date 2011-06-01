@@ -16,8 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 
@@ -135,14 +133,14 @@ public class TaskActivity extends TabActivity {
 			taskInfoViewHolder = new TaskViewHolder(null, task);
 			taskInfoViewHolder.setView(findViewById(android.R.id.content));
 
-			taskInfoViewHolder.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
+			/*taskInfoViewHolder.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
 					new OnCheckedChangeListener() {
 						@Override
 						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
 							originalTask.setStatus(task.getStatus());
 						}
 					}
-			});
+			});*/
 
 			taskInfoViewHolder.updateView(this);
 

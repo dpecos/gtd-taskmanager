@@ -21,4 +21,7 @@
 	<item 
 		android:id="@+id/context_contextMenu_synchronizeGTasks"
     	android:title="@string/context_contextMenu_synchronizeGTasks"/>		
+	<item 
+		android:id="@+id/context_contextMenu_editTask"
+    	android:title="@string/context_contextMenu_editTask"/>		    	
 </menu>
