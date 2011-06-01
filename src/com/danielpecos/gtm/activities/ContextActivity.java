@@ -11,8 +11,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -48,6 +48,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	private HashMap<Long, ContextViewHolder> contextViewHolders;
 	private HashMap<Long, ProjectViewHolder> projectViewHolders;
 	private HashMap<Long, TaskViewHolder> taskViewHolders;
+
+	private HashMap<Long, Boolean> listViewStatus = new HashMap<Long, Boolean>();
+
+	private ExpandableNestedMixedListAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -235,7 +239,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		} else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
 
-			int groupPos = ExpandableListView.getPackedPositionGroup(menuInfo.packedPosition); 
+			final int groupPos = ExpandableListView.getPackedPositionGroup(menuInfo.packedPosition); 
 
 			final Context context = taskManager.elementAt(groupPos);
 
@@ -261,6 +265,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						if (taskManager.deleteContext(ContextActivity.this, context)) {
+							if (listViewStatus.containsKey(context.getId())) {
+								listViewStatus.remove(context.getId());
+							}
 							initializeUI();
 							Toast.makeText(ContextActivity.this, "Context \"" + context.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
 						} else {
@@ -320,6 +327,18 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		return false;
 	}
 
+	@Override
+	public void onGroupCollapse(int groupPosition) {
+		super.onGroupCollapse(groupPosition);
+		listViewStatus.put(taskManager.elementAt(groupPosition).getId(), false);
+	}
+
+	@Override
+	public void onGroupExpand(int groupPosition) {
+		super.onGroupExpand(groupPosition);
+		listViewStatus.put(taskManager.elementAt(groupPosition).getId(), true);
+	}
+
 	private void initializeUI() {
 		setContentView(R.layout.activity_layout_context);
 
@@ -365,7 +384,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				childrenData_tasks.add(contextChildData);
 			}
 
-			this.setListAdapter(new ExpandableNestedMixedListAdapter(
+			this.mAdapter = new ExpandableNestedMixedListAdapter(
 					this, 
 					groupData, 
 					R.layout.item_context, 
@@ -409,9 +428,21 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							tvh.updateView(ContextActivity.this);
 						}
 					}
-			));
+			);
+			this.setListAdapter(mAdapter);
 
-			//			listView.setSelectionFromTop(mListPosition, mItemPosition);
+			if (listViewStatus != null && listViewStatus.size() > 0) {
+				int i = 0;
+				for (Context c: contexts) {
+					if (listViewStatus.containsKey(c.getId())) {
+						if (listViewStatus.get(c.getId())) {
+							Log.d(TaskManager.TAG, "Expanding group " + i);
+							listView.expandGroup(i);
+						}
+					}
+					i++;
+				}
+			}
 		}
 
 		this.registerForContextMenu(listView);
