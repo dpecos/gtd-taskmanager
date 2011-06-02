@@ -10,6 +10,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.model.TaskManager;
 import com.danielpecos.gtm.utils.ActivityUtils;
 
 public class PreferencesActivity extends PreferenceActivity {
@@ -23,7 +24,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
 		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		Preference clearGooglePreferences = (Preference) findPreference("settings_clear_google");
+		final Preference clearGooglePreferences = (Preference) findPreference("settings_clear_google");
 		clearGooglePreferences.setEnabled(!preferences.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, "").equalsIgnoreCase(""));
 		
 		clearGooglePreferences.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -36,6 +37,8 @@ public class PreferencesActivity extends PreferenceActivity {
 						editor.remove(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME);
 						editor.remove(GoogleAccountActivity.GOOGLE_AUTH_TOKEN);
 						editor.commit();
+						
+						clearGooglePreferences.setEnabled(false);
 					}
 				}).show();
 
@@ -43,6 +46,12 @@ public class PreferencesActivity extends PreferenceActivity {
 			}
 
 		});
+		
+		// TODO: implement backup to file
+		if (true || !TaskManager.IS_FULL_VERSION) {
+			((Preference) findPreference("settings_backup_store")).setEnabled(false);
+			((Preference) findPreference("settings_backup_restore")).setEnabled(false);
+		}
 	}
 	
 	@Override

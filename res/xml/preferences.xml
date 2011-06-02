@@ -29,4 +29,19 @@
 	        android:key="settings_clear_google" />
 	        		
     </PreferenceCategory>
+    
+    	<PreferenceCategory
+        android:title="@string/settings_category_backup">
+        
+		<Preference
+	        android:title="@string/settings_backup_store_title"
+	        android:summary="@string/settings_backup_store_summary"
+	        android:key="settings_backup_store" />
+	        
+        <Preference
+	        android:title="@string/settings_backup_restore_title"
+	        android:summary="@string/settings_backup_restore_summary"
+	        android:key="settings_backup_restore" />
+	        		
+    </PreferenceCategory>
 </PreferenceScreen>

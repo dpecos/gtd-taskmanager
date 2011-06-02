@@ -113,6 +113,7 @@
 	
 	<string name="settings_category_general">General</string>
 	<string name="settings_category_synchronization">Synchronization</string>
+	<string name="settings_category_backup">Backup</string>
 	
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string name="settings_task_order_summary">Select a criteria to sort tasks\' lists</string>
@@ -140,5 +141,10 @@
     
     <string name="settings_clearGoogle_title">Clear Google Tasks account</string>  
     <string name="settings_clearGoogle_summary">Forget Google Tasks account preferences</string>    
+    
+    <string name="settings_backup_store_title">Backup data</string>
+    <string name="settings_backup_store_summary">Save a backup file</string>
+    <string name="settings_backup_restore_title">Restore data</string>
+    <string name="settings_backup_restore_summary">Load a backup file</string>
 	
 </resources>

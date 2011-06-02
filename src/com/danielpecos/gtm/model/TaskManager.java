@@ -29,6 +29,8 @@ import com.google.api.client.http.HttpResponseException;
 
 
 public class TaskManager {
+	public static final boolean IS_FULL_VERSION = false;
+	
 	public static final String TAG = "GTD-TaskManager";
 	private static TaskManager instance;
 	private static SharedPreferences preferences;

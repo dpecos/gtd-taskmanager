@@ -62,10 +62,15 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		setContentView(R.layout.activity_layout_context);
 
+		// Admob banner
 		AdView adView = (AdView)this.findViewById(R.id.adView);
-		AdRequest adRequest = new AdRequest();
-		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-		adView.loadAd(adRequest);
+		if (!TaskManager.IS_FULL_VERSION) {
+			AdRequest adRequest = new AdRequest();
+			adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+			adView.loadAd(adRequest);
+		} else {
+			adView.setVisibility(View.GONE);
+		}
 
 		//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");
 		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
