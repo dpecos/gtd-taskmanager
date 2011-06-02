@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.danielpecos.gtm" android:versionCode="20110602"
+	package="com.danielpecos.gtm" android:versionCode="2011060201"
 	android:versionName="0.9">
 	
 	<uses-sdk android:minSdkVersion="7" />
 
 	<uses-permission android:name="android.permission.INTERNET" />
+  	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	
@@ -33,6 +34,9 @@
 		<activity android:name=".activities.GoogleAccountActivity" />
 		
 		<activity android:name=".activities.AboutActivity" android:theme="@android:style/Theme.Light"/>
+		
+		 <activity android:name="com.google.ads.AdActivity"
+              android:configChanges="keyboard|keyboardHidden|orientation"/>
 		
 		<receiver android:name=".receivers.AlarmReceiver" android:process=":remote"/>
 		

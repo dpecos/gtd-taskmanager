@@ -23,6 +23,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
@@ -39,6 +40,9 @@ import com.danielpecos.gtm.views.ContextViewHolder;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 import com.google.android.maps.GeoPoint;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
@@ -57,6 +61,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_layout_context);
+		
+		AdView adView = (AdView)this.findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest();
+		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+	    adView.loadAd(adRequest);
 
 		//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");
 		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
@@ -341,7 +352,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	}
 
 	private void initializeUI() {
-		setContentView(R.layout.activity_layout_context);
 
 		ExpandableListView listView = this.getExpandableListView();
 

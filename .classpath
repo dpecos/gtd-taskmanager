@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="assets/jackson-core-asl-1.6.7.jar"/>
 	<classpathentry kind="lib" path="assets/google-collect-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="assets/google-base-extra.jar"/>
+	<classpathentry kind="lib" path="assets/GoogleAdMobAdsSdk-4.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

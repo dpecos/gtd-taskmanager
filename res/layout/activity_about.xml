@@ -15,6 +15,12 @@
     </TextView>   
     <TextView android:layout_width="wrap_content" 
     		  android:layout_height="wrap_content"    		  
+    		  android:id="@+id/app_version" 
+    		  android:layout_marginBottom="10dip"
+    		  android:textSize="16dip">
+    </TextView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
     		  android:text="@string/app_url" 
     		  android:layout_marginBottom="20dip" 
     		  android:textSize="12dip"
