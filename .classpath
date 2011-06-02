@@ -3,15 +3,15 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="assets/overlaymanager-1.0.1.jar"/>
-	<classpathentry kind="lib" path="assets/google-api-client-googleapis-extensions-android2-1.4.1-beta.jar"/>
-	<classpathentry kind="lib" path="assets/google-api-client-extensions-android2-1.4.1-beta.jar"/>
-	<classpathentry kind="lib" path="assets/google-api-services-tasks-v1-1.0.0-beta.jar"/>
-	<classpathentry kind="lib" path="assets/google-api-client-1.4.1-beta.jar"/>
-	<classpathentry kind="lib" path="assets/google-api-client-googleapis-1.4.1-beta.jar"/>
-	<classpathentry kind="lib" path="assets/jackson-core-asl-1.6.7.jar"/>
-	<classpathentry kind="lib" path="assets/google-collect-1.0-rc1.jar"/>
-	<classpathentry kind="lib" path="assets/google-base-extra.jar"/>
-	<classpathentry kind="lib" path="assets/GoogleAdMobAdsSdk-4.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-client-1.4.1-beta.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-client-extensions-android2-1.4.1-beta.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-client-googleapis-1.4.1-beta.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-client-googleapis-extensions-android2-1.4.1-beta.jar"/>
+	<classpathentry kind="lib" path="libs/google-api-services-tasks-v1-1.0.0-beta.jar"/>
+	<classpathentry kind="lib" path="libs/google-base-extra.jar"/>
+	<classpathentry kind="lib" path="libs/google-collect-1.0-rc1.jar"/>
+	<classpathentry kind="lib" path="libs/GoogleAdMobAdsSdk-4.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-core-asl-1.6.7.jar"/>
+	<classpathentry kind="lib" path="libs/overlaymanager-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
