@@ -182,8 +182,8 @@ public final class R {
         public static final int ok=0x7f05000a;
         public static final int project_optionsMenu_changeDescription=0x7f05004a;
         public static final int project_optionsMenu_renameProject=0x7f050049;
-        public static final int settings_task_order_default=0x7f050051;
-        public static final int settings_task_order_summary=0x7f050052;
+        public static final int settings_task_order_default=0x7f050052;
+        public static final int settings_task_order_summary=0x7f050051;
         public static final int settings_task_order_tittle=0x7f050050;
         public static final int task_delete=0x7f05001d;
         public static final int task_delete_picture=0x7f050014;

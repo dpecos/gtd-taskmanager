@@ -39,6 +39,7 @@ import com.danielpecos.gtm.views.ContextViewHolder;
 import com.danielpecos.gtm.views.ProjectViewHolder;
 import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
+import com.google.android.maps.GeoPoint;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
 	private TaskManager taskManager;
@@ -455,7 +456,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		// Test data 
 
 		Context ctx = this.taskManager.createContext(this, "Context 1");
-		Project prj = ctx.createProject(this, "Project 1.1", "Description de proyecto 1.1");
+		Project prj = ctx.createProject(this, "Project 1.1", "Project 1.1 description");
 		prj.createTask(this, "Task 1", "Task number 1.1.1", Task.Priority.Critical);
 		prj.createTask(this, "Task 2", "Task number 1.1.2", Task.Priority.Important);
 		prj.createTask(this, "Task 3", "Task number 1.1.3", Task.Priority.Low);
@@ -464,10 +465,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		ctx.createTask(this, "Task 1", "Task number 1.0.1", Task.Priority.Critical);
 		ctx.createTask(this, "Task 2", "Task number 1.0.2", Task.Priority.Important);
-		ctx.createTask(this, "Task 3", "Task number 1.0.3", Task.Priority.Normal);
+		ctx.createTask(this, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(0, 40000000));
 		ctx.createTask(this, "Task 4", "Task number 1.0.4", Task.Priority.Low);
 
-		prj = ctx.createProject(this, "Project 1.2", "Description de proyecto 1.2");
+		prj = ctx.createProject(this, "Project 1.2", "Project 1.2 description");
 		prj.createTask(this, "Task 1", "Task number 1.2.1", Task.Priority.Critical);
 		prj.createTask(this, "Task 2", "Task number 1.2.2", Task.Priority.Important);
 		prj.createTask(this, "Task 3", "Task number 1.2.3", Task.Priority.Low);

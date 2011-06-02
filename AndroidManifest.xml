@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.danielpecos.gtm" android:versionCode="1"
-	android:versionName="1.0">
+	package="com.danielpecos.gtm" android:versionCode="20110602"
+	android:versionName="0.9">
 	
 	<uses-sdk android:minSdkVersion="7" />
 
