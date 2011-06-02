@@ -23,7 +23,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
@@ -41,7 +40,6 @@ import com.danielpecos.gtm.views.ProjectViewHolder;
 import com.danielpecos.gtm.views.TaskViewHolder;
 import com.danielpecos.gtm.views.ViewHolder;
 import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.google.android.maps.GeoPoint;
 
@@ -61,13 +59,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.activity_layout_context);
-		
+
 		AdView adView = (AdView)this.findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest();
 		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-	    adView.loadAd(adRequest);
+		adView.loadAd(adRequest);
 
 		//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");
 		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
@@ -134,8 +132,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			initializeUI();
 			break;
 		case R.id.context_optionsMenu_preferences:
-			Intent i = new Intent(this, SettingsActivity.class);  
-			startActivity(i);
+			Intent i = new Intent(this, PreferencesActivity.class);  
+			startActivityForResult(i, ActivityUtils.PREFERENCES_ACTIVITY);
 			break;
 		case R.id.context_optionsMenu_about:
 			i = new Intent(this, AboutActivity.class);  
@@ -475,7 +473,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		ctx.createTask(this, "Task 1", "Task number 1.0.1", Task.Priority.Critical);
 		ctx.createTask(this, "Task 2", "Task number 1.0.2", Task.Priority.Important);
-		ctx.createTask(this, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(0, 40000000));
+		ctx.createTask(this, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(40000000, 0));
 		ctx.createTask(this, "Task 4", "Task number 1.0.4", Task.Priority.Low);
 
 		prj = ctx.createProject(this, "Project 1.2", "Project 1.2 description");
@@ -544,6 +542,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				Context context = taskManager.getContext(contextId);
 
 				synchronizeGoogleTasks(context);
+			}
+		} else if (requestCode == ActivityUtils.PREFERENCES_ACTIVITY) {
+			if (resultCode == RESULT_OK) {
+				this.initializeUI();
 			}
 		}
 

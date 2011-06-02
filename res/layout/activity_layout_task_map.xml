@@ -11,5 +11,9 @@
         android:clickable="true"
         android:apiKey="09hXJq6B7_Yso_2Ndsxl8qHsve3nVtk4gjqx9nw"
     />
-
+    
+    <!-- 
+    publish key "09hXJq6B7_Yso_2Ndsxl8qHsve3nVtk4gjqx9nw"
+    debug key "09hXJq6B7_YtxzREy53VmtcWam_c2mCTo8G2LlQ"
+    -->
 </RelativeLayout>

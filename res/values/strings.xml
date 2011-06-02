@@ -99,6 +99,7 @@
 	<string name="confirm_delete_context">Are you sure you want to delete this Context?</string>
 	<string name="confirm_delete_project">Are you sure you want to delete this Project?</string>
 	<string name="confirm_delete_task">Are you sure you want to delete this Task?</string>
+	<string name="confirm_clear_google">Are you sure you want to forget your current Google Tasks account preferences?</string>
 
 	<string name="project_optionsMenu_renameProject">Rename Project</string>
 	<string name="project_optionsMenu_changeDescription">Change description</string>
@@ -110,11 +111,14 @@
 	<string name="notification_title">Task is about to expire</string>
 	<string name="notification_msg"> is about to expire</string>
 	
+	<string name="settings_category_general">General</string>
+	<string name="settings_category_synchronization">Synchronization</string>
+	
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string name="settings_task_order_summary">Select a criteria to sort tasks\' lists</string>
 	<string-array name="settings_task_order_labels">
-		<item>Sort tasks by its priority</item>
-		<item>Sort tasks alphabetically</item>
+		<item>Sort by priority</item>
+		<item>Sort alphabetically</item>
 	</string-array>
 	<string-array name="settings_task_order_values">
 		<item>priority</item>
@@ -122,5 +126,19 @@
 	</string-array>	
 	<string name="settings_task_order_default">priority</string>	
 	
+    <string name="settings_map_type_title">Map view mode</string>
+    <string name="settings_map_type_summary">Choose which type of map to use</string>
+	<string-array name="settings_map_type_labels">
+        <item>Satellite</item>
+        <item>Traffic</item>
+    </string-array>
+    <string-array name="settings_map_type_values">
+        <item>type_satellite</item>
+        <item>type_traffic</item>
+    </string-array>
+    <string name="settings_map_type_default">type_satellite</string>
+    
+    <string name="settings_clearGoogle_title">Clear Google Tasks account</string>  
+    <string name="settings_clearGoogle_summary">Forget Google Tasks account preferences</string>    
 	
 </resources>

@@ -3,8 +3,10 @@ package com.danielpecos.gtm.activities;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -45,14 +47,13 @@ public class TaskMapActivity extends MapActivity {
 		mapView.setBuiltInZoomControls(true);
 		mapView.setHapticFeedbackEnabled(true);
 
-		//		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
-		//		String tipoMapa = p.getString("pref_tipo_mapa", null);
-		//		Log.i(TaskManager.TAG, "Mapa: Modo de mapa: " + tipoMapa);
-		//
-		//		Boolean tipoMapaSatelite = tipoMapa != null && tipoMapa.equalsIgnoreCase(this.getString(R.string.pref_default_tipo_mapa));
-		//		mapView.setSatellite(tipoMapaSatelite);
-		//		mapView.setTraffic(!tipoMapaSatelite);
+		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
+		String mapType = p.getString("settings_map_type", null);
+		Log.i(TaskManager.TAG, "Map type: " + mapType);
 
+		Boolean satelliteMapType = (mapType != null && mapType.equalsIgnoreCase(this.getString(R.string.settings_map_type_default)));
+		mapView.setSatellite(satelliteMapType);
+		mapView.setTraffic(!satelliteMapType);
 
 		int maxZoom = mapView.getMaxZoomLevel();
 		final int initZoom = maxZoom-5;

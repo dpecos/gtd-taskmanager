@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<ListPreference android:entries="@array/settings_task_order_labels"
-		android:entryValues="@array/settings_task_order_values"
-		android:defaultValue="@string/settings_task_order_default"
-		android:title="@string/settings_task_order_tittle" android:key="settings_task_order"
-		android:summary="@string/settings_task_order_summary"></ListPreference>
+	<PreferenceCategory
+        android:title="@string/settings_category_general">
+
+		<ListPreference 
+			android:key="settings_task_order"
+			android:entries="@array/settings_task_order_labels"
+			android:entryValues="@array/settings_task_order_values"
+			android:defaultValue="@string/settings_task_order_default"
+			android:title="@string/settings_task_order_tittle" 
+			android:summary="@string/settings_task_order_summary"/>
+		<ListPreference 
+			android:key="settings_map_type" 
+			android:entries="@array/settings_map_type_labels" 
+			android:entryValues="@array/settings_map_type_values" 
+			android:defaultValue="@string/settings_map_type_default"
+			android:title="@string/settings_map_type_title" 
+			android:summary="@string/settings_map_type_summary"/>
+			
+	</PreferenceCategory>
+	
+	<PreferenceCategory
+        android:title="@string/settings_category_synchronization">
+        
+		<Preference
+	        android:title="@string/settings_clearGoogle_title"
+	        android:summary="@string/settings_clearGoogle_summary"
+	        android:key="settings_clear_google" />
+	        		
+    </PreferenceCategory>
 </PreferenceScreen>

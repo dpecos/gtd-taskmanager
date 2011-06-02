@@ -32,6 +32,7 @@ public class ActivityUtils {
 	public static final int CAMERA_ACTIVITY = 2;
 	public static final int MAP_ACTIVITY = 3;
 	public static final int GOOGLE_ACCOUNT_ACTIVITY = 4;
+	public static final int PREFERENCES_ACTIVITY = 5;
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);

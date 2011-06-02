@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.danielpecos.gtm.R;
+import com.danielpecos.gtm.activities.GoogleAccountActivity;
 import com.danielpecos.gtm.model.beans.Context;
 import com.danielpecos.gtm.model.beans.Project;
 import com.danielpecos.gtm.model.beans.Task;
@@ -33,8 +34,6 @@ public class TaskManager {
 	private static SharedPreferences preferences;
 
 	HashMap<Long, Context> contexts;
-
-	private static final String PREF = "com.danielpecos.gtm_preferences";
 
 	public static TaskManager getInstance(android.content.Context ctx) {
 		if (instance == null) {
@@ -124,13 +123,13 @@ public class TaskManager {
 
 	public boolean synchronizeGTasks(Activity activity, Context context) {
 
-		SharedPreferences settings = activity.getSharedPreferences(PREF, Activity.MODE_WORLD_READABLE);
-		String accountName = settings.getString("google_accountName", null);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(activity);
+		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
 		
 		if (accountName == null) {
 			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
 		} else {
-			String authToken = settings.getString("google_authToken", null);
+			String authToken = settings.getString(GoogleAccountActivity.GOOGLE_AUTH_TOKEN, null);
 
 			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
 

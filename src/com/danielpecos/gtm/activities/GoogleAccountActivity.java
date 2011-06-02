@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.danielpecos.gtm.model.TaskManager;
@@ -32,11 +33,12 @@ import com.google.api.services.tasks.v1.Tasks;
  * http://code.google.com/p/google-api-java-client/wiki/AndroidAccountManager
  */
 public class GoogleAccountActivity extends Activity {
+	public static final String GOOGLE_AUTH_TOKEN = "google_authToken";
+	public static final String GOOGLE_ACCOUNT_NAME = "google_accountName";
+	
 	private static final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/tasks";
 	private static final int REQUEST_AUTHENTICATE = 0;
 	private static final int DIALOG_ACCOUNTS = 0;
-
-	private static final String PREF = "com.danielpecos.gtm_preferences";
 
 	// TODO(yanivi): save auth token in preferences
 	public String authToken;
@@ -80,12 +82,12 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void gotAccount(boolean tokenExpired) {
-		SharedPreferences settings = getSharedPreferences(PREF, 0);
-		String accountName = settings.getString("google_accountName", null);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		String accountName = settings.getString(GOOGLE_ACCOUNT_NAME, null);
 		Account account = accountManager.getAccountByName(accountName);
 		
 		if (account != null) {
-			authToken = settings.getString("google_authToken", null);
+			authToken = settings.getString(GOOGLE_AUTH_TOKEN, null);
 			
 			if (tokenExpired) {
 				Log.i(TaskManager.TAG, "GTasks: invalidating authToken: " + authToken);
@@ -99,9 +101,9 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void gotAccount(final Account account) {
-		SharedPreferences settings = getSharedPreferences(PREF, 0);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("google_accountName", account.name);
+		editor.putString(GOOGLE_ACCOUNT_NAME, account.name);
 		editor.commit();
 		accountManager.manager.getAuthToken(
 				account, AUTH_TOKEN_TYPE, true, new AccountManagerCallback<Bundle>() {
@@ -160,9 +162,9 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	private void onAuthToken() {
-		SharedPreferences settings = getSharedPreferences(PREF, 0);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("google_authToken", authToken);
+		editor.putString(GOOGLE_AUTH_TOKEN, authToken);
 		editor.commit();
 		
 		Intent resultIntent = new Intent();

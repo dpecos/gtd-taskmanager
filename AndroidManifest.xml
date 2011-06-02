@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.danielpecos.gtm" android:versionCode="2011060201"
-	android:versionName="0.9">
+	package="com.danielpecos.gtm" android:versionCode="2011060202"
+	android:versionName="0.91">
 	
 	<uses-sdk android:minSdkVersion="7" />
 
@@ -29,7 +29,7 @@
 		<activity android:name=".activities.TaskTabReminderActivity" />
         <activity android:name=".activities.TaskMapActivity" /> 
 
-		<activity android:name=".activities.SettingsActivity" />
+		<activity android:name=".activities.PreferencesActivity" />
 		
 		<activity android:name=".activities.GoogleAccountActivity" />
 		

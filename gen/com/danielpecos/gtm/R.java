@@ -9,6 +9,8 @@ package com.danielpecos.gtm;
 
 public final class R {
     public static final class array {
+        public static final int settings_map_type_labels=0x7f070003;
+        public static final int settings_map_type_values=0x7f070004;
         public static final int settings_task_order_labels=0x7f070001;
         public static final int settings_task_order_values=0x7f070002;
         public static final int task_priorities=0x7f070000;
@@ -173,6 +175,7 @@ containing a value of this type.
         public static final int author_uned=0x7f060005;
         public static final int cancel=0x7f060009;
         public static final int clear=0x7f060008;
+        public static final int confirm_clear_google=0x7f060049;
         public static final int confirm_delete_context=0x7f060046;
         public static final int confirm_delete_project=0x7f060047;
         public static final int confirm_delete_task=0x7f060048;
@@ -201,18 +204,25 @@ containing a value of this type.
         public static final int error_deletingTask=0x7f060041;
         public static final int error_initializingCamera=0x7f060045;
         public static final int error_loadingData=0x7f06003e;
-        public static final int gtasks_errorInRequest=0x7f06004b;
-        public static final int gtasks_synchronizationFinished=0x7f06004d;
-        public static final int gtasks_synchronizing=0x7f06004c;
+        public static final int gtasks_errorInRequest=0x7f06004c;
+        public static final int gtasks_synchronizationFinished=0x7f06004e;
+        public static final int gtasks_synchronizing=0x7f06004d;
         public static final int no=0x7f060007;
-        public static final int notification_msg=0x7f06004f;
-        public static final int notification_title=0x7f06004e;
+        public static final int notification_msg=0x7f060050;
+        public static final int notification_title=0x7f06004f;
         public static final int ok=0x7f06000a;
-        public static final int project_optionsMenu_changeDescription=0x7f06004a;
-        public static final int project_optionsMenu_renameProject=0x7f060049;
-        public static final int settings_task_order_default=0x7f060052;
-        public static final int settings_task_order_summary=0x7f060051;
-        public static final int settings_task_order_tittle=0x7f060050;
+        public static final int project_optionsMenu_changeDescription=0x7f06004b;
+        public static final int project_optionsMenu_renameProject=0x7f06004a;
+        public static final int settings_category_general=0x7f060051;
+        public static final int settings_category_synchronization=0x7f060052;
+        public static final int settings_clearGoogle_summary=0x7f06005a;
+        public static final int settings_clearGoogle_title=0x7f060059;
+        public static final int settings_map_type_default=0x7f060058;
+        public static final int settings_map_type_summary=0x7f060057;
+        public static final int settings_map_type_title=0x7f060056;
+        public static final int settings_task_order_default=0x7f060055;
+        public static final int settings_task_order_summary=0x7f060054;
+        public static final int settings_task_order_tittle=0x7f060053;
         public static final int task_delete=0x7f06001d;
         public static final int task_delete_picture=0x7f060014;
         public static final int task_description_label=0x7f06000d;

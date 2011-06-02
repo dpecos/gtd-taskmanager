@@ -40,6 +40,12 @@
     </TextView>
     <TextView android:layout_width="wrap_content" 
     		  android:layout_height="wrap_content"    		  
+    		  android:text="@string/author_uned" 
+    		  android:layout_marginBottom="10dip" 
+    		  android:textSize="16dip">
+    </TextView>
+    <TextView android:layout_width="wrap_content" 
+    		  android:layout_height="wrap_content"    		  
     		  android:text="@string/author_email" 
     		  android:textSize="16dip"
     		  android:autoLink="all">
@@ -48,12 +54,6 @@
     		  android:layout_height="wrap_content"    		  
     		  android:text="@string/author_twitter" 
     		  android:layout_marginTop="10dip"
-    		  android:textSize="16dip">
-    </TextView>
-    <TextView android:layout_width="wrap_content" 
-    		  android:layout_height="wrap_content"    		  
-    		  android:text="@string/author_uned" 
-    		  android:layout_marginTop="10dip" 
     		  android:textSize="16dip">
     </TextView>
 </LinearLayout>
