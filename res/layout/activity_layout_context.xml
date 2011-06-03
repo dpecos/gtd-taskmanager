@@ -16,7 +16,7 @@
 		android:layout_marginBottom="50dip"/>
 		
 	<com.google.ads.AdView android:id="@+id/adView"
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		ads:adUnitId="a14de7b42f9cffd"
 		ads:adSize="BANNER" 

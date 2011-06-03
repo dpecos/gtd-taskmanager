@@ -19,6 +19,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -33,8 +35,8 @@ import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter;
-import com.danielpecos.gtdtm.utils.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
+import com.danielpecos.gtdtm.utils.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
 import com.danielpecos.gtdtm.views.ProjectViewHolder;
 import com.danielpecos.gtdtm.views.TaskViewHolder;
@@ -65,11 +67,19 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		// Admob banner
 		AdView adView = (AdView)this.findViewById(R.id.adView);
 		if (!TaskManager.isFullVersion(this)) {
+			Log.i(TaskManager.TAG, "Launching ad request");
 			AdRequest adRequest = new AdRequest();
 			adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
 			adView.loadAd(adRequest);
 		} else {
+			Log.i(TaskManager.TAG, "Hiding banner in FULL version");
 			adView.setVisibility(View.GONE);
+			
+			// remove previous sibling bottom margin
+			ExpandableListView list = ((ExpandableListView)findViewById(android.R.id.list));
+			final ViewGroup.MarginLayoutParams lpt =(MarginLayoutParams)list.getLayoutParams();
+			lpt.setMargins(lpt.leftMargin,lpt.topMargin,lpt.rightMargin,0);
+			list.setLayoutParams(lpt);
 		}
 
 		//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");

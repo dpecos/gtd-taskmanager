@@ -25,7 +25,7 @@
 
 		<activity android:name=".activities.ProjectActivity" />
 
-		<activity android:name=".activities.TaskActivity" />
+		<activity android:name=".activities.TaskActivity" android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.TaskMapActivity" /> 
 
 		<activity android:name=".activities.PreferencesActivity" />

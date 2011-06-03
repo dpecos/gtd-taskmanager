@@ -230,7 +230,7 @@ public class TaskViewHolder extends ViewHolder {
 			});
 		}
 
-		this.toggleButton_taskDiscarded = (ToggleButton)getView(R.id.task_status_discarded);
+		this.toggleButton_taskDiscarded = (ToggleButton)getView(R.id.task_status_toggle);
 		if (this.toggleButton_taskDiscarded != null) {
 			this.toggleButton_taskDiscarded.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
