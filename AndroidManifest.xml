@@ -26,8 +26,6 @@
 		<activity android:name=".activities.ProjectActivity" />
 
 		<activity android:name=".activities.TaskActivity" />
-		<activity android:name=".activities.TaskTabInfoActivity" />
-		<activity android:name=".activities.TaskTabReminderActivity" />
         <activity android:name=".activities.TaskMapActivity" /> 
 
 		<activity android:name=".activities.PreferencesActivity" />

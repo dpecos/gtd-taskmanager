@@ -4,7 +4,8 @@
 	android:id="@+id/project_item"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:background="@color/Project_Item_Background">
+	android:background="@color/Project_Item_Background"
+	android:paddingRight="5dip">
 	<TextView 
 		android:id="@+id/project_name"
 		android:layout_height="wrap_content"

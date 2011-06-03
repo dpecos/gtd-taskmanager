@@ -12,6 +12,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="clear">Clear</string>
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     
@@ -30,6 +31,7 @@
     <color name="Context_Item_Foreground">#ff23409E</color>
     <color name="Context_Item_Background">#ffC9C9C9</color>
     <color name="Project_Item_Background">#ffD3D8E8</color>
+    <color name="Task_Layout_Actions_Background">#ffCCCCCC</color>
     <color name="task_info_label_background">#ffE8E8E8</color>
     
     <string name="task_tab_details">Details</string>

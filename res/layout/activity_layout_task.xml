@@ -1,19 +1,318 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/tabhost"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/task_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-        <TabWidget
-            android:id="@android:id/tabs"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-        <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </LinearLayout>
-</TabHost>
+
+	<RelativeLayout 
+		android:id="@+id/task_header"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:paddingTop="5dip"
+		android:paddingBottom="3dip"
+		android:paddingRight="3dip"
+		android:gravity="center_vertical"
+		android:background="@color/Task_Layout_Actions_Background"
+		>
+		<TextView 
+			android:id="@+id/task_priority" 
+			android:layout_height="50dip"
+			android:layout_width="7dip" 
+			android:layout_alignParentLeft="true" 
+	        android:layout_marginLeft="1dip"
+	        android:layout_marginRight="3dip" />
+		<CheckBox
+			android:id="@+id/task_status_check"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"  
+			android:layout_toRightOf="@+id/task_priority"
+			android:paddingRight="5dip" 
+			android:focusable="false"/>
+		<EditText 
+			android:id="@+id/task_name_text" 
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent" 
+			android:layout_toRightOf="@+id/task_status_check"
+	        android:textStyle="bold" 
+	        android:layout_marginTop="5dip"
+	        android:maxLines="1"
+	        android:text="" />
+	</RelativeLayout>
+
+
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:layout_below="@+id/task_header"
+		android:layout_marginBottom="50dip"
+		>
+		
+		<LinearLayout
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent"
+			android:orientation="vertical"
+			android:background="#ffffffff">
+			
+			<TextView 
+				android:id="@+id/task_description_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+				android:padding="5dip"
+		        android:layout_marginBottom="5dip" 
+		        android:background="@color/task_info_label_background"  
+		        android:textStyle="bold" 
+		        android:text="@string/task_description_label"/>
+			
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:orientation="horizontal"
+				android:paddingRight="10dip"
+				android:paddingLeft="10dip" >
+				<Button
+					android:id="@+id/task_description_clear"
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:layout_gravity="left"
+					android:layout_marginRight="5dip"
+					android:layout_centerVertical="true"
+					android:text="@string/clear"/>
+				<EditText 
+					android:id="@+id/task_description_text"
+					android:layout_height="fill_parent"
+					android:layout_width="fill_parent"
+					android:layout_gravity="right" 
+					android:minLines="3"
+					/>
+			</LinearLayout>
+			
+			<TextView 
+				android:id="@+id/task_priority_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+				android:padding="5dip"
+		        android:background="@color/task_info_label_background"  
+		        android:layout_marginTop="10dip"          
+		        android:layout_marginBottom="5dip"  
+		        android:textStyle="bold" 
+		        android:text="@string/task_priority_label"/>
+		
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:orientation="horizontal"
+				android:paddingRight="10dip"
+				android:paddingLeft="10dip" >
+				<TextView 
+					android:id="@+id/task_priority_big" 
+					android:layout_height="25dip"
+					android:layout_width="25dip" 
+					android:layout_alignParentLeft="true" 
+					android:layout_centerVertical="true"
+			        android:layout_marginRight="5dip" />	
+			        
+				<Spinner 
+					android:id="@+id/task_priority_spinner"
+					android:layout_height="wrap_content"
+				    android:layout_width="fill_parent"
+				    android:layout_centerHorizontal="true"
+					/>
+			</LinearLayout>                  
+			
+			<TextView 
+				android:id="@+id/task_status_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+		        android:background="@color/task_info_label_background"    
+		        android:padding="5dip"
+		        android:layout_marginTop="10dip"          
+		        android:layout_marginBottom="5dip"  
+		        android:textStyle="bold" 
+		        android:text="@string/task_status_label"/> 
+			
+			<ToggleButton 
+				android:id="@+id/task_status_discarded"
+				android:layout_height="wrap_content"
+				android:text="ToggleButton"
+				android:textOn="@string/task_status_active"
+				android:textOff="@string/task_status_discarded"
+				android:layout_width="120dip" 
+				android:layout_gravity="center|center_vertical" />     
+				
+			<TextView 
+				android:id="@+id/task_picture_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+		        android:background="@color/task_info_label_background"    
+		        android:padding="5dip"
+		        android:layout_marginTop="10dip"          
+		        android:layout_marginBottom="5dip"  
+		        android:textStyle="bold" 
+		        android:text="@string/task_picture_label"/> 
+			
+			<ImageView
+				android:id="@+id/task_picture" 
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center|center_vertical"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip"/>
+						
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"	
+				android:orientation="horizontal"
+				android:weightSum="2"
+				android:paddingLeft="10dip"
+				android:paddingRight="10dip">
+				<Button 
+					android:id="@+id/task_take_picture"
+					android:layout_height="wrap_content"
+					android:text="@string/task_take_picture"
+					android:layout_width="120dip" 
+					android:drawableTop="@+android:drawable/ic_menu_camera"
+					android:layout_weight="1"/>
+					
+				<Button 
+					android:id="@+id/task_delete_picture"
+					android:layout_height="wrap_content"
+					android:text="@string/task_delete_picture"
+					android:layout_width="120dip" 
+					android:drawableTop="@+android:drawable/ic_menu_delete"
+					android:layout_weight="1"/>
+			</LinearLayout>  		
+				
+			<TextView 
+				android:id="@+id/task_duedate_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+		        android:background="@color/task_info_label_background"
+		        android:padding="10dip"
+		        android:layout_marginTop="10dip"          
+		        android:layout_marginBottom="5dip"   
+		        android:textStyle="bold"     
+		        android:text="@string/task_duedate_label"/> 
+			
+			<RelativeLayout 	
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:paddingRight="10dip">
+				<TextView 
+					android:id="@+id/task_duedate"
+			        android:layout_width="110dip"
+			        android:layout_height="wrap_content"
+			        android:padding="10dip"
+			        android:textColor="#ff000000" 
+			        android:text="-" />
+		
+				<TextView 
+					android:id="@+id/task_duetime"
+			        android:layout_width="110dip"
+			        android:layout_height="wrap_content"
+			        android:padding="10dip"
+					android:layout_below="@+id/task_duedate"	    
+			        android:textColor="#ff000000" 
+			        android:text="-" />   
+		       		        
+			    <Button
+			    	android:id="@+id/button_changeDueDate"
+			    	android:layout_width="90dip"
+					android:layout_height="wrap_content"   
+					android:layout_toLeftOf="@+id/button_changeDueTime"
+			    	android:text="@string/task_duedate_button"
+			    	android:drawableTop="@+android:drawable/ic_menu_month"/>
+			    	
+		    	<Button
+			    	android:id="@+id/button_changeDueTime"
+			    	android:layout_width="90dip"
+					android:layout_height="wrap_content"   
+					android:layout_alignParentRight="true"
+			    	android:text="@string/task_duetime_button"
+			    	android:drawableTop="@+android:drawable/ic_menu_recent_history"/>
+		    </RelativeLayout>
+		        
+		    <TextView 
+				android:id="@+id/task_duetime_label"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent" 
+		        android:drawableTop="@color/task_info_label_background"
+		        android:padding="10dip"
+		        android:layout_marginTop="10dip"          
+		        android:layout_marginBottom="5dip"     
+		        android:textStyle="bold"     
+		        android:text="@string/task_map_label"/> 
+		  
+		    
+		    <RelativeLayout 	
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:paddingRight="10dip">
+				<TextView
+					android:id="@+id/task_location_lat_label"
+			        android:layout_width="90dip"
+			        android:layout_height="wrap_content"
+			        android:padding="10dip"
+			        android:text="@string/task_location_latitude_label"/>
+				<TextView 
+					android:id="@+id/task_location_lat"
+			        android:layout_width="110dip"
+			        android:layout_height="wrap_content"
+			        android:layout_toRightOf="@+id/task_location_lat_label"
+			        android:padding="10dip"
+			        android:textColor="#ff000000" 
+			        android:text="-" />
+				<TextView
+					android:id="@+id/task_location_long_label"
+			        android:layout_width="90dip"
+			        android:layout_height="wrap_content"
+			        android:layout_below="@+id/task_location_lat_label"
+			        android:padding="10dip"
+			        android:text="@string/task_location_longitud_label"/>	        
+			    <TextView 
+					android:id="@+id/task_location_long"
+			        android:layout_width="110dip"
+			        android:layout_height="wrap_content"
+			        android:layout_below="@+id/task_location_lat"
+			        android:layout_toRightOf="@+id/task_location_long_label"
+			        android:padding="10dip"
+			        android:textColor="#ff000000" 
+			        android:text="-" />
+			    <Button
+			    	android:id="@+id/button_changeMapPosition"
+			    	android:layout_width="wrap_content"
+					android:layout_height="wrap_content"   
+			    	android:layout_alignParentRight="true"
+			    	android:text="@string/task_map_button"
+			    	android:drawableTop="@drawable/ic_menu_mapmode"
+			    	android:layout_gravity="center_vertical"/> 
+		  	  </RelativeLayout>				
+						          
+		</LinearLayout>
+	
+	</ScrollView>    
+    
+    <LinearLayout 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:paddingTop="3dip"
+		android:orientation="horizontal"
+		android:background="@color/Task_Layout_Actions_Background"
+		android:weightSum="2">
+		<Button 
+			android:id="@+id/button_save" 
+			android:layout_width="0dp"
+			android:layout_height="wrap_content" 
+			android:text="@string/save" 
+			android:layout_weight="1"/>					
+		<Button 
+			android:id="@+id/button_cancel" 
+			android:layout_width="0dp"
+			android:layout_height="wrap_content" 
+			android:text="@string/cancel" 
+			android:layout_weight="1"/>
+	</LinearLayout>
+</RelativeLayout>

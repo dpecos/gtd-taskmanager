@@ -1,20 +1,22 @@
 package com.danielpecos.gtdtm.activities;
 
+import java.io.ByteArrayOutputStream;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
@@ -26,19 +28,18 @@ import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.views.TaskViewHolder;
 import com.google.android.maps.GeoPoint;
 
-public class TaskActivity extends TabActivity {
+public class TaskActivity extends Activity {
 	public static final String FULL_RELOAD = "full_reload";
 	public static final String FILE_NAME = "file_name";
 
 	private TaskManager taskManager;
 	private Context context;
 	private Project project;
-	
-	public static Task task;
-	private static Task originalTask;
 
-	public static TaskViewHolder taskInfoViewHolder;
-	public static TaskViewHolder taskReminderViewHolder;
+	private Task task;
+	private Task originalTask;
+
+	private TaskViewHolder taskViewHolder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,48 +96,55 @@ public class TaskActivity extends TabActivity {
 
 		this.setTitle(task.getName());
 		
-		Resources res = getResources(); 
-		TabHost tabHost = getTabHost(); 
-		TabHost.TabSpec spec;  
-
-		Intent intent = new Intent().setClass(this, TaskTabInfoActivity.class);
-		spec = tabHost.newTabSpec("details").setIndicator(getString(R.string.task_tab_details),
-				res.getDrawable(android.R.drawable.ic_menu_info_details))
-				.setContent(intent);
-		tabHost.addTab(spec);
-
-		intent = new Intent().setClass(this, TaskTabReminderActivity.class);
-		spec = tabHost.newTabSpec("reminder").setIndicator(getString(R.string.task_tab_reminder),
-				res.getDrawable(android.R.drawable.ic_popup_reminder))
-				.setContent(intent);
-		tabHost.addTab(spec);
-
-		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
+		this.taskViewHolder = new TaskViewHolder(findViewById(R.id.task_layout), task);
+		this.taskViewHolder.updateView(this);
+		
+		Button buttonSave = (Button)findViewById(R.id.button_save);
+		buttonSave.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onTabChanged(String tabId) {
-				if (tabId.equalsIgnoreCase("details")) {
-					taskInfoViewHolder.updateView(TaskActivity.this);
-				} else if (tabId.equalsIgnoreCase("reminder")) {
-					taskReminderViewHolder.updateView(TaskActivity.this);
-				}
+			public void onClick(View v) {
+				closeSavingChanges();
 			}
 		});
-
+		
+		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
+		buttonCancel.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				closeAndDiscardChanges();
+			}
+		});
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
-		case ActivityUtils.MAP_ACTIVITY:
+		case ActivityUtils.MAP_ACTIVITY: 
 			if (resultCode == Activity.RESULT_OK) {
 				GeoPoint point = new GeoPoint(data.getIntExtra(TaskMapActivity.LATITUD, 0), data.getIntExtra(TaskMapActivity.LONGITUD, 0));
 				task.setLocation(point);
-				taskReminderViewHolder.updateView(this);
+				taskViewHolder.updateView(this);
 			}
+			break;
+		case ActivityUtils.CAMERA_ACTIVITY: 
+			if (resultCode == Activity.RESULT_OK) {
+
+				Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+				byte [] fileContent = baos.toByteArray();
+
+				task.setPicture(fileContent);
+				taskViewHolder.updateView(this);
+				Log.d(TaskManager.TAG, "Picture read and viewHolder refreshed");
+
+			}
+			break;
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		//Handle the back button
@@ -190,7 +198,7 @@ public class TaskActivity extends TabActivity {
 	}
 
 	private void setAlarm() {
-		if (task.getDueDate() != null) {
+		if (task.getDueDate() != null && task.getDueDate().getTime() > System.currentTimeMillis()) {
 			Intent intent = new Intent(this, AlarmReceiver.class);
 			intent.putExtra("task_id", task.getId());
 			intent.putExtra("project_id", project != null ? project.getId() : null);
@@ -200,6 +208,9 @@ public class TaskActivity extends TabActivity {
 
 			AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
 			am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
+			Log.i(TaskManager.TAG, "Alarm set");
+		} else {
+			Log.i(TaskManager.TAG, "Alarm not set: task due date already past");
 		}
 	}
 

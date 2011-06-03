@@ -7,11 +7,14 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="#ffffffff" >
+    
 	<ExpandableListView
 		android:id="@android:id/list"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent" 
-		android:layout_alignParentTop="true"/>
+		android:layout_alignParentTop="true"
+		android:layout_marginBottom="50dip"/>
+		
 	<com.google.ads.AdView android:id="@+id/adView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
