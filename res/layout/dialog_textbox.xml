@@ -3,34 +3,41 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" 
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent" 
-	android:paddingLeft="10dip"
-	android:paddingRight="10dip">
-	<TextView 
-		android:id="@+id/textbox_label"
+	android:layout_height="fill_parent">
+	<LinearLayout 
+		android:orientation="vertical" 
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" />
-	<EditText 
-		android:id="@+id/textbox_text" 
-		android:layout_width="250dip"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content" 
+		android:paddingLeft="10dip"
+		android:paddingRight="10dip">	
+		<TextView 
+			android:id="@+id/textbox_label"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+		<EditText 
+			android:id="@+id/textbox_text" 
+			android:layout_width="250dip"
+			android:layout_height="wrap_content" />
+	</LinearLayout>
 	<LinearLayout 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		android:paddingTop="15dip"
+		android:paddingTop="3dip"
+		android:layout_marginTop="5dip"
 		android:orientation="horizontal"
+		android:background="@color/Dialog_Actions_Background"
 		android:weightSum="2">
-		<Button 
-			android:id="@+id/textbox_cancel_button" 
-			android:layout_width="0dp"
-			android:layout_height="wrap_content" 
-			android:text="@string/cancel" 
-			android:layout_weight="1"/>
 		<Button 
 			android:id="@+id/textbox_ok_button" 
 			android:layout_width="0dp"
 			android:layout_height="wrap_content" 
 			android:text="@string/ok" 
 			android:layout_weight="1"/>					
+		<Button 
+			android:id="@+id/textbox_cancel_button" 
+			android:layout_width="0dp"
+			android:layout_height="wrap_content" 
+			android:text="@string/cancel" 
+			android:layout_weight="1"/>
 	</LinearLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.danielpecos.gtdtm.utils;
+package com.danielpecos.gtdtm.activities.tasks;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

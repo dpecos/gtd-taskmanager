@@ -27,6 +27,9 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
+import com.danielpecos.gtdtm.activities.tasks.CreateDemoDataAsyncTask;
+import com.danielpecos.gtdtm.activities.tasks.CreateDemoDataAsyncTask.OnFinishedListener;
+import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
@@ -34,7 +37,6 @@ import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
-import com.danielpecos.gtdtm.utils.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
 import com.danielpecos.gtdtm.views.OnCheckedChangeListener;
 import com.danielpecos.gtdtm.views.ProjectViewHolder;
@@ -42,7 +44,6 @@ import com.danielpecos.gtdtm.views.TaskViewHolder;
 import com.danielpecos.gtdtm.views.ViewHolder;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
-import com.google.android.maps.GeoPoint;
 
 public class ContextActivity extends ExpandableListActivity implements ExpandableListView.OnChildClickListener {
 	private TaskManager taskManager;
@@ -475,36 +476,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		listView.setOnChildClickListener(this);
 	}
 
-
-	private void loadDemoData() {
-		// Test data 
-
-		Context ctx = this.taskManager.createContext(this, "Context 1");
-		Project prj = ctx.createProject(this, "Project 1.1", "Project 1.1 description");
-		prj.createTask(this, "Task 1", "Task number 1.1.1", Task.Priority.Critical);
-		prj.createTask(this, "Task 2", "Task number 1.1.2", Task.Priority.Important);
-		prj.createTask(this, "Task 3", "Task number 1.1.3", Task.Priority.Low);
-		prj.createTask(this, "Task 4", "Task number 1.1.4", Task.Priority.Important);
-		prj.createTask(this, "Task 5", "Task number 1.1.5", Task.Priority.Critical);
-
-		ctx.createTask(this, "Task 1", "Task number 1.0.1", Task.Priority.Critical);
-		ctx.createTask(this, "Task 2", "Task number 1.0.2", Task.Priority.Important);
-		ctx.createTask(this, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(40000000, 0));
-		ctx.createTask(this, "Task 4", "Task number 1.0.4", Task.Priority.Low);
-
-		prj = ctx.createProject(this, "Project 1.2", "Project 1.2 description");
-		prj.createTask(this, "Task 1", "Task number 1.2.1", Task.Priority.Critical);
-		prj.createTask(this, "Task 2", "Task number 1.2.2", Task.Priority.Important);
-		prj.createTask(this, "Task 3", "Task number 1.2.3", Task.Priority.Low);
-		prj.createTask(this, "Task 4", "Task number 1.2.4", Task.Priority.Important);
-		prj.createTask(this, "Task 5", "Task number 1.2.5", Task.Priority.Critical);
-
-		this.taskManager.createContext(this, "Context 2");
-		this.taskManager.createContext(this, "Context 3");
-
-	}
-
-
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
 		boolean result = super.onChildClick(parent, view, groupPosition, childPosition, id);
@@ -569,6 +540,17 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		}
 
 		this.triggerViewHolder = null;
+	}
+
+	private void loadDemoData() {
+		CreateDemoDataAsyncTask createDemoDataAsyncTask = new CreateDemoDataAsyncTask(this);
+		createDemoDataAsyncTask.setOnFinishedListener(new OnFinishedListener() {
+			@Override
+			public void onFinish() {
+				ContextActivity.this.initializeUI();
+			}
+		});
+		createDemoDataAsyncTask.execute();
 	}
 
 	private void synchronizeGoogleTasks(final Context context) {
