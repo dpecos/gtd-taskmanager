@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
@@ -32,12 +31,12 @@ import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
-import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
 import com.danielpecos.gtdtm.utils.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
+import com.danielpecos.gtdtm.views.OnCheckedChangeListener;
 import com.danielpecos.gtdtm.views.ProjectViewHolder;
 import com.danielpecos.gtdtm.views.TaskViewHolder;
 import com.danielpecos.gtdtm.views.ViewHolder;
@@ -250,14 +249,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
-			case R.id.context_contextMenu_editTask: {
-				final Task task = (Task)child;
-
-				this.triggerViewHolder = this.taskViewHolders.get(task.getId());
-				ActivityUtils.showTaskActivity(this, context, null, task);
-
-				return true;
-			}
 			}
 
 			return false;
@@ -399,6 +390,16 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				for (final Task task : ctx) {
 
 					TaskViewHolder tvh = new TaskViewHolder(null, task);
+					tvh.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
+							new OnCheckedChangeListener() {
+								@Override
+								public void onCheckedChanged(View buttonView,	boolean isChecked) {
+									if (task.store(ContextActivity.this) < 0) {
+										Toast.makeText(ContextActivity.this, "Problems updating task", Toast.LENGTH_SHORT).show();
+									}
+								}
+							}
+					});
 					taskViewHolders.put(task.getId(), tvh);
 
 					HashMap<String, Object> taskData = tvh.getListFields();
@@ -440,13 +441,13 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 					childrenData_tasks, 
 					R.layout.item_task, 
-					new String[] {"name", "description", "status_check"},
-					new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check}, 
+					new String[] {"name", "description"},
+					new int[] {R.id.task_name, R.id.task_description}, 
 					new RowDisplayListener() {
 						@Override
 						public void onViewSetUp(View view, HashMap<String, Object> data) {
 							Task task = (Task)data.get("_BASE_");
-							view.findViewById(R.id.task_status_check).setClickable(false);
+							//view.findViewById(R.id.task_status_check).setClickable(false);
 							ViewHolder tvh = taskViewHolders.get(task.getId());
 							tvh.setView(view);
 							tvh.updateView(ContextActivity.this);
@@ -517,13 +518,16 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			ActivityUtils.showProjectActivity(this, ctx, project);
 		} else {
 			Task task = (Task) child;
-			if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
+			this.triggerViewHolder = this.taskViewHolders.get(task.getId());
+			ActivityUtils.showTaskActivity(this, ctx, null, task);
+
+			/*if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
 				((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
 
 				if (task.store(view.getContext()) < 0) {
 					Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
 				}
-			}
+			}*/
 		}
 
 		return result;

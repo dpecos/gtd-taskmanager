@@ -16,12 +16,10 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
@@ -29,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -37,6 +36,7 @@ import android.widget.ToggleButton;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.beans.Task;
+import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 
 public class TaskViewHolder extends ViewHolder {
@@ -50,7 +50,7 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDescription;
 	private EditText editText_taskDescription;
 	private Button button_taskDescriptionClear;
-	private CheckBox checkbox_taskStatus;
+	private ImageView imageView_taskStatus;
 	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
 	private Button button_takePicture;
@@ -158,30 +158,36 @@ public class TaskViewHolder extends ViewHolder {
 			}
 		}
 
-		this.checkbox_taskStatus = (CheckBox)getView(R.id.task_status_check);
-		if (this.checkbox_taskStatus != null) {
-			this.checkbox_taskStatus.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		this.imageView_taskStatus = (ImageView)getView(R.id.task_status_check);
+		if (this.imageView_taskStatus != null) {
+			this.imageView_taskStatus.setOnClickListener(new OnClickListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onClick(View v) {
+
 					if (isCallbacksEnabled()) {
 
-						if (task.getStatus() == Task.Status.Discarded) {
-							task.setStatus(Task.Status.Discarded_Completed);
-						} else if (task.getStatus() == Task.Status.Discarded_Completed) {
-							task.setStatus(Task.Status.Discarded);
-						} else if (task.getStatus() == Task.Status.Active) {
-							task.setStatus(Task.Status.Completed);
-						} else if (task.getStatus() == Task.Status.Completed) {
-							task.setStatus(Task.Status.Active);
-						}
+						if (task.getStatus() != Task.Status.Discarded && task.getStatus() != Task.Status.Discarded_Completed) {
 
-						if (viewListeners != null && viewListeners.get(R.id.task_status_check) != null) {
-							for (Object event : viewListeners.get(R.id.task_status_check)) {
-								((OnCheckedChangeListener)event).onCheckedChanged(buttonView, isChecked);
+							if (task.getStatus() == Task.Status.Discarded) {
+								task.setStatus(Task.Status.Discarded_Completed);
+							} else if (task.getStatus() == Task.Status.Discarded_Completed) {
+								task.setStatus(Task.Status.Discarded);
+							} else if (task.getStatus() == Task.Status.Active) {
+								task.setStatus(Task.Status.Completed);
+							} else if (task.getStatus() == Task.Status.Completed) {
+								task.setStatus(Task.Status.Active);
 							}
-						}
 
-						updateView(activity);
+							boolean isChecked = task.getStatus() == Status.Completed || task.getStatus() == Status.Discarded_Completed;
+
+							if (viewListeners != null && viewListeners.get(R.id.task_status_check) != null) {
+								for (Object event : viewListeners.get(R.id.task_status_check)) {
+									((com.danielpecos.gtdtm.views.OnCheckedChangeListener)event).onCheckedChanged(v, isChecked);
+								}
+							}
+
+							updateView(activity);
+						}
 					}
 				}
 			});
@@ -411,14 +417,22 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			}
 
-			if (this.checkbox_taskStatus != null) {
+			if (this.imageView_taskStatus != null) {
 				boolean callbacksEnabled = this.isCallbacksEnabled();
 				this.setCallbacksEnabled(false);
-				
-				boolean completed = (task.getStatus() == Task.Status.Completed || task.getStatus() == Task.Status.Discarded_Completed);
-				this.checkbox_taskStatus.setChecked(completed);
-				this.checkbox_taskStatus.requestLayout();
-				
+
+				if (task.getStatus() == Task.Status.Completed) {
+					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_on);	
+				} else if (task.getStatus() == Task.Status.Discarded_Completed) {
+					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_on_disable);
+				} else if (task.getStatus() == Task.Status.Active) {
+					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_off);
+				} else if (task.getStatus() == Task.Status.Discarded) {
+					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_off_disable);
+				}
+
+				this.imageView_taskStatus.requestLayout();
+
 				this.setCallbacksEnabled(callbacksEnabled);
 			}
 
@@ -623,14 +637,14 @@ public class TaskViewHolder extends ViewHolder {
 	}
 
 	private void setInterfaceEnabled(boolean enabled) {
-		if (this.checkbox_taskStatus != null) 
-			this.checkbox_taskStatus.setEnabled(enabled);
+		if (this.imageView_taskStatus != null) 
+			this.imageView_taskStatus.setEnabled(enabled);
 		if (this.editText_taskName != null) {
 			this.editText_taskName.setEnabled(enabled);
 			this.editText_taskName.setInputType(enabled ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL);
 			this.editText_taskName.setCursorVisible(enabled); 
 		}
-		
+
 		if (this.editText_taskDescription != null) {
 			this.editText_taskDescription.setEnabled(enabled);
 			this.editText_taskDescription.setInputType(enabled ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL);
@@ -638,20 +652,20 @@ public class TaskViewHolder extends ViewHolder {
 		}
 		if (this.button_taskDescriptionClear != null)
 			this.button_taskDescriptionClear.setEnabled(enabled);
-		
+
 		if (this.spinner_taskPriority != null)
 			this.spinner_taskPriority.setEnabled(enabled);
-		
+
 		if (this.button_takePicture != null) 
 			this.button_takePicture.setEnabled(enabled);
 		if (this.button_deletePicture != null) 
 			this.button_deletePicture.setEnabled(enabled && task.getPicture() != null);
-		
+
 		if (this.button_changeDueDate != null)
 			this.button_changeDueDate.setEnabled(enabled);
 		if (this.button_changeDueTime != null)
 			this.button_changeDueTime.setEnabled(enabled);
-		
+
 		if (this.button_changeMapPosition != null)
 			this.button_changeMapPosition.setEnabled(enabled);
 	}
@@ -670,6 +684,7 @@ public class TaskViewHolder extends ViewHolder {
 		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		frame.width = (int) (38 * 0.7);
 		frame.height = (int) (38 * 0.7);
+		frame.setMargins(0, 1, 0, 1);
 		icon.setLayoutParams(frame);
 
 		return icon;

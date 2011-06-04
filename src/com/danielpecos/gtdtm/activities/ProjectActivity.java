@@ -18,9 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -31,10 +28,10 @@ import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
-import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
-import com.danielpecos.gtdtm.utils.SimpleListAdapter;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
+import com.danielpecos.gtdtm.utils.SimpleListAdapter;
+import com.danielpecos.gtdtm.views.OnCheckedChangeListener;
 import com.danielpecos.gtdtm.views.ProjectViewHolder;
 import com.danielpecos.gtdtm.views.TaskViewHolder;
 import com.danielpecos.gtdtm.views.ViewHolder;
@@ -112,14 +109,16 @@ public class ProjectActivity extends ListActivity {
 			tvh.registerChainedFieldEvents(R.id.task_status_check, new Object[] {
 					new OnCheckedChangeListener() {
 						@Override
-						public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) {
+						public void onCheckedChanged(View buttonView,	boolean isChecked) {
+							if (task.store(ProjectActivity.this) < 0) {
+								Toast.makeText(ProjectActivity.this, "Problems updating task", Toast.LENGTH_SHORT).show();
+							}
 							if (projectViewHolder != null) {
 								projectViewHolder.updateView(ProjectActivity.this);
 							}
 						}
 					}
 			});
-
 			taskViewHolders.put(task.getId(), tvh);
 
 			HashMap<String, Object> taskData = tvh.getListFields();
@@ -131,13 +130,13 @@ public class ProjectActivity extends ListActivity {
 				this,
 				itemsData, 
 				R.layout.item_task, 
-				new String[] {"name", "description", "status_check"},
-				new int[] {R.id.task_name, R.id.task_description, R.id.task_status_check},
+				new String[] {"name", "description"},
+				new int[] {R.id.task_name, R.id.task_description},
 				new RowDisplayListener() {
 					@Override
 					public void onViewSetUp(View view, HashMap<String, Object> data) {
 						Task task = (Task)data.get("_BASE_");
-						view.findViewById(R.id.task_status_check).setClickable(false);
+//						view.findViewById(R.id.task_status_check).setClickable(false);
 						ViewHolder tvh = taskViewHolders.get(task.getId());
 						tvh.setView(view);
 						tvh.updateView(ProjectActivity.this);
@@ -196,13 +195,16 @@ public class ProjectActivity extends ListActivity {
 		super.onListItemClick(parent, view, position, id);
 
 		Task task = project.elementAt(position);
-		if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
+		this.triggerViewHolder = this.taskViewHolders.get(task.getId());
+		ActivityUtils.showTaskActivity(this, context, project, task);
+		
+		/*if (task.getStatus() == Status.Active || task.getStatus() == Status.Completed) {
 			((CheckBox)this.taskViewHolders.get(task.getId()).getView(R.id.task_status_check)).toggle();
 
 			if (task.store(view.getContext()) < 0) {
 				Toast.makeText(view.getContext(), "Problems updating task", Toast.LENGTH_SHORT).show();
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -259,13 +261,6 @@ public class ProjectActivity extends ListActivity {
 					}
 				}
 			}).show();
-			return true;
-		}
-
-		case R.id.context_contextMenu_editTask: {
-			this.triggerViewHolder = this.taskViewHolders.get(task.getId());
-			ActivityUtils.showTaskActivity(this, context, project, task);
-
 			return true;
 		}
 		}

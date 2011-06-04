@@ -72,7 +72,6 @@
     <string name="context_contextMenu_deleteContext">Delete Context</string>
 	<string name="context_contextMenu_deleteProject">Delete Project</string>
 	<string name="context_contextMenu_deleteTask">Delete Task</string>
-	<string name="context_contextMenu_editTask">Edit Task</string>
     <string name="context_contextMenu_addProject">Add Project</string>
     <string name="context_contextMenu_addTask">Add Task</string>
     <string name="context_contextMenu_synchronizeGTasks">Synchronize Google Tasks</string>
