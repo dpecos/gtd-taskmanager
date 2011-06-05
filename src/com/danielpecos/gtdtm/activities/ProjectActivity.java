@@ -277,7 +277,7 @@ public class ProjectActivity extends ListActivity {
 				public void onClick(DialogInterface dialog, int which) {
 					if (project.deleteTask(ProjectActivity.this, task)) {
 						initializeUI();
-						Toast.makeText(ProjectActivity.this, "Task \"" + task.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ProjectActivity.this, String.format(getString(R.string.result_delete_task), task.getName()), Toast.LENGTH_SHORT).show();
 					} else {
 						Toast.makeText(ProjectActivity.this, R.string.error_deletingTask, Toast.LENGTH_SHORT).show();
 					}

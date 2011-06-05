@@ -35,14 +35,12 @@
     <color name="Dialog_Actions_Background">#ffC0C0C0</color>
     <color name="task_info_label_background">#ffE8E8E8</color>
     
-    <string name="task_tab_details">Details</string>
-    <string name="task_tab_reminder">Reminder</string>
     <string name="task_description_label">Task description:</string>
     <string name="task_priority_label">Task priority:</string>
     <string name="task_status_label">Task status:</string>
     <string name="task_status_discarded">Task discarded</string>
     <string name="task_status_active">Task active</string>
-    <string name="task_picture_label">Add a picture</string>
+    <string name="task_picture_label">Add a picture:</string>
     <string name="task_take_picture">Take picture</string>
     <string name="task_delete_picture">Delete picture</string>
     <string name="task_duedate_label">Task due date/time:</string>
@@ -60,9 +58,8 @@
 	<string name="task_optionsMenu_revert">Revert changes</string>     
         
     <string name="context_loadDemo_title">Load demo data?</string>
-    <string name="context_loadDemo_message">You haven\'t created any context list. Do you want to load some demo data?</string>
+    <string name="context_loadDemo_message">You haven\'t created any Context yet. Do you want to load some demo data?</string>
     <string name="context_loadDemo_creating">Creating demo data...</string>
-    <!--  string name="context_loading_data">Loading data...</string-->
     
     <string name="context_optionsMenu_addContext">Add new Context</string>
     <string name="context_optionsMenu_reloadData">Refresh data</string>
@@ -103,14 +100,18 @@
 	<string name="error_initializingCamera">Error initializing camera application</string>
 	
 	<string name="confirm_delete_context">Are you sure you want to delete this Context?</string>
+	<string name="result_delete_context">Context \"%s\" successfully deleted</string>
 	<string name="confirm_delete_project">Are you sure you want to delete this Project?</string>
+	<string name="result_delete_project">Project \"%s\" successfully deleted</string>
 	<string name="confirm_delete_task">Are you sure you want to delete this Task?</string>
+	<string name="result_delete_task">Task \"%s\" successfully deleted</string>
 	<string name="confirm_clear_google">Are you sure you want to forget your current Google Tasks account preferences?</string>
 
 	<string name="project_optionsMenu_renameProject">Rename Project</string>
 	<string name="project_optionsMenu_changeDescription">Change description</string>
 	<string name="project_optionsMenu_addTask">Add new Task</string>
 	
+	<string name="gtasks_selectAccount">Select a Google account</string>
 	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
 	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
 	<string name="gtasks_synchronizationFinished">Synchronization finished</string>

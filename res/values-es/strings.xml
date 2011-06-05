@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="yes">Sí</string>
+	<string name="no">No</string>
+	<string name="clear">Borrar</string>
+	<string name="save">Guardar</string>
+	<string name="cancel">Cancelar</string>
+	<string name="ok">Aceptar</string>
+	
+	<string-array name="task_priorities">
+		<item>Crítica</item>
+		<item>Importante</item>
+		<item>Normal</item>
+		<item>Baja</item>
+	</string-array>
+	
+	<string name="task_description_label">Descripción de tarea:</string>
+	<string name="task_priority_label">Prioridad de la Tarea:</string>
+	<string name="task_status_label">Estado de la tarea:</string>
+	<string name="task_status_discarded">Tarea descartada</string>
+	<string name="task_status_active">Tarea activa</string>
+	<string name="task_picture_label">Añade una foto:</string>
+	<string name="task_take_picture">Sacar foto</string>
+	<string name="task_delete_picture">Eliminar imagen</string>
+	<string name="task_duedate_label">Fecha y hora de vencimiento de la tarea:</string>
+	<string name="task_duedate_button">Cambiar la fecha de vencimiento</string>
+	<string name="task_duetime_button">Cambiar la hora de vencimientoo</string>
+	<string name="task_map_label">Ubicación de la tarea:</string>
+	<string name="task_map_button">Cambiar ubicación</string>
+	<string name="task_location_latitude_label">Latitud:</string>
+	<string name="task_location_longitud_label">Longitud:</string>
+	<string name="task_delete">Eliminar</string>
+	<string name="task_quit_title">¿Desea guardar los cambios?</string>
+	<string name="task_quit_message">Si sale sin guardar, ¡los cambios aplicados a esta tarea se perderán!</string>
+	
+	<string name="task_optionsMenu_save">Guardar</string>
+	<string name="task_optionsMenu_revert">Deshacer los cambios</string>
+	
+	<string name="context_loadDemo_title">¿Cargar datos de prueba?</string>
+	<string name="context_loadDemo_message">Todavía no ha creado ningún Contexto. ¿Quiere cargar algunos datos de prueba?</string>
+	<string name="context_loadDemo_creating">Creando datos de demostración ...</string>
+
+	<string name="context_optionsMenu_addContext">Añadir nuevo Contexto</string>
+	<string name="context_optionsMenu_reloadData">Actualizar</string>
+	<string name="context_optionsMenu_settings">Configuración</string>
+	<string name="context_optionsMenu_about">Acerca de</string>
+	
+	<string name="context_contextMenu_contextTitle">Acciones de Contexto</string>
+	<string name="context_contextMenu_projectTitle">Acciones de Proyecto</string>
+	<string name="context_contextMenu_taskTitle">Acciones de Tarea</string>
+	<string name="context_contextMenu_renameContext">Renombrar el Contexto</string>
+	<string name="context_contextMenu_deleteContext">Eliminar Contexto</string>
+	<string name="context_contextMenu_deleteProject">Eliminar Proyecto</string>
+	<string name="context_contextMenu_deleteTask">Eliminar Tarea</string>
+	<string name="context_contextMenu_addProject">Añadir nuevo Proyecto</string>
+	<string name="context_contextMenu_addTask">Añadir nueva Tarea</string>
+	<string name="context_contextMenu_synchronizeGTasks">Sincronizar Google Tasks</string>
+	
+	<string name="textbox_addContext_title">Añadir nuevo Contexto</string>
+	<string name="textbox_addContext_label">Nombre del Contexto:</string>
+	<string name="textbox_renameContext_title">Renombrar el Contexto</string>
+	<string name="textbox_renameContext_label">Nombre del Contexto:</string>
+	<string name="textbox_addProject_title">Añadir nuevo Proyecto</string>
+	<string name="textbox_addProject_label">Nombre del Proyecto:</string>
+	<string name="textbox_renameProject_title">Renombrar el Proyecto</string>
+	<string name="textbox_renameProject_label">Nombre del Proyecto:</string>
+	<string name="textbox_changeProjectDescription_title">Cambiar descripción del Proyecto</string>
+	<string name="textbox_changeProjectDescription_label">Descripción del Proyecto:</string>
+	<string name="textbox_addTask_title">Establecer el nombre de la Tarea</string>
+	<string name="textbox_addTask_label">Nombre de la Tarea:</string>
+	
+	<string name="error_loadingData">Error al cargar los datos</string>
+	<string name="error_deletingContext">Error al eliminar el Contexto</string>
+	<string name="error_deletingProject">Error al eliminar del Proyecto</string>
+	<string name="error_deletingTask">Error al eliminar la Tarea</string>
+	<string name="error_creatingContext">Error al crear el Contexto</string>
+	<string name="error_creatingProject">Error al crear el Proyecto</string>
+	<string name="error_creatingTask">Error al crear la Tarea</string>
+	<string name="error_initializingCamera">Error al inicializar la aplicación de la cámara</string>
+	
+	<string name="confirm_delete_context">¿Estás seguro que desea eliminar este Contexto?</string>
+	<string name="result_delete_context">Contexto \"%s\" borrado correctamente</string>
+	<string name="confirm_delete_project">¿Está seguro que desea eliminar este Proyecto?</string>
+	<string name="result_delete_project">Proyecto \"%s\" borrado correctamente</string>
+	<string name="confirm_delete_task">¿Está seguro que desea eliminar esta Tarea?</string>
+	<string name="result_delete_task">Tarea \"%s\" borrada correctamente</string>
+	<string name="confirm_clear_google">¿Está seguro que quiere olvidar su actual cuenta de Google Tasks?</string>
+	
+	<string name="project_optionsMenu_renameProject">Renombrar el Proyecto</string>
+	<string name="project_optionsMenu_changeDescription">Cambiar la descripción</string>
+	<string name="project_optionsMenu_addTask">Añadir nueva Tarea</string>
+	
+	<string name="gtasks_selectAccount">Selecciona una cuenta de Google</string>
+	<string name="gtasks_errorInRequest">Google Tasks: Error en la solicitud</string>
+	<string name="gtasks_synchronizing">Sincronizando con Google Tasks...</string>
+	<string name="gtasks_synchronizationFinished">Sincronización terminada</string>
+	
+	<string name="notification_title">La tarea está a punto de vencer</string>
+	<string name="notification_msg">está a punto de vencer</string>
+	
+	<string name="settings_category_general">General</string>
+	<string name="settings_category_synchronization">Sincronización</string>
+	<string name="settings_category_backup">Copia de seguridad</string>
+	
+	<string name="settings_task_order_tittle">Orden de la lista de Tareas</string>
+	<string name="settings_task_order_summary">Seleccione un criterio para ordenar la lista de tareas</string>
+	<string-array name="settings_task_order_labels">
+		<item>Por prioridad</item>
+		<item>Alfabéticamente</item>
+	</string-array>
+	
+	<string name="settings_map_type_title">Modo de vista de mapa</string>
+	<string name="settings_map_type_summary">Seleccione el tipo de mapa a utilizar</string>
+	<string-array name="settings_map_type_labels">
+        <item>Satélite</item>
+        <item>Tráfico</item>
+    </string-array>
+    
+	<string name="settings_clearGoogle_title">Borrar cuenta de Google Tasks</string>
+	<string name="settings_clearGoogle_summary">Eliminar la cuenta de Google Tasks autorizada</string>
+	
+	<string name="settings_backup_store_title">Copia de seguridad de datos</string>
+	<string name="settings_backup_store_summary">Guardar un archivo de copia de seguridad</string>
+	<string name="settings_backup_restore_title">Restaurar datos</string>
+	<string name="settings_backup_restore_summary">Cargar un archivo de copia de seguridad</string>
+	
+</resources>

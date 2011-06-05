@@ -201,7 +201,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					public void onClick(DialogInterface dialog, int which) {
 						if (context.deleteProject(ContextActivity.this, project)) {
 							initializeUI();
-							Toast.makeText(ContextActivity.this, "Project \"" + project.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+							Toast.makeText(ContextActivity.this, String.format(getString(R.string.result_delete_project), project.getName()), Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(ContextActivity.this, R.string.error_deletingProject, Toast.LENGTH_SHORT).show();
 						}
@@ -217,7 +217,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					public void onClick(DialogInterface dialog, int which) {
 						if (context.deleteTask(ContextActivity.this, task)) {
 							initializeUI();
-							Toast.makeText(ContextActivity.this, "Task \"" + task.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+							Toast.makeText(ContextActivity.this, String.format(getString(R.string.result_delete_task), task.getName()), Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(ContextActivity.this, R.string.error_deletingTask, Toast.LENGTH_SHORT).show();
 						}
@@ -286,7 +286,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 								listViewStatus.remove(context.getId());
 							}
 							initializeUI();
-							Toast.makeText(ContextActivity.this, "Context \"" + context.getName() + "\" successfully deleted", Toast.LENGTH_SHORT).show();
+							Toast.makeText(ContextActivity.this, String.format(getString(R.string.result_delete_context), context.getName()), Toast.LENGTH_SHORT).show();
 						} else {
 							Toast.makeText(ContextActivity.this, R.string.error_deletingContext, Toast.LENGTH_SHORT).show();
 						}

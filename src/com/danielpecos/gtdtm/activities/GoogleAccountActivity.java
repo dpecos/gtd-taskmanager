@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
 import com.google.api.client.http.HttpResponse;
@@ -57,7 +58,7 @@ public class GoogleAccountActivity extends Activity {
 		switch (id) {
 		case DIALOG_ACCOUNTS:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Select a Google account");
+			builder.setTitle(R.string.gtasks_selectAccount);
 			final Account[] accounts = accountManager.getAccounts();
 			final int size = accounts.length;
 			String[] names = new String[size];
