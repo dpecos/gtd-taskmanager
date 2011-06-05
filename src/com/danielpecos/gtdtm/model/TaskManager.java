@@ -32,7 +32,7 @@ public class TaskManager {
 	public static boolean isFullVersion(android.content.Context context) {
 		return context.getString(R.string.app_version).equalsIgnoreCase("FULL");
 	}
-	
+
 	public static final String TAG = "GTD-TaskManager";
 	private static TaskManager instance;
 	private static SharedPreferences preferences;
@@ -53,7 +53,7 @@ public class TaskManager {
 		this.contexts = new LinkedHashMap<Long, Context>();
 		this.loadDatabase(ctx);
 	}
-	
+
 	public static TaskManager reset(android.content.Context ctx) {
 		instance = new TaskManager(ctx);
 		Log.d(TAG, "TaskManager reset");
@@ -132,7 +132,7 @@ public class TaskManager {
 	public boolean synchronizeGTasks(Activity activity, Context context) {
 		SharedPreferences settings = getPreferences();
 		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
-		
+
 		if (accountName == null) {
 			Log.i(TAG, "Google Tasks authorization required");
 			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
@@ -144,15 +144,17 @@ public class TaskManager {
 			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
 
 			boolean forceCreate = false;
-			
+
 			try {
 				boolean elementUpdated = false;
 				String contextListId = null;
 				if (context.getGoogleId() != null) {
 					contextListId = context.getGoogleId();
-					elementUpdated = client.updateTaskList(contextListId, context.getName());
-					if (!elementUpdated) {
-						Log.e(TaskManager.TAG, "GTasks: Error updating context/taskList");
+					try {					
+						elementUpdated = client.updateTaskList(contextListId, context.getName());
+					} catch (IOException e) {
+						Log.e(TaskManager.TAG, "GTasks: Error updating context/taskList", e);
+						elementUpdated = false;
 						forceCreate = true;
 					}
 				}
@@ -165,16 +167,20 @@ public class TaskManager {
 						Log.e(TaskManager.TAG, "GTasks: Error creating context/taskList");
 					}
 				}
-				
+
 				String previousProjectId = null;
 				for (Project project : context.getProjects()) {
 					elementUpdated = false;
 					String projectId = null;
 					if (project.getGoogleId() != null && !forceCreate) {
 						projectId = project.getGoogleId();
-						elementUpdated = client.updateTask(contextListId, project.getGoogleId(), project.getName(), project.getDescription(), null, null);
+						try {
+							elementUpdated = client.updateTask(contextListId, project.getGoogleId(), project.getName(), project.getDescription(), null, null);
+						} catch (IOException e) {
+							Log.e(TaskManager.TAG, "GTasks: Error updating project/task", e);
+							elementUpdated = false;
+						}
 						if (!elementUpdated) {
-							Log.e(TaskManager.TAG, "GTasks: Error updating project/task");
 							forceCreate = true;
 						} else {
 							previousProjectId = projectId;
@@ -190,10 +196,10 @@ public class TaskManager {
 							Log.e(TaskManager.TAG, "GTasks: Error creating project/task");
 						}
 					}
-					
+
 					exportTasks(activity, client, contextListId, project, null, forceCreate);
 				}
-				
+
 				exportTasks(activity, client, contextListId, context, previousProjectId, forceCreate);
 
 				return true;
@@ -202,7 +208,7 @@ public class TaskManager {
 				if (e instanceof HttpResponseException) {
 					HttpResponse response = ((HttpResponseException) e).response;
 					int statusCode = response.statusCode;
-					
+
 					if (statusCode == 400) {
 						Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
 						Toast.makeText(activity, R.string.gtasks_errorInRequest, Toast.LENGTH_SHORT);
@@ -227,16 +233,19 @@ public class TaskManager {
 			parentId = ((Project) parent).getGoogleId();
 		}
 		String previousTaskId = previousId;
-		
+
 		for (Task task : parent) {
 			boolean elementUpdated = false;
 			String taskId = null;
 			if (task.getGoogleId() != null && !forceCreate) {
 				taskId = task.getGoogleId();
-				elementUpdated = client.updateTask(contextListId, task.getGoogleId(), task.getName(), task.getDescription(), task.getDueDate(), task.getStatus());
-				if (!elementUpdated) {
-					Log.e(TaskManager.TAG, "GTasks: Error updating task");
-				} else {
+				try {
+					elementUpdated = client.updateTask(contextListId, task.getGoogleId(), task.getName(), task.getDescription(), task.getDueDate(), task.getStatus());
+				} catch (IOException e) {
+					Log.e(TaskManager.TAG, "GTasks: Error updating task", e);
+					elementUpdated = false;
+				}
+				if (elementUpdated) {
 					previousTaskId = taskId;
 				}
 			}

@@ -11,7 +11,8 @@
     		  android:text="@string/app_name" 
     		  android:layout_marginBottom="10dip" 
     		  android:textSize="24dip"
-    		  android:textStyle="bold|italic">
+    		  android:textStyle="bold|italic"
+    		  android:gravity="center_horizontal">
     </TextView>   
     <TextView android:layout_width="wrap_content" 
     		  android:layout_height="wrap_content"    		  

@@ -2,7 +2,7 @@
 <resources>
 	<string name="app_version"></string>
     <string name="app_name"></string>
-    <string name="app_url">http://danielpecos.com/projects/gtd-taskmanager</string>
+    <string name="app_url">http://m.danielpecos.com/projects/gtd-taskmanager</string>
     
     <string name="author">Daniel Pecos Martínez</string>
     <string name="author_twitter">twitter: @danielpecos</string>  
