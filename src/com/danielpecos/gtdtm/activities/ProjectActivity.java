@@ -248,7 +248,7 @@ public class ProjectActivity extends ListActivity {
 				// task saved
 				if (data.getBooleanExtra(TaskActivity.FULL_RELOAD, false)) {
 					this.initializeUI();
-				} else {
+				} else if (this.triggerViewHolder != null) {
 					TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 					taskViewHolder.updateView(this);
 				}

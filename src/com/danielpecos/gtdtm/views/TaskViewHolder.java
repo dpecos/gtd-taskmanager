@@ -10,6 +10,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.InputType;
@@ -474,13 +475,13 @@ public class TaskViewHolder extends ViewHolder {
 				int i = 0;
 				
 				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
-					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm, (i++ % 2) == 0));
+					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm_little, (i++ % 2) == 0));
 				}
 				if (this.task.getPicture() != null) {
 					views.add(this.newTaskIcon(R.drawable.ic_menu_camera_little, (i++ % 2) == 0));
 				}
 				if (this.task.getLocation() != null) {
-					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on, (i++ % 2) == 0));
+					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on_little, (i++ % 2) == 0));
 				}
 
 				if (views.size() > 0) {
@@ -685,18 +686,24 @@ public class TaskViewHolder extends ViewHolder {
 
 		icon.setAlpha(128);
 
-		Matrix matrix = new Matrix();
-		matrix.postScale(0.7f, 0.7f);
-		icon.setImageMatrix(matrix);
-		icon.setScaleType(ScaleType.MATRIX);
+//		Matrix matrix = new Matrix();
+//		if (setMargins) {
+//			matrix.postScale(0.6f, 0.6f);
+//		} else {
+//			matrix.postScale(0.7f, 0.7f);
+//		}
+//		icon.setImageMatrix(matrix);
+//		icon.setScaleType(ScaleType.MATRIX);
 
 		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		frame.width = (int) (38 * 0.7);
-		frame.height = (int) (38 * 0.7);
+//		frame.setMargins(0, 0, 0, 0);
+//		frame.width = (int) (38 * 0.5);
+//		frame.height = (int) (38 * 0.5);
 		if (setMargins) {
 			frame.setMargins(0, 0, 0, 5);
 		}
 		icon.setLayoutParams(frame);
+//		icon.setBackgroundColor(Color.BLUE);
 
 		return icon;
 	}

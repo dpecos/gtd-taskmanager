@@ -92,10 +92,10 @@ public class TaskActivity extends Activity {
 		setContentView(R.layout.activity_layout_task);
 
 		this.setTitle(task.getName());
-		
+
 		this.taskViewHolder = new TaskViewHolder(findViewById(R.id.task_layout), task);
 		this.taskViewHolder.updateView(this);
-		
+
 		Button buttonSave = (Button)findViewById(R.id.button_save);
 		buttonSave.setOnClickListener(new OnClickListener() {
 			@Override
@@ -103,7 +103,7 @@ public class TaskActivity extends Activity {
 				closeSavingChanges();
 			}
 		});
-		
+
 		Button buttonCancel = (Button)findViewById(R.id.button_cancel);
 		buttonCancel.setOnClickListener(new OnClickListener() {
 			@Override
@@ -122,7 +122,9 @@ public class TaskActivity extends Activity {
 			if (resultCode == Activity.RESULT_OK) {
 				GeoPoint point = new GeoPoint(data.getIntExtra(TaskMapActivity.LATITUDE, 0), data.getIntExtra(TaskMapActivity.LONGITUDE, 0));
 				task.setLocation(point);
-				taskViewHolder.updateView(this);
+				if (taskViewHolder != null) {
+					taskViewHolder.updateView(this);
+				}
 			}
 			break;
 		case ActivityUtils.CAMERA_ACTIVITY: 
@@ -136,7 +138,9 @@ public class TaskActivity extends Activity {
 				byte [] fileContent = baos.toByteArray();
 
 				task.setPicture(fileContent);
-				taskViewHolder.updateView(this);
+				if (taskViewHolder != null) {
+					taskViewHolder.updateView(this);
+				}
 				Log.d(TaskManager.TAG, "Picture read and viewHolder refreshed");
 
 			}
