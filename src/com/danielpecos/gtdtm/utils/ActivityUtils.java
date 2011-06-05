@@ -110,7 +110,7 @@ public class ActivityUtils {
 		}
 	}
 
-	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {
+	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final boolean enableBlankValue, final OnDismissListener listener) {
 
 		final Dialog textboxDialog = new Dialog(context);
 		textboxDialog.getWindow().setFlags(
@@ -136,8 +136,8 @@ public class ActivityUtils {
 		okButton.setOnClickListener(new OnClickListener() {
 			// @Override
 			public void onClick(View v) {
-				if (textBox.getText().length() == 0) {
-					Toast.makeText(context, "Enter a value.", Toast.LENGTH_LONG).show();
+				if (textBox.getText().length() == 0 && !enableBlankValue) {
+					Toast.makeText(context, R.string.textbox_noBlankValue, Toast.LENGTH_LONG).show();
 				} else { 
 					textboxDialog.dismiss();
 					listener.onDismiss(textboxDialog);

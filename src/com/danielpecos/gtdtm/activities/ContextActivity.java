@@ -130,6 +130,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 					this.getResources().getString(R.string.textbox_addContext_title), 
 					this.getResources().getString(R.string.textbox_addContext_label), 
 					null,
+					false,
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
@@ -235,6 +236,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						this.getResources().getString(R.string.textbox_addTask_title), 
 						this.getResources().getString(R.string.textbox_addTask_label), 
 						null,
+						false,
 						new OnDismissListener() {
 							@Override
 							public void onDismiss(DialogInterface dialog) {
@@ -267,6 +269,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						this.getResources().getString(R.string.textbox_renameContext_title), 
 						this.getResources().getString(R.string.textbox_renameContext_label), 
 						context.getName(),
+						false, 
 						new OnDismissListener() {
 							@Override
 							public void onDismiss(DialogInterface dialog) {
@@ -300,6 +303,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						this.getResources().getString(R.string.textbox_addProject_title), 
 						this.getResources().getString(R.string.textbox_addProject_label), 
 						null,
+						false,
 						new OnDismissListener() {
 							@Override
 							public void onDismiss(DialogInterface dialog) {
@@ -319,6 +323,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						this.getResources().getString(R.string.textbox_addTask_title), 
 						this.getResources().getString(R.string.textbox_addTask_label), 
 						null,
+						false,
 						new OnDismissListener() {
 							@Override
 							public void onDismiss(DialogInterface dialog) {

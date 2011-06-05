@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
@@ -83,18 +84,22 @@ public class ProjectActivity extends ListActivity {
 
 		View projectItemView = mInflater.inflate(R.layout.item_project, null);
 		projectItemView.setMinimumHeight(projectItemView.getMeasuredHeight() + 8);
-		projectItemView.setPadding(0, 6, 0, 0);
+		projectItemView.setPadding(0, 6, 10, 0);
 
-		LinearLayout header = (LinearLayout)findViewById(R.id.header);
+		LinearLayout header = (LinearLayout)findViewById(R.id.project_header);
 		header.addView(projectItemView);
 
 		this.projectViewHolder = new ProjectViewHolder(projectItemView, project);
-		//		((TextView)projectViewHolder.getView(R.id.project_name)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_name)).getTextSize() + 4);
-		//		((TextView)projectViewHolder.getView(R.id.project_description)).setTextSize(((TextView)projectViewHolder.getView(R.id.project_description)).getTextSize() + 4);
 
-		findViewById(R.id.project_details).setVisibility(View.INVISIBLE);
-		//findViewById(R.id.project_details).setVisibility(View.GONE);
+		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)findViewById(R.id.project_icons).getLayoutParams();
+		lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		lp.addRule(RelativeLayout.RIGHT_OF, RelativeLayout.NO_ID);
+		lp.rightMargin = 0;
+		findViewById(R.id.project_icons).setLayoutParams(lp);
+		
+		findViewById(R.id.project_chevron).setVisibility(View.GONE);
 
+		projectItemView.requestLayout();
 		projectViewHolder.updateView(this);
 
 		//projectItemView.setTag(projectViewHolder);
@@ -159,6 +164,7 @@ public class ProjectActivity extends ListActivity {
 					this.getResources().getString(R.string.textbox_renameProject_title), 
 					this.getResources().getString(R.string.textbox_renameProject_label), 
 					project.getName(),
+					false,
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
@@ -176,10 +182,14 @@ public class ProjectActivity extends ListActivity {
 					this.getResources().getString(R.string.textbox_changeProjectDescription_title), 
 					this.getResources().getString(R.string.textbox_changeProjectDescription_label), 
 					project.getDescription(),
+					true,
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							String projectDescription = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							if (projectDescription.equalsIgnoreCase("")) {
+								projectDescription = null;
+							}
 							project.setDescription(projectDescription);
 							project.store(ProjectActivity.this);
 							projectViewHolder.updateView(ProjectActivity.this);
@@ -194,6 +204,7 @@ public class ProjectActivity extends ListActivity {
 					this.getResources().getString(R.string.textbox_addTask_title), 
 					this.getResources().getString(R.string.textbox_addTask_label), 
 					null,
+					false,
 					new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
@@ -205,7 +216,7 @@ public class ProjectActivity extends ListActivity {
 							}
 						}
 					});
-			return true;
+			break;
 		}
 		}
 		return true;

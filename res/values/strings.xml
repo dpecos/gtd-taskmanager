@@ -89,6 +89,7 @@
     <string name="textbox_changeProjectDescription_label">Project description:</string>	    
     <string name="textbox_addTask_title">Set Task name</string>
 	<string name="textbox_addTask_label">Task name:</string>
+	<string name="textbox_noBlankValue">Enter a value</string>
 	
 	<string name="error_loadingData">Error loading data</string>
 	<string name="error_deletingContext">Error deleting Context</string>

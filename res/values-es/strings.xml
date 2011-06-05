@@ -38,7 +38,7 @@
 	
 	<string name="context_loadDemo_title">¿Cargar datos de prueba?</string>
 	<string name="context_loadDemo_message">Todavía no ha creado ningún Contexto. ¿Quiere cargar algunos datos de prueba?</string>
-	<string name="context_loadDemo_creating">Creando datos de demostración ...</string>
+	<string name="context_loadDemo_creating">Creando datos de demostración...</string>
 
 	<string name="context_optionsMenu_addContext">Añadir nuevo Contexto</string>
 	<string name="context_optionsMenu_reloadData">Actualizar</string>
@@ -68,6 +68,7 @@
 	<string name="textbox_changeProjectDescription_label">Descripción del Proyecto:</string>
 	<string name="textbox_addTask_title">Establecer el nombre de la Tarea</string>
 	<string name="textbox_addTask_label">Nombre de la Tarea:</string>
+	<string name="textbox_noBlankValue">Introduzca un valor</string>
 	
 	<string name="error_loadingData">Error al cargar los datos</string>
 	<string name="error_deletingContext">Error al eliminar el Contexto</string>

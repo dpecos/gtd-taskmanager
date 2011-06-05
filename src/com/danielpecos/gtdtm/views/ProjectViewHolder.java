@@ -49,7 +49,6 @@ public class ProjectViewHolder extends ViewHolder {
 			
 			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 			lp.leftMargin = 7;
-//			lp.addRule(RelativeLayout.BELOW, R.id.project_name);
 			
 			if (project.getDescription() == null || project.getDescription().equalsIgnoreCase("")) {
 				textView_projectDescription.setVisibility(View.GONE);
