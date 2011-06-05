@@ -5,6 +5,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.danielpecos.gtdtm.R;
@@ -40,9 +41,30 @@ public class ProjectViewHolder extends ViewHolder {
 	public void updateView(Activity activity) {
 		int completedTasks = project.getCompletedTasksCount();
 		int totalTasks = project.getTasksCount() - project.getDiscardedTasksCount();
+		
+		TextView textView_projectName = (TextView)getView(R.id.project_name);
+		TextView textView_projectDescription = (TextView)getView(R.id.project_description);
+		
+		if (textView_projectName != null && textView_projectDescription != null) {
+			
+			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			lp.leftMargin = 7;
+//			lp.addRule(RelativeLayout.BELOW, R.id.project_name);
+			
+			if (project.getDescription() == null || project.getDescription().equalsIgnoreCase("")) {
+				textView_projectDescription.setVisibility(View.GONE);
+				lp.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+			} else {
+				textView_projectDescription.setVisibility(View.VISIBLE);
+				lp.topMargin = 5;
+				lp.rightMargin = 7;
+				lp.bottomMargin = 1;
+			}
+			textView_projectName.setLayoutParams(lp);
+		}
 
-		((TextView)getView(R.id.project_name)).setText(project.getName());
-		((TextView)getView(R.id.project_description)).setText(project.getDescription());
+		textView_projectName.setText(project.getName());
+		textView_projectDescription.setText(project.getDescription());
 		((TextView)getView(R.id.project_status_text)).setText(completedTasks + "/" + totalTasks);
 
 		((ImageView)getView(R.id.project_status_icon)).setImageResource(this.getProjectStatusIcon(totalTasks, completedTasks));

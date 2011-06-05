@@ -44,8 +44,8 @@
     <string name="task_take_picture">Take picture</string>
     <string name="task_delete_picture">Delete picture</string>
     <string name="task_duedate_label">Task due date/time:</string>
-    <string name="task_duedate_button">Change due date</string>
-    <string name="task_duetime_button">Change due time</string>
+    <string name="task_duedate_button">Change date</string>
+    <string name="task_duetime_button">Change time</string>
 	<string name="task_map_label">Task location:</string>    
 	<string name="task_map_button">Change location</string>
 	<string name="task_location_latitude_label">Latitude:</string>

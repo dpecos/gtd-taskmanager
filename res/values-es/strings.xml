@@ -23,8 +23,8 @@
 	<string name="task_take_picture">Sacar foto</string>
 	<string name="task_delete_picture">Eliminar imagen</string>
 	<string name="task_duedate_label">Fecha y hora de vencimiento de la tarea:</string>
-	<string name="task_duedate_button">Cambiar la fecha de vencimiento</string>
-	<string name="task_duetime_button">Cambiar la hora de vencimientoo</string>
+	<string name="task_duedate_button">Cambiar fecha</string>
+	<string name="task_duetime_button">Cambiar hora</string>
 	<string name="task_map_label">Ubicación de la tarea:</string>
 	<string name="task_map_button">Cambiar ubicación</string>
 	<string name="task_location_latitude_label">Latitud:</string>
