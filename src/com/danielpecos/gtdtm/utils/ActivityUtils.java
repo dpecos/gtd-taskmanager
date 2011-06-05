@@ -133,6 +133,16 @@ public class ActivityUtils {
 		final EditText textBox = (EditText) dialogView.findViewById(R.id.textbox_text);
 		textBox.setText(text);
 
+		// show keyboard whenever textbox gets focus
+		textBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+		    @Override
+		    public void onFocusChange(View v, boolean hasFocus) {
+		        if (hasFocus) {
+		        	textboxDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		        }
+		    }
+		});
+
 		okButton.setOnClickListener(new OnClickListener() {
 			// @Override
 			public void onClick(View v) {

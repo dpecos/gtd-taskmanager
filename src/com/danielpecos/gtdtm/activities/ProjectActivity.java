@@ -151,7 +151,8 @@ public class ProjectActivity extends ListActivity {
 		);
 
 		this.setListAdapter(adapter);
-
+		// weird behaviour on terminal without this line
+		this.getListView().requestLayout();
 		this.registerForContextMenu(this.getListView());
 	}
 
