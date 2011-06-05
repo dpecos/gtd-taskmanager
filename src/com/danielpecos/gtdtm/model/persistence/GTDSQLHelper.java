@@ -102,6 +102,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			db.execSQL(sql);
 
 			db.setTransactionSuccessful();
+			
+			Log.i(TaskManager.TAG, "Database initialization successful");
 		} finally {
 			db.endTransaction();
 		}

@@ -156,7 +156,33 @@ public class Task implements Persistable, Cloneable {
 		}
 
 		db.close();
+		Log.d(TaskManager.TAG, "Task successfully stored");
+		return result;
+	}
 
+	@Override
+	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
+
+		SQLiteDatabase db = null;
+
+		if (dbParent == null) {
+			GTDSQLHelper helper = new GTDSQLHelper(ctx);
+			db = helper.getWritableDatabase();
+		} else {
+			db = dbParent;
+		}
+
+		boolean result = false;
+		if (this.id != 0) {
+			result = db.delete(GTDSQLHelper.TABLE_TASKS, BaseColumns._ID + "=" + this.getId(), null) > 0;
+		} else {
+			result =  false;
+		}
+
+		if (dbParent == null) {
+			db.close();
+		}
+		Log.d(TaskManager.TAG, "Task successfully removed");
 		return result;
 	}
 
@@ -193,11 +219,12 @@ public class Task implements Persistable, Cloneable {
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID))) {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID));
 		}
-
+		Log.d(TaskManager.TAG, "Task successfully loaded");
 		return true;
 	}
 
 	public boolean reload(android.content.Context ctx) {
+		Log.d(TaskManager.TAG, "Reloading Task from DDBB...");
 		boolean result = false;
 
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
@@ -216,33 +243,7 @@ public class Task implements Persistable, Cloneable {
 
 		return result;
 	}
-
-	@Override
-	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
-
-		SQLiteDatabase db = null;
-
-		if (dbParent == null) {
-			GTDSQLHelper helper = new GTDSQLHelper(ctx);
-			db = helper.getWritableDatabase();
-		} else {
-			db = dbParent;
-		}
-
-		boolean result = false;
-		if (this.id != 0) {
-			result = db.delete(GTDSQLHelper.TABLE_TASKS, BaseColumns._ID + "=" + this.getId(), null) > 0;
-		} else {
-			result =  false;
-		}
-
-		if (dbParent == null) {
-			db.close();
-		}
-
-		return result;
-	}
-
+	
 	@Override
 	public int hashCode() {
 		return (

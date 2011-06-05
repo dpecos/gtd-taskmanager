@@ -20,7 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context ctx, Intent intent) {
-		Log.d(TaskManager.TAG, "AlarmReceiver triggered!");
+		Log.i(TaskManager.TAG, "AlarmReceiver triggered!");
 		
 		Resources res = ctx.getResources();
 
@@ -54,6 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 				contentIntent
 		);
 		
+		Log.i(TaskManager.TAG, "Creating android notification");
 		nm.notify((int)task.getId(), notification);
 	}
 

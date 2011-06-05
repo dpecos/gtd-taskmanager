@@ -6,7 +6,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Log;
 
+import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
 
@@ -84,6 +86,7 @@ public class Project extends TaskContainer implements Persistable {
 			}
 		}
 		db.close();
+		Log.d(TaskManager.TAG, "Project successfully stored");
 		return result;
 	}
 
@@ -119,7 +122,7 @@ public class Project extends TaskContainer implements Persistable {
 				db.close();
 			}
 		}
-
+		Log.d(TaskManager.TAG, "Project successfully removed");
 		return result;
 	}
 
@@ -134,6 +137,7 @@ public class Project extends TaskContainer implements Persistable {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_GOOGLE_ID));
 		}
 		this.context_id = cursor.getLong(cursor.getColumnIndex(GTDSQLHelper.PROJECT_CONTEXTID));
+		Log.d(TaskManager.TAG, "Project successfully loaded");
 		return true;
 	}
 

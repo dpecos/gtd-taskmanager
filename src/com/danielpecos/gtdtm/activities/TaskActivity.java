@@ -3,9 +3,7 @@ package com.danielpecos.gtdtm.activities;
 import java.io.ByteArrayOutputStream;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,7 +21,6 @@ import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
-import com.danielpecos.gtdtm.receivers.AlarmReceiver;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.views.TaskViewHolder;
 import com.google.android.maps.GeoPoint;
@@ -121,13 +118,15 @@ public class TaskActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case ActivityUtils.MAP_ACTIVITY: 
+			Log.d(TaskManager.TAG, "TaskActivity: Returning from the map activity");
 			if (resultCode == Activity.RESULT_OK) {
-				GeoPoint point = new GeoPoint(data.getIntExtra(TaskMapActivity.LATITUD, 0), data.getIntExtra(TaskMapActivity.LONGITUD, 0));
+				GeoPoint point = new GeoPoint(data.getIntExtra(TaskMapActivity.LATITUDE, 0), data.getIntExtra(TaskMapActivity.LONGITUDE, 0));
 				task.setLocation(point);
 				taskViewHolder.updateView(this);
 			}
 			break;
 		case ActivityUtils.CAMERA_ACTIVITY: 
+			Log.d(TaskManager.TAG, "TaskActivity: Returning from the camera app");
 			if (resultCode == Activity.RESULT_OK) {
 
 				Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -181,7 +180,7 @@ public class TaskActivity extends Activity {
 	private void closeSavingChanges() {
 		Log.d(TaskManager.TAG, "TaskActivity: close activity saving changes");
 		task.store(TaskActivity.this);
-		this.setAlarm();
+		ActivityUtils.createAlarm(this, context, project, task);
 		Intent resultIntent = new Intent();
 		if (task.getName().equalsIgnoreCase(originalTask.getName()) 
 				&& (task.getDescription() == null || task.getDescription().equalsIgnoreCase(originalTask.getDescription())) 
@@ -195,23 +194,6 @@ public class TaskActivity extends Activity {
 		}
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();  
-	}
-
-	private void setAlarm() {
-		if (task.getDueDate() != null && task.getDueDate().getTime() > System.currentTimeMillis()) {
-			Intent intent = new Intent(this, AlarmReceiver.class);
-			intent.putExtra("task_id", task.getId());
-			intent.putExtra("project_id", project != null ? project.getId() : null);
-			intent.putExtra("context_id", context.getId());
-
-			PendingIntent appIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-			AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
-			am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
-			Log.i(TaskManager.TAG, "Alarm set");
-		} else {
-			Log.i(TaskManager.TAG, "Alarm not set: task due date already past");
-		}
 	}
 
 	private void closeAndDiscardChanges() {

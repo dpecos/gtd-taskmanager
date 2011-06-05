@@ -3,6 +3,7 @@ package com.danielpecos.gtdtm.activities.tasks;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
@@ -62,6 +63,7 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 	@Override
 	protected void onPostExecute(Void response) {
 		super.onPostExecute(response);
+		Log.i(TaskManager.TAG, "Demo data created succesffully");
 		progressDialog.dismiss();
 		if (this.onFinishedListener != null) {
 			onFinishedListener.onFinish();

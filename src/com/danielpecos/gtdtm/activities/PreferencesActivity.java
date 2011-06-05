@@ -22,7 +22,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
 
-		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		final SharedPreferences preferences = TaskManager.getPreferences();
 		
 		final Preference clearGooglePreferences = (Preference) findPreference("settings_clear_google");
 		clearGooglePreferences.setEnabled(!preferences.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, "").equalsIgnoreCase(""));
@@ -32,8 +32,7 @@ public class PreferencesActivity extends PreferenceActivity {
 				ActivityUtils.createConfirmDialog(PreferencesActivity.this, R.string.confirm_clear_google).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						SharedPreferences settings = preferences;
-						SharedPreferences.Editor editor = settings.edit();
+						SharedPreferences.Editor editor = preferences.edit();
 						editor.remove(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME);
 						editor.remove(GoogleAccountActivity.GOOGLE_AUTH_TOKEN);
 						editor.commit();

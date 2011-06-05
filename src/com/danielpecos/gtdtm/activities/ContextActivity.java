@@ -147,12 +147,10 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			initializeUI();
 			break;
 		case R.id.context_optionsMenu_preferences:
-			Intent i = new Intent(this, PreferencesActivity.class);  
-			startActivityForResult(i, ActivityUtils.PREFERENCES_ACTIVITY);
+			ActivityUtils.showPreferencesActivity(this);
 			break;
 		case R.id.context_optionsMenu_about:
-			i = new Intent(this, AboutActivity.class);  
-			startActivity(i);
+			ActivityUtils.showAboutActivity(this);
 			break;
 		}
 		return true;
@@ -507,12 +505,15 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
+			Log.d(TaskManager.TAG, "ContextActivity: Returning from the project activity");
 			if (this.triggerViewHolder != null) {
 				ProjectViewHolder projectViewHolder = (ProjectViewHolder) this.triggerViewHolder;
 				projectViewHolder.updateView(this);
 			}
 		} else if (requestCode == ActivityUtils.TASK_ACTIVITY) {
+			Log.d(TaskManager.TAG, "ContextActivity: Returning from the task activity");
 			if (resultCode == RESULT_OK) {
 				// task saved
 				if (data.getBooleanExtra(TaskActivity.FULL_RELOAD, false)) {
@@ -527,6 +528,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				taskViewHolder.updateView(this);
 			}
 		} else if (requestCode == ActivityUtils.GOOGLE_ACCOUNT_ACTIVITY) {
+			Log.d(TaskManager.TAG, "ContextActivity: Returning from the google account activity");
 			if (resultCode == RESULT_OK) {
 				Long contextId = data.getLongExtra("context_id", -1);
 				Context context = taskManager.getContext(contextId);
@@ -534,6 +536,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				synchronizeGoogleTasks(context);
 			}
 		} else if (requestCode == ActivityUtils.PREFERENCES_ACTIVITY) {
+			Log.d(TaskManager.TAG, "ContextActivity: Returning from the preferences activity");
 			if (resultCode == RESULT_OK) {
 				this.initializeUI();
 			}

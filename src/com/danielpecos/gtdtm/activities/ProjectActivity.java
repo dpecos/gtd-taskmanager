@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -210,6 +211,7 @@ public class ProjectActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == ActivityUtils.TASK_ACTIVITY) {
+			Log.d(TaskManager.TAG, "ProjectActivity: Returning from the task activity");
 			if (resultCode == RESULT_OK) {
 				// task saved
 				if (data.getBooleanExtra(TaskActivity.FULL_RELOAD, false)) {

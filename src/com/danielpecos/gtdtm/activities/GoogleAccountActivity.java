@@ -19,15 +19,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.danielpecos.gtdtm.model.TaskManager;
-import com.danielpecos.gtdtm.utils.GoogleTasksClient;
-import com.google.api.client.extensions.android2.AndroidHttp;
-import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
 import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson.JacksonFactory;
-import com.google.api.services.tasks.v1.Tasks;
 
 /*
  * http://code.google.com/p/google-api-java-client/wiki/AndroidAccountManager
@@ -48,7 +42,6 @@ public class GoogleAccountActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		System.out.println("onCreate");
 		super.onCreate(savedInstanceState);
 		accountManager = new GoogleAccountManager(this);
 		Logger.getLogger("com.google.api.client").setLevel(Level.ALL);
@@ -150,7 +143,7 @@ public class GoogleAccountActivity extends Activity {
 			try {
 				response.ignore();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				Log.e(TaskManager.TAG, "GTasks: error", e);
 			}
 			// TODO(yanivi): should only try this once to avoid infinite loop
 			if (statusCode == 401) {

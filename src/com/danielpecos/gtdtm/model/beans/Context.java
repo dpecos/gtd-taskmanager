@@ -9,7 +9,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Log;
 
+import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
 
@@ -118,12 +120,12 @@ public class Context extends TaskContainer implements Persistable {
 			}
 		}
 		helper.close();
+		Log.d(TaskManager.TAG, "Context successfully stored");
 		return result;
 	}
 
 	@Override
 	public boolean remove(android.content.Context ctx, SQLiteDatabase dbParent) {
-
 		SQLiteDatabase db = null;
 
 		if (dbParent == null) {
@@ -152,6 +154,7 @@ public class Context extends TaskContainer implements Persistable {
 				db.close();
 			}
 		}
+		Log.d(TaskManager.TAG, "Context successfully removed");
 		return result;
 	}
 
@@ -167,6 +170,7 @@ public class Context extends TaskContainer implements Persistable {
 
 	@Override
 	public boolean load(SQLiteDatabase db, Cursor cursor) {
+		Log.d(TaskManager.TAG, "Loading context...");
 		this.id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID));
 		this.name = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_NAME));
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_GOOGLE_ID))) {
@@ -188,6 +192,7 @@ public class Context extends TaskContainer implements Persistable {
 			if (cursor_projects != null && !cursor_projects.isClosed()) {
 				cursor_projects.close();
 			}
+			Log.d(TaskManager.TAG, "Context successfully loaded");
 		}
 	}
 

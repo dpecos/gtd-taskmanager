@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
@@ -122,6 +123,7 @@ public abstract class TaskContainer implements Iterable<Task> {
 	}
 
 	protected boolean loadTasks(SQLiteDatabase db, String table, String where) {
+		Log.d(TaskManager.TAG, "Loading tasks...");
 		Cursor cursor = null;
 
 		try {
@@ -156,16 +158,19 @@ public abstract class TaskContainer implements Iterable<Task> {
 			if (cursor != null && !cursor.isClosed()) {
 				cursor.close();
 			}
+			Log.d(TaskManager.TAG, "Tasks successfully loaded");
 		}
 	}
 
 	protected boolean removeTasks(android.content.Context ctx, SQLiteDatabase db) {
+		Log.d(TaskManager.TAG, "Removing tasks...");
 		for (Task t : this) {
 			if (!t.remove(ctx, db)) {
 				return false;
 			}
 		}
-
+		
+		boolean result = true;
 		if (this.tasks.size() > 0) {
 
 			if (this instanceof Context) {
@@ -174,10 +179,12 @@ public abstract class TaskContainer implements Iterable<Task> {
 				return (db.delete(GTDSQLHelper.TABLE_PROJECTS_TASKS, GTDSQLHelper.PROJECT_ID + "=" + ((Project)this).getId(), null) > 0);
 			}
 
-			return false;
+			result = false;
 		} else {
-			return true;
+			result = true;
 		}
+		Log.d(TaskManager.TAG, "Tasks successfully removed");
+		return result;
 	}
 
 }

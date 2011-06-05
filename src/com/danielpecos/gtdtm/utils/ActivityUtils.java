@@ -1,8 +1,10 @@
 package com.danielpecos.gtdtm.utils;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -17,7 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
+import com.danielpecos.gtdtm.activities.AboutActivity;
 import com.danielpecos.gtdtm.activities.GoogleAccountActivity;
+import com.danielpecos.gtdtm.activities.PreferencesActivity;
 import com.danielpecos.gtdtm.activities.ProjectActivity;
 import com.danielpecos.gtdtm.activities.TaskActivity;
 import com.danielpecos.gtdtm.activities.TaskMapActivity;
@@ -25,6 +29,7 @@ import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
+import com.danielpecos.gtdtm.receivers.AlarmReceiver;
 
 public class ActivityUtils {
 	public static final int PROJECT_ACTIVITY = 0;
@@ -39,6 +44,7 @@ public class ActivityUtils {
 		intent.putExtra("context_id", context.getId());
 		intent.putExtra("project_id", project.getId());
 		activity.startActivityForResult(intent, PROJECT_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for ProjectActivity");
 	}
 
 	public static void showTaskActivity(Activity activity, Context context, Project project, Task task) {
@@ -48,12 +54,14 @@ public class ActivityUtils {
 			intent.putExtra("project_id", project.getId());
 		intent.putExtra("task_id", task.getId());
 		activity.startActivityForResult(intent, TASK_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for TaskActivity");
 
 	}
 
 	public static void callDefaultCameraApp(Activity activity) {
 		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 		activity.startActivityForResult(intent, CAMERA_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for camera app");
 	}
 
 
@@ -61,6 +69,7 @@ public class ActivityUtils {
 		Intent intent = new Intent(activity.getBaseContext(), TaskMapActivity.class);   
 		intent.putExtra("task_id", task.getId());
 		activity.startActivityForResult(intent, MAP_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for MapActivity");
 	} 
 
 	public static void showGoogleAccountActivity(Activity activity, Context context, Boolean invalidate) {
@@ -69,7 +78,37 @@ public class ActivityUtils {
 		intent.putExtra("context_id", context.getId());
 		Log.d(TaskManager.TAG, "GTasks: invoking GoogleAccountActivity");
 		activity.startActivityForResult(intent, GOOGLE_ACCOUNT_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for GoogleAccountActivity");
 	}	
+	
+	public static void showPreferencesActivity(Activity activity) {
+		Intent i = new Intent(activity, PreferencesActivity.class);  
+		activity.startActivityForResult(i, PREFERENCES_ACTIVITY);
+		Log.d(TaskManager.TAG, "Intent for PreferencesActivity");
+	}
+	
+	public static void showAboutActivity(Activity activity) {
+		Intent i = new Intent(activity, AboutActivity.class);  
+		activity.startActivity(i);
+		Log.d(TaskManager.TAG, "Intent for AboutActivity");
+	}
+	
+	public static void createAlarm(Activity activity, Context context, Project project, Task task) {
+		if (task.getDueDate() != null && task.getDueDate().getTime() > System.currentTimeMillis()) {
+			Intent intent = new Intent(activity, AlarmReceiver.class);
+			intent.putExtra("task_id", task.getId());
+			intent.putExtra("project_id", project != null ? project.getId() : null);
+			intent.putExtra("context_id", context.getId());
+
+			PendingIntent appIntent = PendingIntent.getBroadcast(activity, 0, intent, 0);
+
+			AlarmManager am = (AlarmManager)activity.getSystemService(android.content.Context.ALARM_SERVICE);
+			am.set(AlarmManager.RTC_WAKEUP, task.getDueDate().getTime(), appIntent);
+			Log.i(TaskManager.TAG, "Alarm set");
+		} else {
+			Log.i(TaskManager.TAG, "Alarm not set: task due date already past");
+		}
+	}
 
 	public static void showTextBoxDialog(final android.content.Context context, String title, String label, String text, final OnDismissListener listener) {
 

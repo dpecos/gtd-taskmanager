@@ -27,8 +27,8 @@ import de.android1.overlaymanager.ManagedOverlayItem;
 import de.android1.overlaymanager.OverlayManager;
 
 public class TaskMapActivity extends MapActivity {
-	public static final String LATITUD = "latitud";
-	public static final String LONGITUD = "longitud";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
 
 	private Task task;
 	private GeoPoint point;
@@ -49,7 +49,7 @@ public class TaskMapActivity extends MapActivity {
 
 		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
 		String mapType = p.getString("settings_map_type", null);
-		Log.i(TaskManager.TAG, "Map type: " + mapType);
+		Log.i(TaskManager.TAG, "Using map mode " + mapType);
 
 		Boolean satelliteMapType = (mapType != null && mapType.equalsIgnoreCase(this.getString(R.string.settings_map_type_default)));
 		mapView.setSatellite(satelliteMapType);
@@ -68,6 +68,7 @@ public class TaskMapActivity extends MapActivity {
 		final OverlayManager overlayManager = new OverlayManager(this, mapView);
 		final ManagedOverlay managedOverlay = overlayManager.createOverlay(marker);
 		if (task.getLocation() != null) {
+			Log.i(TaskManager.TAG, "Initial mark set on " + task.getLocation().getLatitudeE6() + ", " + task.getLocation().getLongitudeE6());
 			this.item = managedOverlay.createItem(task.getLocation(), task.getName(), task.getDescription());
 		}
 		overlayManager.populate();
@@ -89,6 +90,7 @@ public class TaskMapActivity extends MapActivity {
 					managedOverlay.remove(item);
 					Log.d(TaskManager.TAG, "Removed previous map marker");
 				}
+				Log.i(TaskManager.TAG, "Mark set on " + point.getLatitudeE6() + ", " + point.getLongitudeE6());
 				item = managedOverlay.createItem(point, task.getName(), task.getDescription());
 				overlayManager.populate();
 
@@ -119,8 +121,8 @@ public class TaskMapActivity extends MapActivity {
 	public void onBackPressed() {
 		Intent resultIntent = new Intent();
 		if (this.point != null) {
-			resultIntent.putExtra(TaskMapActivity.LATITUD, this.point.getLatitudeE6());
-			resultIntent.putExtra(TaskMapActivity.LONGITUD, this.point.getLongitudeE6());
+			resultIntent.putExtra(TaskMapActivity.LATITUDE, this.point.getLatitudeE6());
+			resultIntent.putExtra(TaskMapActivity.LONGITUDE, this.point.getLongitudeE6());
 			this.setResult(RESULT_OK, resultIntent);
 		} else {
 			this.setResult(RESULT_CANCELED, resultIntent);

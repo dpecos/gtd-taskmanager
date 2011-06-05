@@ -14,6 +14,7 @@ import android.graphics.Matrix;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -35,6 +36,7 @@ import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import com.danielpecos.gtdtm.R;
+import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
@@ -50,7 +52,7 @@ public class TaskViewHolder extends ViewHolder {
 	private TextView textView_taskDescription;
 	private EditText editText_taskDescription;
 	private Button button_taskDescriptionClear;
-	private ImageView imageView_taskStatus;
+	private ImageView imageViewCheckBox_taskStatus;
 	private Spinner spinner_taskPriority;
 	private ToggleButton toggleButton_taskDiscarded;
 	private Button button_takePicture;
@@ -153,14 +155,15 @@ public class TaskViewHolder extends ViewHolder {
 					@Override
 					public void onClick(View v) {
 						editText_taskDescription.setText("");
+						Log.d(TaskManager.TAG, "Description text cleared");
 					}
 				});
 			}
 		}
 
-		this.imageView_taskStatus = (ImageView)getView(R.id.task_status_check);
-		if (this.imageView_taskStatus != null) {
-			this.imageView_taskStatus.setOnClickListener(new OnClickListener() {
+		this.imageViewCheckBox_taskStatus = (ImageView)getView(R.id.task_status_check);
+		if (this.imageViewCheckBox_taskStatus != null) {
+			this.imageViewCheckBox_taskStatus.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 
@@ -291,7 +294,8 @@ public class TaskViewHolder extends ViewHolder {
 							updateView(activity);
 						}
 					}, mYear, mMonth, mDay).show();
-
+					
+					Log.d(TaskManager.TAG, "Due date set");
 				}
 			});
 		}
@@ -328,7 +332,8 @@ public class TaskViewHolder extends ViewHolder {
 							updateView(activity);
 						}
 					}, mHour, mMinute, true).show();
-
+					
+					Log.d(TaskManager.TAG, "Due time set");
 				}
 			});
 		}
@@ -341,6 +346,7 @@ public class TaskViewHolder extends ViewHolder {
 				@Override
 				public void onClick(View v) {
 					ActivityUtils.showMapActivity(activity, task);
+					Log.d(TaskManager.TAG, "Location set");
 				}
 			});
 		}
@@ -363,6 +369,7 @@ public class TaskViewHolder extends ViewHolder {
 				public void onClick(View v) {
 					task.setPicture(null);
 					updateView(activity);
+					Log.d(TaskManager.TAG, "Picture deleted");
 				}
 			});
 		}
@@ -417,21 +424,21 @@ public class TaskViewHolder extends ViewHolder {
 				}
 			}
 
-			if (this.imageView_taskStatus != null) {
+			if (this.imageViewCheckBox_taskStatus != null) {
 				boolean callbacksEnabled = this.isCallbacksEnabled();
 				this.setCallbacksEnabled(false);
 
 				if (task.getStatus() == Task.Status.Completed) {
-					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_on);	
+					this.imageViewCheckBox_taskStatus.setImageResource(R.drawable.btn_check_on);	
 				} else if (task.getStatus() == Task.Status.Discarded_Completed) {
-					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_on_disable);
+					this.imageViewCheckBox_taskStatus.setImageResource(R.drawable.btn_check_on_disable);
 				} else if (task.getStatus() == Task.Status.Active) {
-					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_off);
+					this.imageViewCheckBox_taskStatus.setImageResource(R.drawable.btn_check_off);
 				} else if (task.getStatus() == Task.Status.Discarded) {
-					this.imageView_taskStatus.setImageResource(R.drawable.btn_check_off_disable);
+					this.imageViewCheckBox_taskStatus.setImageResource(R.drawable.btn_check_off_disable);
 				}
 
-				this.imageView_taskStatus.requestLayout();
+				this.imageViewCheckBox_taskStatus.requestLayout();
 
 				this.setCallbacksEnabled(callbacksEnabled);
 			}
@@ -464,14 +471,16 @@ public class TaskViewHolder extends ViewHolder {
 
 				ArrayList<View> views = new ArrayList<View>();
 
+				int i = 0;
+				
 				if (this.task.getDueDate() != null && this.task.getDueDate().getTime() > System.currentTimeMillis()) {
-					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm));
+					views.add(this.newTaskIcon(R.drawable.stat_notify_alarm, (i++ % 2) == 0));
 				}
 				if (this.task.getPicture() != null) {
-					views.add(this.newTaskIcon(R.drawable.ic_menu_camera_little));
+					views.add(this.newTaskIcon(R.drawable.ic_menu_camera_little, (i++ % 2) == 0));
 				}
 				if (this.task.getLocation() != null) {
-					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on));
+					views.add(this.newTaskIcon(R.drawable.stat_sys_gps_on, (i++ % 2) == 0));
 				}
 
 				if (views.size() > 0) {
@@ -487,7 +496,7 @@ public class TaskViewHolder extends ViewHolder {
 					this.layout_taskIcons_2.setVisibility(View.GONE);
 				}
 
-				for (int i=0; i<views.size(); i++) {
+				for (i = 0; i<views.size(); i++) {
 					if (i < 2) {
 						this.layout_taskIcons_1.addView(views.get(i));
 					} else {
@@ -637,8 +646,8 @@ public class TaskViewHolder extends ViewHolder {
 	}
 
 	private void setInterfaceEnabled(boolean enabled) {
-		if (this.imageView_taskStatus != null) 
-			this.imageView_taskStatus.setEnabled(enabled);
+		if (this.imageViewCheckBox_taskStatus != null) 
+			this.imageViewCheckBox_taskStatus.setEnabled(enabled);
 		if (this.editText_taskName != null) {
 			this.editText_taskName.setEnabled(enabled);
 			this.editText_taskName.setInputType(enabled ? InputType.TYPE_CLASS_TEXT : InputType.TYPE_NULL);
@@ -670,7 +679,7 @@ public class TaskViewHolder extends ViewHolder {
 			this.button_changeMapPosition.setEnabled(enabled);
 	}
 
-	private ImageView newTaskIcon(int drawableId) {
+	private ImageView newTaskIcon(int drawableId, boolean setMargins) {
 		ImageView icon = new ImageView(view.getContext());
 		icon.setImageResource(drawableId);
 
@@ -684,7 +693,9 @@ public class TaskViewHolder extends ViewHolder {
 		LayoutParams frame = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		frame.width = (int) (38 * 0.7);
 		frame.height = (int) (38 * 0.7);
-		frame.setMargins(0, 1, 0, 1);
+		if (setMargins) {
+			frame.setMargins(0, 0, 0, 5);
+		}
 		icon.setLayoutParams(frame);
 
 		return icon;

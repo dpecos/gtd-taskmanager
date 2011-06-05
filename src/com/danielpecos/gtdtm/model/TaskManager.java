@@ -41,13 +41,9 @@ public class TaskManager {
 
 	public static TaskManager getInstance(android.content.Context ctx) {
 		if (instance == null) {
+			Log.d(TAG, "TaskManager loaded");
 			instance = new TaskManager(ctx);
 		}
-		return instance;
-	}
-
-	public static TaskManager reset(android.content.Context ctx) {
-		instance = new TaskManager(ctx);
 		return instance;
 	}
 
@@ -56,6 +52,12 @@ public class TaskManager {
 
 		this.contexts = new LinkedHashMap<Long, Context>();
 		this.loadDatabase(ctx);
+	}
+	
+	public static TaskManager reset(android.content.Context ctx) {
+		instance = new TaskManager(ctx);
+		Log.d(TAG, "TaskManager reset");
+		return instance;
 	}
 
 	public static SharedPreferences getPreferences() {
@@ -82,6 +84,7 @@ public class TaskManager {
 	}
 
 	private boolean loadDatabase(android.content.Context ctx) {
+		Log.i(TAG, "Loading data from database...");
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 
 		SQLiteDatabase db = helper.getReadableDatabase();
@@ -109,6 +112,7 @@ public class TaskManager {
 				cursor.close();
 			}
 			db.close();
+			Log.i(TAG, "Data loading finished");
 		}
 	}
 
@@ -126,13 +130,15 @@ public class TaskManager {
 	}
 
 	public boolean synchronizeGTasks(Activity activity, Context context) {
-
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(activity);
+		SharedPreferences settings = getPreferences();
 		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
 		
 		if (accountName == null) {
+			Log.i(TAG, "Google Tasks authorization required");
 			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
+			return false;
 		} else {
+			Log.i(TAG, "Synchronizing with Google Tasks...");
 			String authToken = settings.getString(GoogleAccountActivity.GOOGLE_AUTH_TOKEN, null);
 
 			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
@@ -207,10 +213,11 @@ public class TaskManager {
 				} else {
 					Log.e(TaskManager.TAG, "GTasks: unknown error: " + e.getMessage(), e);
 				}
+				return false;
+			} finally {
+				Log.i(TAG, "Synchronization finished.");
 			}
 		}
-
-		return false;
 
 	}
 
