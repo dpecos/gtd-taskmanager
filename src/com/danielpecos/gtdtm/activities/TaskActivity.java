@@ -72,7 +72,7 @@ public class TaskActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.menu_save: {
+		case R.id.task_optionsMenu_save: {
 			closeSavingChanges();
 			return true;
 		}
@@ -80,7 +80,7 @@ public class TaskActivity extends Activity {
 			closeAndDiscardChanges();
 			return true;
 		}*/
-		case R.id.menu_revert: {
+		case R.id.task_optionsMenu_revert: {
 			closeAndDiscardChanges();
 			return true;
 		}

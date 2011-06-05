@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item 
+		android:id="@+id/project_optionsMenu_addTask"
+    	android:title="@string/project_optionsMenu_addTask"
+    	android:icon="@drawable/ic_menu_compose"/>		
     <item 
 		android:id="@+id/project_optionsMenu_renameProject"
     	android:title="@string/project_optionsMenu_renameProject"
-		android:icon="@drawable/ic_menu_edit"/>
+    	android:icon="@drawable/ic_menu_edit"/>
 	<item 
 		android:id="@+id/project_optionsMenu_changeDescription"
     	android:title="@string/project_optionsMenu_changeDescription"
-		android:icon="@drawable/ic_menu_compose"/>
+    	android:icon="@drawable/ic_menu_compose"/>
 </menu>

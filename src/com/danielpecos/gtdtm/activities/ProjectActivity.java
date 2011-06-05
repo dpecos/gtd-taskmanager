@@ -187,6 +187,26 @@ public class ProjectActivity extends ListActivity {
 					});
 			break;
 		}
+		case R.id.project_optionsMenu_addTask: {
+
+			ActivityUtils.showTextBoxDialog(
+					this, 
+					this.getResources().getString(R.string.textbox_addTask_title), 
+					this.getResources().getString(R.string.textbox_addTask_label), 
+					null,
+					new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
+							if (project.createTask(ProjectActivity.this, taskName, null, Task.Priority.Normal) != null) {
+								initializeUI();
+							} else {
+								Toast.makeText(ProjectActivity.this, R.string.error_creatingTask, Toast.LENGTH_SHORT).show();
+							}
+						}
+					});
+			return true;
+		}
 		}
 		return true;
 	}

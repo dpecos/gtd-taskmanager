@@ -240,7 +240,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							public void onDismiss(DialogInterface dialog) {
 								String taskName = ((EditText)((Dialog)dialog).findViewById(R.id.textbox_text)).getText().toString();
 								if (project.createTask(ContextActivity.this, taskName, null, Task.Priority.Normal) != null) {
-									initializeUI();
+									//initializeUI();
+									triggerViewHolder = projectViewHolders.get(project.getId());
+									ActivityUtils.showProjectActivity(ContextActivity.this, context, project);
 								} else {
 									Toast.makeText(ContextActivity.this, R.string.error_creatingTask, Toast.LENGTH_SHORT).show();
 								}

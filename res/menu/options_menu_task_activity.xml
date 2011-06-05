@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/task_save"
-		android:id="@+id/menu_save"
-		android:icon="@android:drawable/ic_menu_save"/>
-    <!-- item android:title="@string/task_delete"
-		android:id="@+id/menu_delete"
-		android:icon="@android:drawable/ic_menu_delete"/-->	
-	<item android:title="@string/task_revert"
-		android:id="@+id/menu_revert"
-		android:icon="@android:drawable/ic_menu_revert"/>			
+    <item android:title="@string/task_optionsMenu_save"
+		android:id="@+id/task_optionsMenu_save"
+		android:icon="@drawable/ic_menu_save"/>
+	<item android:title="@string/task_optionsMenu_revert"
+		android:id="@+id/task_optionsMenu_revert"
+		android:icon="@drawable/ic_menu_revert"/>			
 </menu>

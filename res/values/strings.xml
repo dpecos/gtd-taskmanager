@@ -52,18 +52,19 @@
 	<string name="task_map_button">Change location</string>
 	<string name="task_location_latitude_label">Latitude:</string>
 	<string name="task_location_longitud_label">Longitude:</string> 
-    <string name="task_save">Save</string>
     <string name="task_delete">Delete</string>
-    <string name="task_revert">Revert changes</string>
     <string name="task_quit_title">Do you want to save changes?</string>
     <string name="task_quit_message">If you leave without saving, all changes applied to this task will be lost!</string>
+        
+	<string name="task_optionsMenu_save">Save</string>   
+	<string name="task_optionsMenu_revert">Revert changes</string>     
         
     <string name="context_loadDemo_title">Load demo data?</string>
     <string name="context_loadDemo_message">You haven\'t created any context list. Do you want to load some demo data?</string>
     <string name="context_loadDemo_creating">Creating demo data...</string>
     <!--  string name="context_loading_data">Loading data...</string-->
     
-    <string name="context_optionsMenu_addContext">Add Context...</string>
+    <string name="context_optionsMenu_addContext">Add new Context</string>
     <string name="context_optionsMenu_reloadData">Refresh data</string>
     <string name="context_optionsMenu_settings">Settings</string>
     <string name="context_optionsMenu_about">About</string>
@@ -75,8 +76,8 @@
     <string name="context_contextMenu_deleteContext">Delete Context</string>
 	<string name="context_contextMenu_deleteProject">Delete Project</string>
 	<string name="context_contextMenu_deleteTask">Delete Task</string>
-    <string name="context_contextMenu_addProject">Add Project</string>
-    <string name="context_contextMenu_addTask">Add Task</string>
+    <string name="context_contextMenu_addProject">Add new Project</string>
+    <string name="context_contextMenu_addTask">Add new Task</string>
     <string name="context_contextMenu_synchronizeGTasks">Synchronize Google Tasks</string>
     
     <string name="textbox_addContext_title">Create new Context</string>
@@ -108,6 +109,7 @@
 
 	<string name="project_optionsMenu_renameProject">Rename Project</string>
 	<string name="project_optionsMenu_changeDescription">Change description</string>
+	<string name="project_optionsMenu_addTask">Add new Task</string>
 	
 	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
 	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
@@ -145,7 +147,7 @@
     <string name="settings_map_type_default">type_satellite</string>
     
     <string name="settings_clearGoogle_title">Clear Google Tasks account</string>  
-    <string name="settings_clearGoogle_summary">Forget Google Tasks account preferences</string>    
+    <string name="settings_clearGoogle_summary">Forget authorized Google Tasks account</string>    
     
     <string name="settings_backup_store_title">Backup data</string>
     <string name="settings_backup_store_summary">Save a backup file</string>
