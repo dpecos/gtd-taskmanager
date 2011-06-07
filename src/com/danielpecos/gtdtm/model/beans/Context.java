@@ -92,6 +92,15 @@ public class Context extends TaskContainer implements Persistable {
 		return this.projects.get(id);
 	}
 
+	public Project getProjectByGoogleId(String googleId) {
+		for (Project project : this.projects.values()) {
+			if (project.getGoogleId() != null && project.getGoogleId().equalsIgnoreCase(googleId)) {
+				return project;
+			}
+		}
+		return null;
+	}
+	
 	public Collection<Project> getProjects() {
 		return this.projects.values();
 	}

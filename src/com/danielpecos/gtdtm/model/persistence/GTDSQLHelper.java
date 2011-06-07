@@ -9,7 +9,7 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 
 public class GTDSQLHelper extends SQLiteOpenHelper {
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "gtd_taskmanager.db";
 
 	// Table name
@@ -37,6 +37,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	public static final String TASK_LOCATION_LAT = "location_lat";
 	public static final String TASK_LOCATION_LONG = "location_long";	
 	public static final String TASK_GOOGLE_ID = "googleId";
+	public static final String TASK_LAST_TIME_PERSISTED = "lastTimePersisted";
 
 	public static final String CONTEXT_ID = "context_id";
 	public static final String PROJECT_ID = "project_id";
@@ -79,7 +80,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ TASK_PICTURE + " blob, "
 			+ TASK_LOCATION_LAT + " integer, "
 			+ TASK_LOCATION_LONG + " integer, "
-			+ TASK_GOOGLE_ID + " text "
+			+ TASK_GOOGLE_ID + " text, "
+			+ TASK_LAST_TIME_PERSISTED + " datetime "
 			+ ");";
 			db.execSQL(sql);
 
@@ -116,16 +118,15 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 			Log.w(TaskManager.TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
-			/*String sql = null;
+			StringBuffer sql = new StringBuffer();
 			if (oldVersion == 1) {
-				sql = "alter table " + TABLE_TASKS + " add " + TASK_DUEDATETIME + " datetime ";
+				sql.append("alter table " + TABLE_TASKS + " add " + TASK_LAST_TIME_PERSISTED + " datetime ");
 			} else if (oldVersion == 2) {
-				sql = "";
 			}
 
-			if (sql != null) {
-				db.execSQL(sql);
-			}*/
+			if (sql.length() > 0) {
+				db.execSQL(sql.toString());
+			}
 		}
 	}
 	

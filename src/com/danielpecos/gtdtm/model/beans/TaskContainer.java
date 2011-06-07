@@ -77,6 +77,15 @@ public abstract class TaskContainer implements Iterable<Task> {
 		return this.tasks.get(id);
 	}
 
+	public Task getTaskByGoogleId(String googleId) {
+		for (Task task : this.tasks.values()) {
+			if (task.getGoogleId() != null && task.getGoogleId().equalsIgnoreCase(googleId)) {
+				return task;
+			}
+		}
+		return null;
+	}
+	
 	public int getTasksCount() {
 		return this.tasks.size();
 	}

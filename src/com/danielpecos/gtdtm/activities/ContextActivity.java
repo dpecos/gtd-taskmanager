@@ -361,7 +361,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		listViewStatus.put(taskManager.elementAt(groupPosition).getId(), true);
 	}
 
-	private void initializeUI() {
+	public void initializeUI() {
 
 		ExpandableListView listView = this.getExpandableListView();
 

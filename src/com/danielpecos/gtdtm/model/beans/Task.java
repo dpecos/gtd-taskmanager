@@ -38,6 +38,7 @@ public class Task implements Persistable, Cloneable {
 	Type type;
 	byte[] picture;
 	String googleId;
+	Date lastTimePersisted;
 
 	Task() {
 		this.priority = Priority.Normal;
@@ -126,11 +127,20 @@ public class Task implements Persistable, Cloneable {
 		this.googleId = googleId;
 	}
 
+	public Date getLastTimePersisted() {
+		return lastTimePersisted;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
+		Date now = new Date(System.currentTimeMillis());
+		return this.store(ctx, now);
+		
+	}
+	public long store(android.content.Context ctx, Date date) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
-
+		
 		long result = 0;
 
 		ContentValues values = new ContentValues();
@@ -143,7 +153,8 @@ public class Task implements Persistable, Cloneable {
 		values.put(GTDSQLHelper.TASK_LOCATION_LAT, this.getLocation() != null ? this.getLocation().getLatitudeE6() : null);
 		values.put(GTDSQLHelper.TASK_LOCATION_LONG, this.getLocation() != null ? this.getLocation().getLongitudeE6() : null);
 		values.put(GTDSQLHelper.TASK_GOOGLE_ID, this.googleId);
-
+		values.put(GTDSQLHelper.TASK_LAST_TIME_PERSISTED, iso8601Format.format(date));
+		
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 			result = this.id;
@@ -154,9 +165,13 @@ public class Task implements Persistable, Cloneable {
 				result = -1;
 			}
 		}
+		
+		if (result != -1) {
+			this.lastTimePersisted = date;
+		}
 
 		db.close();
-		Log.d(TaskManager.TAG, "Task successfully stored");
+		Log.d(TaskManager.TAG, "DDBB: Task successfully stored");
 		return result;
 	}
 
@@ -182,7 +197,7 @@ public class Task implements Persistable, Cloneable {
 		if (dbParent == null) {
 			db.close();
 		}
-		Log.d(TaskManager.TAG, "Task successfully removed");
+		Log.d(TaskManager.TAG, "DDBB: Task successfully removed");
 		return result;
 	}
 
@@ -204,7 +219,7 @@ public class Task implements Persistable, Cloneable {
 					this.dueDate = null;
 				}
 			} catch (ParseException e) {
-				Log.e(TaskManager.TAG, e.getMessage(), e);
+				Log.e(TaskManager.TAG, "DDBB: " + e.getMessage(), e);
 			}
 		}
 
@@ -219,12 +234,28 @@ public class Task implements Persistable, Cloneable {
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID))) {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID));
 		}
-		Log.d(TaskManager.TAG, "Task successfully loaded");
+		
+		if (this.lastTimePersisted == null) {
+			if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED))) {
+				try {
+					String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED));
+					if (date != null && !date.equalsIgnoreCase("")) {
+						this.lastTimePersisted = iso8601Format.parse(date);
+					} else {
+						this.lastTimePersisted = null;
+					}
+				} catch (ParseException e) {
+					Log.e(TaskManager.TAG, "DDBB: " + e.getMessage(), e);
+				}
+			}
+		}
+		
+		Log.d(TaskManager.TAG, "DDBB: Task successfully loaded");
 		return true;
 	}
 
 	public boolean reload(android.content.Context ctx) {
-		Log.d(TaskManager.TAG, "Reloading Task from DDBB...");
+		Log.d(TaskManager.TAG, "DDBB: Reloading Task from DDBB...");
 		boolean result = false;
 
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);

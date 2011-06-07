@@ -1,6 +1,7 @@
 package com.danielpecos.gtdtm.utils;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,20 +18,16 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.tasks.v1.Tasks;
+import com.google.api.services.tasks.v1.Tasks.TasksOperations.List;
 import com.google.api.services.tasks.v1.Tasks.TasksOperations.Move;
 import com.google.api.services.tasks.v1.model.Task;
 import com.google.api.services.tasks.v1.model.TaskList;
 import com.google.api.services.tasks.v1.model.TaskLists;
 
-
-
-/* 
- * http://code.google.com/apis/tasks/v1/using.html
- */
-
 public class GoogleTasksClient {
 
-	private static SimpleDateFormat rfc3339Format = new SimpleDateFormat("yyyy-MM-dd'T'h:m:ss.SZ");
+	private static SimpleDateFormat rfc3339DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
+	private static SimpleDateFormat rfc3339DateFormat_FractSecs = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 
 	private static String apiKey = "AIzaSyB9Uw7kh3jdyoO9FkzTjAtAkf48on1HI8U";
 
@@ -55,31 +52,79 @@ public class GoogleTasksClient {
 		this.service.accessKey = apiKey;
 	}
 
-	public void getTaskLists() throws IOException {
-		TaskLists taskLists = this.service.tasklists.list().execute();
-
-		for (TaskList taskList : taskLists.items) {
-			System.out.println(taskList.title);
+	public String getTaskListByName(String title) throws IOException {
+		try {
+			TaskLists taskLists = this.service.tasklists.list().execute();
+			for (TaskList taskList : taskLists.items) {
+				if (taskList.title.equalsIgnoreCase(title)) {
+					return taskList.id;
+				}
+			}
+		} catch (IOException e) {
+			if (e instanceof HttpResponseException) {
+				HttpResponse response = ((HttpResponseException) e).response;
+				int statusCode = response.statusCode;
+				if (statusCode == 404) {
+					Log.e(TaskManager.TAG, "Gtasks: could not get user's lists", e);
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
 		}
+		return null;
+	}
+
+	public String getTaskList(String googleId) throws IOException {
+
+		TaskList taskList = null;
+		try {
+			taskList = this.service.tasklists.get(googleId).execute();
+			return taskList.id;
+		} catch (IOException e) {
+			if (e instanceof HttpResponseException) {
+				HttpResponse response = ((HttpResponseException) e).response;
+				int statusCode = response.statusCode;
+				if (statusCode == 404) {
+					Log.e(TaskManager.TAG, "Gtasks: list not found", e);
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
+			}
+		}
+		return null;
+	}
+
+	public com.google.api.services.tasks.v1.model.Tasks getTasksFromList(String googleId) throws IOException {
+		List operation = service.tasks.list(googleId);
+		operation.showDeleted = true;
+		com.google.api.services.tasks.v1.model.Tasks tasks = operation.execute();
+		return tasks;
 	}
 
 	public String createTaskList(String name) throws IOException {
-		Log.d(TaskManager.TAG, "GTasks: creating context/list " + name);
+//		Log.d(TaskManager.TAG, "GTasks: creating context/list " + name);
 		TaskList list = new TaskList();
 		list.title = name;
-		TaskList result = this.service.tasklists.insert(list).execute();
 
+		TaskList result = this.service.tasklists.insert(list).execute();
 		return result.id;
 	}
 
 	public boolean updateTaskList(String id, String name) throws IOException {
-		Log.d(TaskManager.TAG, "GTasks: updating context/list " + name + " with ID " + id);
+//		Log.d(TaskManager.TAG, "GTasks: updating context/list " + name + " with ID " + id);
 
 		try {
-			TaskList list = service.tasklists.get(id).execute();
-			Log.d(TaskManager.TAG, "GTasks: got context/list " + list.title + " with ID " + list.id);
-
+			//TaskList list = service.tasklists.get(id).execute();
+			//Log.d(TaskManager.TAG, "GTasks: got context/list " + list.title + " with ID " + list.id);
+			
+			TaskList list = new TaskList();
+			list.id = id;
 			list.title = name;
+
 			TaskList result = service.tasklists.update(id, list).execute();
 
 			return id.equalsIgnoreCase(result.id);
@@ -100,8 +145,8 @@ public class GoogleTasksClient {
 		}
 	}
 
-	public String createTask(String taskListId, String parentTaskId, String previousTaskId, String name, String description, Date duedate, Status status) throws IOException {
-		Log.d(TaskManager.TAG, "GTasks: creating project/task " + name);
+	public Task createTask(String taskListId, String parentTaskId, String previousTaskId, String name, String description, Date duedate, Status status) throws IOException {
+//		Log.d(TaskManager.TAG, "GTasks: creating project/task " + name);
 
 		Task task = new Task();
 
@@ -123,20 +168,21 @@ public class GoogleTasksClient {
 			move.execute();
 		}
 
-		return result.id;
+		return result;
 	}
 
-	public boolean updateTask(String taskListId, String id, String name, String description, Date duedate, Status status) throws IOException {
-		Log.d(TaskManager.TAG, "GTasks: updating project/task " + name + " with ID " + id);
+	public Task updateTask(String taskListId, String id, String name, String description, Date duedate, Status status) throws IOException {
+//		Log.d(TaskManager.TAG, "GTasks: updating project/task " + name + " with ID " + id);
 
 		try {
-			Task task = service.tasks.get(taskListId, id).execute();
+			Task tmp = new Task();
+			tmp.id = id;
+			
+			fillTask(tmp, name, description, status, duedate);
 
-			fillTask(task, name, description, status, duedate);
+			Task result = service.tasks.update(taskListId, tmp.id, tmp).execute();
 
-			Task result = service.tasks.update(taskListId, task.id, task).execute();
-
-			return id.equalsIgnoreCase(result.id);
+			return result;
 
 		} catch (IOException e) {
 			if (e instanceof HttpResponseException) {
@@ -145,7 +191,7 @@ public class GoogleTasksClient {
 
 				if (statusCode == 404) {
 					Log.w(TaskManager.TAG, "GTasks: project/task with ID: " + id + " not found");
-					return false;
+					return null;
 				} else {
 					throw e;
 				}
@@ -161,8 +207,7 @@ public class GoogleTasksClient {
 			task.notes = description;
 		}
 		if (duedate != null) {
-			//Use the RFC 3339 timestamp format. For example: 2005-08-09T10:57:00-08:00Z
-			task.due = rfc3339Format.format(duedate);
+			task.due = rfc3339DateFormat.format(duedate);
 		}
 		if (status != null) {
 			if (status == Status.Completed || status == Status.Discarded_Completed) {
@@ -176,5 +221,24 @@ public class GoogleTasksClient {
 				task.deleted = false;
 			}
 		}
+	}
+
+	public static Date parseDate(String strDate) {
+		Date date = null;
+		if (strDate != null) {
+			try {
+				date = rfc3339DateFormat_FractSecs.parse(strDate);
+			} catch (ParseException e) {
+				Log.w(TaskManager.TAG, "GTasks: Error parsing date", e);
+			}
+			if (date == null) {
+				try {
+					date = rfc3339DateFormat.parse(strDate);
+				} catch (ParseException e) {
+					Log.w(TaskManager.TAG, "GTasks: Error parsing date", e);
+				}
+			}
+		}
+		return date;
 	}
 }
