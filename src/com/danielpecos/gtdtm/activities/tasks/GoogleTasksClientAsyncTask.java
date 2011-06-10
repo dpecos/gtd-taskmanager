@@ -41,7 +41,7 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 		progressDialog.dismiss();
 		if (response) {
 			Toast.makeText(activity, activity.getString(R.string.gtasks_synchronizationFinished), Toast.LENGTH_SHORT).show();
-		}
+		} 
 		activity.initializeUI();
 	}
 }

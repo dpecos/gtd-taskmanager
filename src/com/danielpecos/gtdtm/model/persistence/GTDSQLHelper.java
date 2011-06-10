@@ -22,11 +22,13 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 	// Columns
 	public static final String CONTEXT_NAME = "name";
 	public static final String CONTEXT_GOOGLE_ID = "googleId";
+	public static final String CONTEXT_LAST_TIME_PERSISTED = "lastTimePersisted";
 
 	public static final String PROJECT_NAME = "name";
 	public static final String PROJECT_DESCRIPTION = "description";
 	public static final String PROJECT_CONTEXTID = "context_id";
 	public static final String PROJECT_GOOGLE_ID = "googleId";
+	public static final String PROJECT_LAST_TIME_PERSISTED = "lastTimePersisted";
 
 	public static final String TASK_NAME = "name";
 	public static final String TASK_DESCRIPTION = "description";
@@ -56,7 +58,8 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			String sql = "create table " + TABLE_CONTEXTS + "( " 
 			+ BaseColumns._ID + " integer primary key autoincrement, " 
 			+ CONTEXT_NAME + " text not null, "
-			+ CONTEXT_GOOGLE_ID + " text "
+			+ CONTEXT_GOOGLE_ID + " text, "
+			+ CONTEXT_LAST_TIME_PERSISTED + " datetime "
 			+ ");";
 			db.execSQL(sql);
 
@@ -66,6 +69,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			+ PROJECT_DESCRIPTION + " text, "
 			+ PROJECT_GOOGLE_ID + " text, "
 			+ PROJECT_CONTEXTID + " integer not null, "
+			+ PROJECT_LAST_TIME_PERSISTED + " datetime, "
 			+ "FOREIGN KEY(" + PROJECT_CONTEXTID + ") REFERENCES " + TABLE_CONTEXTS + "(id) "
 			+ ");";
 			db.execSQL(sql);
@@ -120,7 +124,9 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 			StringBuffer sql = new StringBuffer();
 			if (oldVersion == 1) {
-				sql.append("alter table " + TABLE_TASKS + " add " + TASK_LAST_TIME_PERSISTED + " datetime ");
+				sql.append("alter table " + TABLE_CONTEXTS + " add " + CONTEXT_LAST_TIME_PERSISTED + " datetime; ");
+				sql.append("alter table " + TABLE_PROJECTS + " add " + PROJECT_LAST_TIME_PERSISTED + " datetime; ");
+				sql.append("alter table " + TABLE_TASKS + " add " + TASK_LAST_TIME_PERSISTED + " datetime; ");
 			} else if (oldVersion == 2) {
 			}
 

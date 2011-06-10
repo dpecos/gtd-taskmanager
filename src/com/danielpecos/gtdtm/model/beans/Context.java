@@ -2,6 +2,7 @@ package com.danielpecos.gtdtm.model.beans;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 import android.content.ContentValues;
@@ -14,13 +15,15 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
+import com.danielpecos.gtdtm.utils.DateUtils;
 
 public class Context extends TaskContainer implements Persistable {
-	long id;
-	String name;
-	String googleId;
+	private long id;
+	private String name;
+	private String googleId;
 
-	LinkedHashMap<Long, Project> projects;
+	private LinkedHashMap<Long, Project> projects;
+	private Date lastTimePersisted;
 
 	private Context() {
 		this.projects = new LinkedHashMap<Long, Project>();
@@ -55,6 +58,10 @@ public class Context extends TaskContainer implements Persistable {
 
 	public void setGoogleId(String googleId) {
 		this.googleId = googleId;
+	}
+
+	public Date getLastTimePersisted() {
+		return lastTimePersisted;
 	}
 
 	void addProject(Project project) {
@@ -107,27 +114,33 @@ public class Context extends TaskContainer implements Persistable {
 
 	@Override
 	public long store(android.content.Context ctx) {
+		Date now = new Date(System.currentTimeMillis());
+		return this.store(ctx, now);
+	}
+	
+	public long store(android.content.Context ctx, Date date) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
 		long result = 0;
+		
+		ContentValues values = new ContentValues();
+		values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
+		values.put(GTDSQLHelper.CONTEXT_GOOGLE_ID, this.googleId);
+		values.put(GTDSQLHelper.PROJECT_LAST_TIME_PERSISTED, DateUtils.formatDate(date));
+		
 		if (this.id == 0) {
 			// insert
-			ContentValues values = new ContentValues();
-			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
-			values.put(GTDSQLHelper.CONTEXT_GOOGLE_ID, this.googleId);
 			this.id = db.insert(GTDSQLHelper.TABLE_CONTEXTS, null, values);
 			result = this.id;
 		} else {
 			// update
-			ContentValues values = new ContentValues();
-			values.put(GTDSQLHelper.CONTEXT_NAME, this.name);
-			values.put(GTDSQLHelper.CONTEXT_GOOGLE_ID, this.googleId);
 			if (db.update(GTDSQLHelper.TABLE_CONTEXTS, values, BaseColumns._ID + "=" + this.getId(), null) > 0) {
 				result = this.id;
 			} else {
 				result = -1;
 			}
 		}
+		db.close();
 		helper.close();
 		Log.d(TaskManager.TAG, "Context successfully stored");
 		return result;
@@ -184,6 +197,14 @@ public class Context extends TaskContainer implements Persistable {
 		this.name = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_NAME));
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_GOOGLE_ID))) {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_GOOGLE_ID));
+		}
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_LAST_TIME_PERSISTED))) {
+			String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.CONTEXT_LAST_TIME_PERSISTED));
+			if (date != null && !date.equalsIgnoreCase("")) {
+				this.lastTimePersisted = DateUtils.parseDate(date);
+			} else {
+				this.lastTimePersisted = null;
+			}
 		}
 
 		Cursor cursor_projects = null;

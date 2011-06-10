@@ -1,7 +1,5 @@
 package com.danielpecos.gtdtm.model.beans;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -13,11 +11,10 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
+import com.danielpecos.gtdtm.utils.DateUtils;
 import com.google.android.maps.GeoPoint;
 
 public class Task implements Persistable, Cloneable {
-	private static SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
 	public enum Type {
 		Normal, Web, Call_SMS, Email, Location 
 	}
@@ -28,17 +25,17 @@ public class Task implements Persistable, Cloneable {
 		Low, Normal, Important, Critical
 	}
 
-	long id;
-	String name;
-	String description;
-	Status status;
-	Priority priority;
-	Date dueDate;
-	GeoPoint location;
-	Type type;
-	byte[] picture;
-	String googleId;
-	Date lastTimePersisted;
+	private long id;
+	private String name;
+	private String description;
+	private Status status;
+	private Priority priority;
+	private Date dueDate;
+	private GeoPoint location;
+	private Type type;
+	private byte[] picture;
+	private String googleId;
+	private Date lastTimePersisted;
 
 	Task() {
 		this.priority = Priority.Normal;
@@ -135,12 +132,13 @@ public class Task implements Persistable, Cloneable {
 	public long store(android.content.Context ctx) {
 		Date now = new Date(System.currentTimeMillis());
 		return this.store(ctx, now);
-		
+
 	}
+	
 	public long store(android.content.Context ctx, Date date) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
-		
+
 		long result = 0;
 
 		ContentValues values = new ContentValues();
@@ -148,13 +146,13 @@ public class Task implements Persistable, Cloneable {
 		values.put(GTDSQLHelper.TASK_DESCRIPTION, this.description);
 		values.put(GTDSQLHelper.TASK_STATUS, this.status.toString());
 		values.put(GTDSQLHelper.TASK_PRIORITY, this.priority.toString());
-		values.put(GTDSQLHelper.TASK_DUEDATETIME, this.getDueDate() != null ? iso8601Format.format(this.getDueDate()) : null);
+		values.put(GTDSQLHelper.TASK_DUEDATETIME, this.getDueDate() != null ? DateUtils.formatDate(this.getDueDate()) : null);
 		values.put(GTDSQLHelper.TASK_PICTURE, this.getPicture() != null ? this.getPicture() : null);
 		values.put(GTDSQLHelper.TASK_LOCATION_LAT, this.getLocation() != null ? this.getLocation().getLatitudeE6() : null);
 		values.put(GTDSQLHelper.TASK_LOCATION_LONG, this.getLocation() != null ? this.getLocation().getLongitudeE6() : null);
 		values.put(GTDSQLHelper.TASK_GOOGLE_ID, this.googleId);
-		values.put(GTDSQLHelper.TASK_LAST_TIME_PERSISTED, iso8601Format.format(date));
-		
+		values.put(GTDSQLHelper.TASK_LAST_TIME_PERSISTED, DateUtils.formatDate(date));
+
 		if (this.id == 0) {
 			this.id = db.insert(GTDSQLHelper.TABLE_TASKS, null, values);
 			result = this.id;
@@ -165,7 +163,7 @@ public class Task implements Persistable, Cloneable {
 				result = -1;
 			}
 		}
-		
+
 		if (result != -1) {
 			this.lastTimePersisted = date;
 		}
@@ -211,15 +209,11 @@ public class Task implements Persistable, Cloneable {
 		this.status = Status.valueOf(cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_STATUS)));
 		this.priority = Priority.valueOf(cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_PRIORITY)));
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_DUEDATETIME))) {
-			try {
-				String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_DUEDATETIME));
-				if (date != null && !date.equalsIgnoreCase("")) {
-					this.dueDate = iso8601Format.parse(date);
-				} else {
-					this.dueDate = null;
-				}
-			} catch (ParseException e) {
-				Log.e(TaskManager.TAG, "DDBB: " + e.getMessage(), e);
+			String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_DUEDATETIME));
+			if (date != null && !date.equalsIgnoreCase("")) {
+				this.dueDate = DateUtils.parseDate(date);
+			} else {
+				this.dueDate = null;
 			}
 		}
 
@@ -234,22 +228,16 @@ public class Task implements Persistable, Cloneable {
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID))) {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID));
 		}
-		
-		if (this.lastTimePersisted == null) {
-			if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED))) {
-				try {
-					String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED));
-					if (date != null && !date.equalsIgnoreCase("")) {
-						this.lastTimePersisted = iso8601Format.parse(date);
-					} else {
-						this.lastTimePersisted = null;
-					}
-				} catch (ParseException e) {
-					Log.e(TaskManager.TAG, "DDBB: " + e.getMessage(), e);
-				}
+
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED))) {
+			String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.TASK_LAST_TIME_PERSISTED));
+			if (date != null && !date.equalsIgnoreCase("")) {
+				this.lastTimePersisted = DateUtils.parseDate(date);
+			} else {
+				this.lastTimePersisted = null;
 			}
 		}
-		
+
 		Log.d(TaskManager.TAG, "DDBB: Task successfully loaded");
 		return true;
 	}
@@ -274,7 +262,7 @@ public class Task implements Persistable, Cloneable {
 
 		return result;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (

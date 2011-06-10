@@ -1,6 +1,7 @@
 package com.danielpecos.gtdtm.model.beans;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -11,13 +12,15 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
+import com.danielpecos.gtdtm.utils.DateUtils;
 
 public class Project extends TaskContainer implements Persistable {
-	long id;
-	long context_id;
-	String name;
-	String description;
-	String googleId;
+	private long id;
+	private long context_id;
+	private String name;
+	private String description;
+	private String googleId;
+	private Date lastTimePersisted;
 
 	Project(SQLiteDatabase db, Cursor cursor) {
 		this.load(db, cursor);
@@ -59,8 +62,17 @@ public class Project extends TaskContainer implements Persistable {
 		this.googleId = googleId;
 	}
 
+	public Date getLastTimePersisted() {
+		return lastTimePersisted;
+	}
+
 	@Override
 	public long store(android.content.Context ctx) {
+		Date now = new Date(System.currentTimeMillis());
+		return this.store(ctx, now);
+	}
+	
+	public long store(android.content.Context ctx, Date date) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
 
@@ -69,6 +81,7 @@ public class Project extends TaskContainer implements Persistable {
 		values.put(GTDSQLHelper.PROJECT_DESCRIPTION, this.description);
 		values.put(GTDSQLHelper.PROJECT_GOOGLE_ID, this.googleId);
 		values.put(GTDSQLHelper.PROJECT_CONTEXTID, this.context_id);
+		values.put(GTDSQLHelper.PROJECT_LAST_TIME_PERSISTED, DateUtils.formatDate(date));
 
 		long result = 0;
 
@@ -137,6 +150,15 @@ public class Project extends TaskContainer implements Persistable {
 			this.googleId = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_GOOGLE_ID));
 		}
 		this.context_id = cursor.getLong(cursor.getColumnIndex(GTDSQLHelper.PROJECT_CONTEXTID));
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.PROJECT_LAST_TIME_PERSISTED))) {
+			String date = cursor.getString(cursor.getColumnIndex(GTDSQLHelper.PROJECT_LAST_TIME_PERSISTED));
+			if (date != null && !date.equalsIgnoreCase("")) {
+				this.lastTimePersisted = DateUtils.parseDate(date);
+			} else {
+				this.lastTimePersisted = null;
+			}
+		}
+
 		Log.d(TaskManager.TAG, "Project successfully loaded");
 		return true;
 	}
