@@ -98,6 +98,9 @@ public class Project extends TaskContainer implements Persistable {
 				result = -1;
 			}
 		}
+		if (result != -1) {
+			this.lastTimePersisted = date;
+		}
 		db.close();
 		Log.d(TaskManager.TAG, "Project successfully stored");
 		return result;

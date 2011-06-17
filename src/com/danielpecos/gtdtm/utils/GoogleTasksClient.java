@@ -185,7 +185,9 @@ public class GoogleTasksClient {
 				move.previous = null;
 			}
 			if (move != null) {
-				move.parent = result.parent;
+				if (result.parent != null) {
+					move.parent = result.parent;
+				}
 				result = move.execute();
 			}
 

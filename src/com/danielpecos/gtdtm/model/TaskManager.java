@@ -239,7 +239,7 @@ public class TaskManager {
 			}
 
 			for (com.google.api.services.tasks.v1.model.Task gTask : tasks.items) {
-				if (gTasksProjects.contains(gTask.id)) {
+				if (gTasksProjects.contains(gTask.id) || context.getProjectByGoogleId(gTask.id) != null) {
 					// it's a project
 					Project p = this.createOrUpdateLocalProject(activity, context, gTask);
 				} else {
@@ -272,13 +272,16 @@ public class TaskManager {
 			boolean projectUpdatedInGTasks = false;
 			boolean isNewProject = isNewContextList;
 			String projectId = null;
+			Task.Status status = project.getCompletedTasksCount() == (project.getTasksCount() - project.getDiscardedTasksCount()) ? Task.Status.Completed : Task.Status.Active;
 			if (project.getGoogleId() != null && !isNewContextList) {
 				com.google.api.services.tasks.v1.model.Task gTask = this.findTask(gTasks, project.getGoogleId());
 				isNewProject = false;
 
-				if (project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime()) {
+				if (project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime() ||
+						status == Task.Status.Completed && (gTask.containsKey("deleted") && gTask.deleted == true || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
+						status == Task.Status.Active && (gTask.containsKey("deleted") && gTask.deleted == true || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
 					projectId = project.getGoogleId();
-					com.google.api.services.tasks.v1.model.Task tResult = client.updateTask(contextListId, previousProjectId, project.getGoogleId(), project.getName(), project.getDescription(), null, null);
+					com.google.api.services.tasks.v1.model.Task tResult = client.updateTask(contextListId, previousProjectId, project.getGoogleId(), project.getName(), project.getDescription(), null, status);
 					projectUpdatedInGTasks = tResult != null;
 					if (!projectUpdatedInGTasks) {
 						Log.e(TaskManager.TAG, "GTasks: Error updating remote project");
@@ -293,12 +296,12 @@ public class TaskManager {
 			}
 			if (!projectUpdatedInGTasks) {
 				isNewProject = true;
-				com.google.api.services.tasks.v1.model.Task pResult = client.createTask(contextListId, null, previousProjectId, project.getName(), project.getDescription(), null, null);
+				com.google.api.services.tasks.v1.model.Task pResult = client.createTask(contextListId, null, previousProjectId, project.getName(), project.getDescription(), null, status);
 				projectId = pResult.id;
 
 				if (projectId != null) {
 					project.setGoogleId(projectId);
-					project.store(activity.getBaseContext());
+					project.store(activity.getBaseContext(), DateUtils.parseDate(pResult.updated));
 				} else {
 					Log.e(TaskManager.TAG, "GTasks: Error creating project/task");
 				}
@@ -323,6 +326,7 @@ public class TaskManager {
 				isNewListOrNotSynchronized = true;
 				gTaskListId = client.getTaskListByName(context.getName());
 				if (gTaskListId == null) {
+					this.resetSynchronizationData(context);
 					gTaskListId  = client.createTaskList(context.getName());
 				} else {
 					if (!client.updateTaskList(context.getGoogleId(), context.getName())) {
@@ -352,19 +356,39 @@ public class TaskManager {
 
 	}
 
+	private void resetSynchronizationData(Context context) {
+		for (Project p : context.getProjects()) {
+			this.resetSynchronizationData(p);
+		}
+		for (Task t : context) {
+			t.setGoogleId(null);
+		}
+	}
+
+	private void resetSynchronizationData(Project p) {
+		p.setGoogleId(null);
+		for (Task t : p) {
+			t.setGoogleId(null);
+		}
+	}
+
 	private Project createOrUpdateLocalProject(Activity activity, Context context, com.google.api.services.tasks.v1.model.Task gTask) {
 		Project project = context.getProjectByGoogleId(gTask.id);
 		if (project != null) {
-			// update local existing project
-			project.setName(gTask.title);
-			project.setDescription(gTask.notes);
-			project.store(activity);
-			Log.d(TaskManager.TAG, "GTaks: Updated local project " + project.getName());
+			if (project.getLastTimePersisted() == null || DateUtils.parseDate(gTask.updated).getTime() > project.getLastTimePersisted().getTime()) {
+				// update local existing project
+				project.setName(gTask.title);
+				project.setDescription(gTask.notes);
+				project.store(activity, DateUtils.parseDate(gTask.updated));
+				Log.d(TaskManager.TAG, "GTaks: Updated local project " + project.getName());
+			} else {
+				Log.d(TaskManager.TAG, "GTaks: No need to update local project " + project.getName());
+			}
 		} else {
 			// create new project
 			project = context.createProject(activity, gTask.title, gTask.notes);
 			project.setGoogleId(gTask.id);
-			project.store(activity);
+			project.store(activity, DateUtils.parseDate(gTask.updated));
 			Log.d(TaskManager.TAG, "GTaks: Created local project " + project.getName());
 		}
 
@@ -428,9 +452,13 @@ public class TaskManager {
 		String previousTaskId = previousId;
 
 		long previousTaskPostion = 0;
-		com.google.api.services.tasks.v1.model.Task firsTask = this.findFirstTaskInParent(gTasks, parentId);
-		if (firsTask != null) {
-			previousTaskPostion = Long.parseLong(firsTask.position);
+		if (parentId == null) {
+			previousTaskPostion = Long.parseLong(this.findTask(gTasks,previousTaskId).position);
+		} else {
+			com.google.api.services.tasks.v1.model.Task firsTask = this.findFirstTaskInParent(gTasks, parentId);
+			if (firsTask != null) {
+				previousTaskPostion = Long.parseLong(firsTask.position);
+			}
 		}
 
 		for (Task task : parent) {
@@ -469,6 +497,7 @@ public class TaskManager {
 
 			previousTaskId = task.getGoogleId();
 		}
+
 	}
 
 	private com.google.api.services.tasks.v1.model.Task findFirstTaskInParent(Tasks gTasks, String parentId) {
