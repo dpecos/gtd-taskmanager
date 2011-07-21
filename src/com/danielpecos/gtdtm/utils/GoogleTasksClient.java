@@ -226,8 +226,32 @@ public class GoogleTasksClient {
 			}
 			if (status == Status.Discarded || status == Status.Discarded_Completed) {
 				task.deleted = true;
+//				task.hidden = true;
 			} else {
 				task.deleted = false;
+//				task.hidden = false;
+			}
+		}
+	}
+
+	public boolean deleteTask(String taskListId, String googleId) throws IOException {
+		try {
+			service.tasks.delete(taskListId, googleId).execute();
+			service.tasks.clear(googleId).execute();
+			return true;
+		} catch (IOException e) {
+			if (e instanceof HttpResponseException) {
+				HttpResponse response = ((HttpResponseException) e).response;
+				int statusCode = response.statusCode;
+
+				if (statusCode == 404) {
+					Log.w(TaskManager.TAG, "GTasks: project/task with ID: " + googleId + " not found");
+					return false;
+				} else {
+					throw e;
+				}
+			} else {
+				throw e;
 			}
 		}
 	}

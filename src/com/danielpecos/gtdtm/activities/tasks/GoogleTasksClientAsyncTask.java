@@ -25,7 +25,8 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 	@Override
 	protected Boolean doInBackground(Object... params) {
 		final TaskManager taskManager = TaskManager.getInstance(activity);
-		return taskManager.synchronizeGTasks(activity, context);
+		//return taskManager.synchronizeGTasks(activity, context);
+		return taskManager.doInGTasks(activity, TaskManager.GTASKS_SYNCHRONIZATION, context, null, null);
 
 	}
 

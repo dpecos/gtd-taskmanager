@@ -2,6 +2,7 @@ package com.danielpecos.gtdtm.model.beans;
 
 import java.util.Date;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -195,6 +196,13 @@ public class Task implements Persistable, Cloneable {
 		if (dbParent == null) {
 			db.close();
 		}
+		
+		if (this.getGoogleId() != null) {
+			TaskManager tm = TaskManager.getInstance(ctx);
+			result = tm.doInGTasks((Activity)ctx, TaskManager.GTASKS_DELETE_TASK, tm.findContextContainingTask(this), null, this);
+			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
+		}
+		
 		Log.d(TaskManager.TAG, "DDBB: Task successfully removed");
 		return result;
 	}

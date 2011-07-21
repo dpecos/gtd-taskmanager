@@ -38,6 +38,9 @@ public class TaskManager {
 	}
 
 	public static final String TAG = "GTD-TaskManager";
+	public static final String GTASKS_SYNCHRONIZATION = "gTasks_synchronization";
+	public static final String GTASKS_DELETE_TASK = "gTasks_deleteTask";
+	
 	private static TaskManager instance;
 	private static SharedPreferences preferences;
 
@@ -133,7 +136,34 @@ public class TaskManager {
 		return ctx;
 	}
 
-	public boolean synchronizeGTasks(Activity activity, Context context) {
+	private boolean gTasksSynchronization(Activity activity, GoogleTasksClient client, Context context) throws IOException {
+		Log.d(TaskManager.TAG, "GTasks: Synchronizing context element");
+		boolean isNewContextList = this.getOrCcreateGoogleList(activity, context, client);
+
+		Log.d(TaskManager.TAG, "GTasks: Getting remote list of tasks");
+		Tasks gTasks = client.getTasksFromList(context.getGoogleId());
+
+		if (TaskManager.isFullVersion(activity)) {
+			Log.i(TaskManager.TAG, "GTasks: Full version - Synchronizing from remote to local");
+			syncrhonizeFromGoogleToLocal(activity, context, client, gTasks);
+			Log.i(TaskManager.TAG, "GTasks: Full version - Finished synchronization from remote to local");
+			isNewContextList = false;
+		} else {
+		}
+
+		Log.i(TaskManager.TAG, "GTasks: Synchronizing from local to remote");
+		synchronizeFromLocalToGoole(activity, context, client, gTasks, isNewContextList);
+		Log.i(TaskManager.TAG, "GTasks: Finished synchronization from local to remote");
+
+		return true;
+	}
+	
+	private boolean gTasksDeleteTask(Activity activity,	GoogleTasksClient client, Context context, Task task) throws IOException {
+		Log.d(TaskManager.TAG, "GTasks: Deleting task \"" +task.getName() + " (" + task.getGoogleId() + ")\"");
+		return client.deleteTask(context.getGoogleId(), task.getGoogleId());
+	}
+	
+	public boolean doInGTasks(Activity activity, String action, Context context, Project project, Task task) {
 		SharedPreferences settings = getPreferences();
 		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
 
@@ -148,25 +178,13 @@ public class TaskManager {
 			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
 
 			try {
-				Log.d(TaskManager.TAG, "GTasks: Synchronizing context element");
-				boolean isNewContextList = this.getOrCcreateGoogleList(activity, context, client);
-
-				Log.d(TaskManager.TAG, "GTasks: Getting remote list of tasks");
-				Tasks gTasks = client.getTasksFromList(context.getGoogleId());
-
-				if (TaskManager.isFullVersion(activity)) {
-					Log.i(TaskManager.TAG, "GTasks: Full version - Synchronizing from remote to local");
-					syncrhonizeFromGoogleToLocal(activity, context, client, gTasks);
-					Log.i(TaskManager.TAG, "GTasks: Full version - Finished synchronization from remote to local");
-					isNewContextList = false;
+				if (action.equalsIgnoreCase(GTASKS_SYNCHRONIZATION)) {
+					return gTasksSynchronization(activity, client, context);
+				} else if (action.equalsIgnoreCase(GTASKS_DELETE_TASK)) {
+					return gTasksDeleteTask(activity, client, context, task);
 				} else {
+					return false;
 				}
-
-				Log.i(TaskManager.TAG, "GTasks: Synchronizing from local to remote");
-				synchronizeFromLocalToGoole(activity, context, client, gTasks, isNewContextList);
-				Log.i(TaskManager.TAG, "GTasks: Finished synchronization from local to remote");
-
-				return true;
 			} catch (Exception e) {
 				if (e instanceof HttpResponseException) {
 					HttpResponse response = ((HttpResponseException) e).response;
@@ -277,7 +295,7 @@ public class TaskManager {
 				com.google.api.services.tasks.v1.model.Task gTask = this.findTask(gTasks, project.getGoogleId());
 				isNewProject = false;
 
-				if (project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime() ||
+				if (!TaskManager.isFullVersion(activity) || project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime() ||
 						status == Task.Status.Completed && (gTask.containsKey("deleted") && gTask.deleted == true || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
 						status == Task.Status.Active && (gTask.containsKey("deleted") && gTask.deleted == true || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
 					projectId = project.getGoogleId();
@@ -452,8 +470,9 @@ public class TaskManager {
 		String previousTaskId = previousId;
 
 		long previousTaskPostion = 0;
-		if (parentId == null) {
-			previousTaskPostion = Long.parseLong(this.findTask(gTasks,previousTaskId).position);
+		com.google.api.services.tasks.v1.model.Task previousTask = this.findTask(gTasks,previousTaskId);
+		if (parentId == null && previousTask != null) {
+			previousTaskPostion = Long.parseLong(previousTask.position);
 		} else {
 			com.google.api.services.tasks.v1.model.Task firsTask = this.findFirstTaskInParent(gTasks, parentId);
 			if (firsTask != null) {
@@ -466,7 +485,7 @@ public class TaskManager {
 			if (task.getGoogleId() != null) {
 				com.google.api.services.tasks.v1.model.Task gTask = this.findTask(gTasks, task.getGoogleId());
 				if (gTask != null) {
-					if (DateUtils.parseDate(gTask.updated).getTime() < task.getLastTimePersisted().getTime() || previousTaskPostion == 0  || Long.parseLong(gTask.position) < previousTaskPostion) {
+					if (!TaskManager.isFullVersion(activity) || DateUtils.parseDate(gTask.updated).getTime() < task.getLastTimePersisted().getTime() || previousTaskPostion == 0  || Long.parseLong(gTask.position) < previousTaskPostion) {
 						com.google.api.services.tasks.v1.model.Task tResult = client.updateTask(contextListId, previousTaskId, task.getGoogleId(), task.getName(), task.getDescription(), task.getDueDate(), task.getStatus());
 						elementUpdated = tResult != null;
 						if (!elementUpdated) {
@@ -519,6 +538,23 @@ public class TaskManager {
 				}
 			}
 		}
+		return null;
+	}
+	
+	public Context findContextContainingTask(Task task) {
+		if (task != null) {
+			for (Context context: this.getContexts()) {
+				if (context.getTask(task.getId()) != null) {
+					return context;
+				} else {
+					for (Project project : context.getProjects()) {
+						if (project.getTask(task.getId()) != null) {
+							return context;
+						}
+					}
+				}
+			}
+ 		}
 		return null;
 	}
 
