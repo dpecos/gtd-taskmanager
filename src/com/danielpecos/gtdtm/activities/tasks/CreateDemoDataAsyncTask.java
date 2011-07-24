@@ -30,21 +30,21 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 		
 		Context ctx = taskManager.createContext(activity, "Context 1");
 		Project prj = ctx.createProject(activity, "Project 1.1", "Project 1.1 description");
-		prj.createTask(activity, "Task 1", "Task number 1.1.1", Task.Priority.Critical).setStatus(Task.Status.Discarded);
+		prj.createTask(activity, "Task 1", "Task number 1.1.1", Task.Priority.Critical).setStatus(Task.Status.Discarded).store(activity);
 		prj.createTask(activity, "Task 2", "Task number 1.1.2", Task.Priority.Important);
-		prj.createTask(activity, "Task 3", "Task number 1.1.3", Task.Priority.Low).setStatus(Task.Status.Discarded_Completed);
-		prj.createTask(activity, "Task 4", "Task number 1.1.4", Task.Priority.Important).setStatus(Task.Status.Completed);
+		prj.createTask(activity, "Task 3", "Task number 1.1.3", Task.Priority.Low).setStatus(Task.Status.Discarded_Completed).store(activity);
+		prj.createTask(activity, "Task 4", "Task number 1.1.4", Task.Priority.Important).setStatus(Task.Status.Completed).store(activity);
 		prj.createTask(activity, "Task 5", "Task number 1.1.5", Task.Priority.Critical);
 
-		ctx.createTask(activity, "Task 1", "Task number 1.0.1", Task.Priority.Critical).setStatus(Task.Status.Completed);
+		ctx.createTask(activity, "Task 1", "Task number 1.0.1", Task.Priority.Critical).setStatus(Task.Status.Completed).store(activity);
 		ctx.createTask(activity, "Task 2", "Task number 1.0.2", Task.Priority.Important);
-		ctx.createTask(activity, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(40000000, 0));
+		ctx.createTask(activity, "Task 3", "Task number 1.0.3", Task.Priority.Normal).setLocation(new GeoPoint(40000000, 0)).store(activity);
 		ctx.createTask(activity, "Task 4", "Task number 1.0.4", Task.Priority.Low);
 
 		prj = ctx.createProject(activity, "Project 1.2", "Project 1.2 description");
 		prj.createTask(activity, "Task 1", "Task number 1.2.1", Task.Priority.Critical);
 		prj.createTask(activity, "Task 2", "Task number 1.2.2", Task.Priority.Important);
-		prj.createTask(activity, "Task 3", "Task number 1.2.3", Task.Priority.Low).setStatus(Task.Status.Completed);
+		prj.createTask(activity, "Task 3", "Task number 1.2.3", Task.Priority.Low).setStatus(Task.Status.Completed).store(activity);
 		prj.createTask(activity, "Task 4", "Task number 1.2.4", Task.Priority.Important);
 		prj.createTask(activity, "Task 5", "Task number 1.2.5", Task.Priority.Critical);
 
@@ -66,16 +66,11 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 		Log.i(TaskManager.TAG, "Demo data created succesffully");
 		progressDialog.dismiss();
 		if (this.onFinishedListener != null) {
-			onFinishedListener.onFinish();
+			onFinishedListener.onFinish(null);
 		}
 	}
 	
 	public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
 		this.onFinishedListener = onFinishedListener;
-	}
-
-	
-	public abstract static class OnFinishedListener {
-		public abstract void onFinish();
 	}
 }

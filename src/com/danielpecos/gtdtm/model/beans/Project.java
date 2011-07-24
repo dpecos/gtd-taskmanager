@@ -15,6 +15,8 @@ import com.danielpecos.gtdtm.model.persistence.Persistable;
 import com.danielpecos.gtdtm.utils.DateUtils;
 
 public class Project extends TaskContainer implements Persistable {
+	private static final long serialVersionUID = 1L;
+	
 	private long id;
 	private long context_id;
 	private String name;

@@ -1,5 +1,6 @@
 package com.danielpecos.gtdtm.model.beans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +19,9 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 
-public abstract class TaskContainer implements Iterable<Task> {
+public abstract class TaskContainer implements Iterable<Task>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	protected HashMap<Long, Task> tasks;
 
 	public static Comparator<Task> taskComparator;

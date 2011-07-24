@@ -1,7 +1,13 @@
 package com.danielpecos.gtdtm.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -12,6 +18,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -37,10 +44,11 @@ public class TaskManager {
 		return context.getString(R.string.app_version).equalsIgnoreCase("FULL");
 	}
 
+	public static final File SDCARD_DIR = new File(Environment.getExternalStorageDirectory(), "GTD-TaskManager/");
 	public static final String TAG = "GTD-TaskManager";
 	public static final String GTASKS_SYNCHRONIZATION = "gTasks_synchronization";
 	public static final String GTASKS_DELETE_TASK = "gTasks_deleteTask";
-	
+
 	private static TaskManager instance;
 	private static SharedPreferences preferences;
 
@@ -123,6 +131,35 @@ public class TaskManager {
 		}
 	}
 
+	public boolean emptyDatabase(android.content.Context ctx) {
+		GTDSQLHelper helper = new GTDSQLHelper(ctx);
+
+		SQLiteDatabase db = helper.getWritableDatabase();
+
+		Cursor cursor = null;
+
+		try {
+			db.delete(GTDSQLHelper.TABLE_CONTEXTS, null, null);
+			db.delete(GTDSQLHelper.TABLE_PROJECTS, null, null);
+			db.delete(GTDSQLHelper.TABLE_TASKS, null, null);
+			db.delete(GTDSQLHelper.TABLE_CONTEXTS_TASKS, null, null);
+			db.delete(GTDSQLHelper.TABLE_PROJECTS_TASKS, null, null);
+
+			this.contexts = new HashMap<Long, Context>();
+			
+			return true;
+
+		} catch (SQLException e) {
+			return false;
+		} finally {
+			if (cursor != null && !cursor.isClosed()) {
+				cursor.close();
+			}
+			db.close();
+			Log.i(TAG, "Database emptied");
+		}
+	}
+
 	public Context getContext(Long id) {
 		return this.contexts.get(id);
 	}
@@ -157,12 +194,12 @@ public class TaskManager {
 
 		return true;
 	}
-	
+
 	private boolean gTasksDeleteTask(Activity activity,	GoogleTasksClient client, Context context, Task task) throws IOException {
 		Log.d(TaskManager.TAG, "GTasks: Deleting task \"" +task.getName() + " (" + task.getGoogleId() + ")\"");
 		return client.deleteTask(context.getGoogleId(), task.getGoogleId());
 	}
-	
+
 	public boolean doInGTasks(Activity activity, String action, Context context, Project project, Task task) {
 		SharedPreferences settings = getPreferences();
 		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
@@ -540,7 +577,7 @@ public class TaskManager {
 		}
 		return null;
 	}
-	
+
 	public Context findContextContainingTask(Task task) {
 		if (task != null) {
 			for (Context context: this.getContexts()) {
@@ -554,8 +591,69 @@ public class TaskManager {
 					}
 				}
 			}
- 		}
+		}
 		return null;
+	}
+
+	public String saveToFile(android.content.Context ctx) {
+		String result = null;
+		String fileName = null;
+		File file = null;
+		
+		if (Environment.getExternalStorageDirectory().canWrite()){
+			
+			File root = TaskManager.SDCARD_DIR;
+			
+			if (!root.exists()) {
+				root.mkdir();
+				Log.i(TaskManager.TAG, "Backup directory created");
+			}
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+			fileName = sdf.format(new Date()) + ".db";
+			file = new File(root, fileName);
+			
+			if (!file.exists() || file.canWrite()) {
+				Log.d(TaskManager.TAG, "Saving contexts data to file: " + file.getAbsolutePath() + "...");
+
+				FileOutputStream fos = null;
+				ObjectOutputStream oos = null;
+				try {
+					fos = new FileOutputStream(file.getAbsolutePath());
+					oos = new ObjectOutputStream(fos);
+					oos.writeObject(this.contexts);
+					oos.close();
+					Log.d(TaskManager.TAG, "Data successfully saved");
+					result = String.format(ctx.getString(R.string.context_file_saveOk), fileName);
+				} catch (FileNotFoundException e) {
+					Log.e(TaskManager.TAG, "File " + fileName + " could not be created", e);
+				} catch (IOException e) {
+					Log.e(TaskManager.TAG, "File " + fileName + " could not be written", e);
+				} finally {
+					if (fos != null) {
+						try {
+							fos.close();
+						} catch (IOException e) {
+							Log.e(TaskManager.TAG, "Error closing file output stream", e);
+						}
+					}
+					if (oos != null) {
+						try {
+							oos.close();
+						} catch (IOException e) {
+							Log.e(TaskManager.TAG, "Error closing object output stream", e);
+						}
+					}
+				}
+			} else {
+				result = ctx.getString(R.string.error_file_writing);
+				Log.e(TaskManager.TAG, result);
+			}
+		} else {
+			Log.w(TaskManager.TAG, "Impossible to write to SD card");
+			result = ctx.getString(R.string.error_sdcard);
+		}
+		return result;
 	}
 
 }

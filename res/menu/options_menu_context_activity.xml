@@ -12,8 +12,7 @@
 		android:id="@+id/context_optionsMenu_preferences"
     	android:title="@string/context_optionsMenu_settings"
 		android:icon="@drawable/ic_menu_preferences"/>
-    <item 
-		android:id="@+id/context_optionsMenu_about"
-    	android:title="@string/context_optionsMenu_about"
-		android:icon="@drawable/ic_menu_info_details"/>
+    
+    <item android:title="@string/context_optionsMenu_fileSave" android:icon="@drawable/ic_menu_save" android:id="@+id/context_optionsMenu_fileSave"></item>
+    <item android:icon="@drawable/ic_menu_archive" android:title="@string/context_optionsMenu_fileLoad" android:id="@+id/context_optionsMenu_fileLoad"></item><item android:title="@string/context_optionsMenu_about" android:icon="@drawable/ic_menu_info_details" android:id="@+id/context_optionsMenu_about" ></item>
 </menu>

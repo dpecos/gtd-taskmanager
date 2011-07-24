@@ -80,19 +80,19 @@ public class ActivityUtils {
 		activity.startActivityForResult(intent, GOOGLE_ACCOUNT_ACTIVITY);
 		Log.d(TaskManager.TAG, "Intent for GoogleAccountActivity");
 	}	
-	
+
 	public static void showPreferencesActivity(Activity activity) {
 		Intent i = new Intent(activity, PreferencesActivity.class);  
 		activity.startActivityForResult(i, PREFERENCES_ACTIVITY);
 		Log.d(TaskManager.TAG, "Intent for PreferencesActivity");
 	}
-	
+
 	public static void showAboutActivity(Activity activity) {
 		Intent i = new Intent(activity, AboutActivity.class);  
 		activity.startActivity(i);
 		Log.d(TaskManager.TAG, "Intent for AboutActivity");
 	}
-	
+
 	public static void createAlarm(Activity activity, Context context, Project project, Task task) {
 		if (task.getDueDate() != null && task.getDueDate().getTime() > System.currentTimeMillis()) {
 			Intent intent = new Intent(activity, AlarmReceiver.class);
@@ -135,12 +135,12 @@ public class ActivityUtils {
 
 		// show keyboard whenever textbox gets focus
 		textBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-		    @Override
-		    public void onFocusChange(View v, boolean hasFocus) {
-		        if (hasFocus) {
-		        	textboxDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		        }
-		    }
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					textboxDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+				}
+			}
 		});
 
 		okButton.setOnClickListener(new OnClickListener() {
@@ -178,6 +178,13 @@ public class ActivityUtils {
 				dialog.cancel();
 			}
 		});
+		return builder;
+	}
+
+	public static AlertDialog.Builder createOptionsDialog(android.content.Context context, int titleId, String[] options, DialogInterface.OnClickListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(titleId);
+		builder.setSingleChoiceItems(options, -1, listener);
 		return builder;
 	}
 }

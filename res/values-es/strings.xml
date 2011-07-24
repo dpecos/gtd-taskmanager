@@ -39,11 +39,18 @@
 	<string name="context_loadDemo_title">¿Cargar datos de prueba?</string>
 	<string name="context_loadDemo_message">Todavía no ha creado ningún Contexto. ¿Quiere cargar algunos datos de prueba?</string>
 	<string name="context_loadDemo_creating">Creando datos de demostración...</string>
+	
+	<string name="context_file_saveOk">Fichero guardado correctamente en SD con nombre \"%s\"</string>
+    <string name="context_file_loadOk">Datos cargados correctamente desde fichero \"%s\"</string>
+    <string name="context_file_loadOptions">Selecciona qué fichero utilizar:</string>
+    <string name="context_file_loadingData">Cargando datos...</string>
 
 	<string name="context_optionsMenu_addContext">Añadir nuevo Contexto</string>
 	<string name="context_optionsMenu_reloadData">Actualizar</string>
 	<string name="context_optionsMenu_settings">Configuración</string>
 	<string name="context_optionsMenu_about">Acerca de</string>
+    <string name="context_optionsMenu_fileSave">Guardar en fichero</string>
+    <string name="context_optionsMenu_fileLoad">Cargar desde fichero</string>
 	
 	<string name="context_contextMenu_contextTitle">Acciones de Contexto</string>
 	<string name="context_contextMenu_projectTitle">Acciones de Proyecto</string>
@@ -70,6 +77,7 @@
 	<string name="textbox_addTask_label">Nombre de la Tarea:</string>
 	<string name="textbox_noBlankValue">Introduzca un valor</string>
 	
+	<string name="error_unknown">Error desconocido</string>
 	<string name="error_loadingData">Error al cargar los datos</string>
 	<string name="error_deletingContext">Error al eliminar el Contexto</string>
 	<string name="error_deletingProject">Error al eliminar del Proyecto</string>
@@ -78,6 +86,9 @@
 	<string name="error_creatingProject">Error al crear el Proyecto</string>
 	<string name="error_creatingTask">Error al crear la Tarea</string>
 	<string name="error_initializingCamera">Error al inicializar la aplicación de la cámara</string>
+	<string name="error_sdcard">Error al escribir en tarjeta SD</string>
+	<string name="error_file_writing">Error escribiendo fichero</string>
+	<string name="error_file_reading">Error leyendo fichero</string>	
 	
 	<string name="confirm_delete_context">¿Estás seguro que desea eliminar este Contexto?</string>
 	<string name="result_delete_context">Contexto \"%s\" borrado correctamente</string>
@@ -86,6 +97,8 @@
 	<string name="confirm_delete_task">¿Está seguro que desea eliminar esta Tarea?</string>
 	<string name="result_delete_task">Tarea \"%s\" borrada correctamente</string>
 	<string name="confirm_clear_google">¿Está seguro que quiere olvidar su actual cuenta de Google Tasks?</string>
+	<string name="confirm_file_load">¿Está seguro de que quiere cargar los datos de este fichero y descartar los actuales?</string>
+	<string name="result_file_load">Fichero \"%s\" cargado correctamente</string>
 	
 	<string name="project_optionsMenu_renameProject">Renombrar el Proyecto</string>
 	<string name="project_optionsMenu_changeDescription">Cambiar la descripción</string>

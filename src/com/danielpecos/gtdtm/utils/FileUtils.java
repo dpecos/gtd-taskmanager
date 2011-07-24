@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.io.filefilter.WildcardFileFilter;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -15,7 +17,7 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 
 public class FileUtils {
-	public static boolean StoreByteImage(byte[] imageData, int quality, File file) {
+	public static boolean storeByteImage(byte[] imageData, int quality, File file) {
 
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -43,7 +45,7 @@ public class FileUtils {
 		return true;
 	}
 	
-	public static byte[] ReadByteImage(File file) {
+	public static byte[] readByteImage(File file) {
 		byte[] fileContent = null;
 		
 		FileInputStream fin = null;
@@ -65,5 +67,9 @@ public class FileUtils {
 			}
 		}
 		return fileContent;
+	}
+	
+	public static String[] listFilesMatching(File root, String pattern) {
+		return root.list(new WildcardFileFilter(pattern));
 	}
 }

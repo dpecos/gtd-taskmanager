@@ -1,5 +1,6 @@
 package com.danielpecos.gtdtm.model.beans;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import android.app.Activity;
@@ -15,10 +16,12 @@ import com.danielpecos.gtdtm.model.persistence.Persistable;
 import com.danielpecos.gtdtm.utils.DateUtils;
 import com.google.android.maps.GeoPoint;
 
-public class Task implements Persistable, Cloneable {
-	public enum Type {
-		Normal, Web, Call_SMS, Email, Location 
-	}
+public class Task implements Persistable, Cloneable, Serializable {
+	private static final long serialVersionUID = 1L;
+
+//	public enum Type {
+//		Normal, Web, Call_SMS, Email, Location 
+//	}
 	public enum Status {
 		Active, Completed, Discarded, Discarded_Completed 
 	}
@@ -32,8 +35,9 @@ public class Task implements Persistable, Cloneable {
 	private Status status;
 	private Priority priority;
 	private Date dueDate;
-	private GeoPoint location;
-	private Type type;
+	private Integer location_latitude;
+	private Integer location_longitude;
+//	private Type type;
 	private byte[] picture;
 	private String googleId;
 	private Date lastTimePersisted;
@@ -41,7 +45,7 @@ public class Task implements Persistable, Cloneable {
 	Task() {
 		this.priority = Priority.Normal;
 		this.status = Status.Active;
-		this.type = Type.Normal;
+//		this.type = Type.Normal;
 	}
 
 	public Task(android.content.Context ctx, long task_id) {
@@ -65,64 +69,82 @@ public class Task implements Persistable, Cloneable {
 		return name;
 	}
 
-	public void setName(String name) {
+	public Task setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public Task setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	public Status getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(Status status) {
+	public Task setStatus(Status status) {
 		this.status = status;
+		return this;
 	}
 
 	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Priority priority) {
+	public Task setPriority(Priority priority) {
 		this.priority = priority;
+		return this;
 	}
 
 	public Date getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public Task setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
+		return this;
 	}
 
 	public byte[] getPicture() {
 		return picture;
 	}
 
-	public void setPicture(byte[] picture) {
+	public Task setPicture(byte[] picture) {
 		this.picture = picture;
+		return this;
 	}
 
 	public GeoPoint getLocation() {
-		return location;
+		if (this.location_latitude != null && this.location_longitude != null) {
+			return new GeoPoint(this.location_latitude, this.location_longitude);
+		} else {
+			return null;
+		}
 	}
 
-	public void setLocation(GeoPoint location) {
-		this.location = location;
+	public Task setLocation(GeoPoint location) {
+		if (location != null) {
+			this.location_latitude = location.getLatitudeE6();
+			this.location_longitude = location.getLongitudeE6();
+		} else {
+			this.location_latitude = null;
+			this.location_longitude = null;
+		}
+		return this;
 	}
 
 	public String getGoogleId() {
 		return googleId;
 	}
 
-	public void setGoogleId(String googleId) {
+	public Task setGoogleId(String googleId) {
 		this.googleId = googleId;
+		return this;
 	}
 
 	public Date getLastTimePersisted() {
@@ -135,7 +157,7 @@ public class Task implements Persistable, Cloneable {
 		return this.store(ctx, now);
 
 	}
-	
+
 	public long store(android.content.Context ctx, Date date) {
 		GTDSQLHelper helper = new GTDSQLHelper(ctx);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -196,13 +218,13 @@ public class Task implements Persistable, Cloneable {
 		if (dbParent == null) {
 			db.close();
 		}
-		
+
 		if (this.getGoogleId() != null) {
 			TaskManager tm = TaskManager.getInstance(ctx);
 			result = tm.doInGTasks((Activity)ctx, TaskManager.GTASKS_DELETE_TASK, tm.findContextContainingTask(this), null, this);
 			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
 		}
-		
+
 		Log.d(TaskManager.TAG, "DDBB: Task successfully removed");
 		return result;
 	}
@@ -230,7 +252,11 @@ public class Task implements Persistable, Cloneable {
 		}
 
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LAT))) {
-			this.location = new GeoPoint(cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LAT)), cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LONG)));
+			this.location_latitude = cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LAT));
+		}
+
+		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LONG))) {
+			this.location_longitude = cursor.getInt(cursor.getColumnIndex(GTDSQLHelper.TASK_LOCATION_LONG));
 		}
 
 		if (!cursor.isNull(cursor.getColumnIndex(GTDSQLHelper.TASK_GOOGLE_ID))) {
@@ -280,7 +306,8 @@ public class Task implements Persistable, Cloneable {
 				this.status + 
 				this.priority + 
 				this.dueDate +
-				this.location + 
+				this.location_latitude +
+				this.location_longitude +
 				this.picture 
 		).hashCode();
 	}
