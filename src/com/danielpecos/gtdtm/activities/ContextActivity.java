@@ -84,9 +84,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			list.setLayoutParams(lpt);
 		}
 
-		//		Log.d(TaskManager.TAG, "Settings: Fijo los valores por defecto");
-		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
-
 		this.taskManager = TaskManager.getInstance(this);
 
 		if (this.taskManager.getContexts().size() == 0) {
@@ -155,29 +152,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		case R.id.context_optionsMenu_about:
 			ActivityUtils.showAboutActivity(this);
 			break;
-		case R.id.context_optionsMenu_fileSave:
-			String result = taskManager.saveToFile(this);
-			if (result != null) {
-				Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-			} else {
-				Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_LONG).show();
-			}
-			break;
-		case R.id.context_optionsMenu_fileLoad:
-			final String[] options = FileUtils.listFilesMatching(TaskManager.SDCARD_DIR, "*.db");
-			ActivityUtils.createOptionsDialog(this, R.string.context_file_loadOptions, options, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, final int elementPosition) {
-					dialog.dismiss();
-					ActivityUtils.createConfirmDialog(ContextActivity.this, R.string.confirm_file_load).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							loadFromFile(ContextActivity.this, options[elementPosition]);
-						}
-					}).show();
-				}
-			}).show();
-			break;			
 		}
 		return true;
 	}
@@ -570,6 +544,9 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		} else if (requestCode == ActivityUtils.PREFERENCES_ACTIVITY) {
 			Log.d(TaskManager.TAG, "ContextActivity: Returning from the preferences activity");
 			if (resultCode == RESULT_OK) {
+				if (data != null && data.getBooleanExtra(PreferencesActivity.FULL_RELOAD, false)) {
+					taskManager = TaskManager.reset(this);
+				}
 				this.initializeUI();
 			}
 		}
@@ -593,20 +570,4 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		googleTasksClientAsyncTask.execute();
 	}
 	
-	public void loadFromFile(android.content.Context ctx, String fileName) {
-		LoadDataFileAsyncTask loadDataFileAsyncTask = new LoadDataFileAsyncTask(ctx);
-		loadDataFileAsyncTask.setOnFinishedListener(new OnFinishedListener() {
-			@Override
-			public void onFinish(String response) {
-				if (response != null) {
-					Toast.makeText(ContextActivity.this, response, Toast.LENGTH_LONG).show();
-					taskManager = TaskManager.reset(ContextActivity.this);
-					ContextActivity.this.initializeUI();
-				} else {
-					Toast.makeText(ContextActivity.this, R.string.error_unknown, Toast.LENGTH_LONG).show();
-				}
-			}
-		});
-		loadDataFileAsyncTask.execute(fileName);
-	}
 }

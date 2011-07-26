@@ -68,7 +68,7 @@ public class LoadDataFileAsyncTask extends AsyncTask<Object, Integer, String>{
 					}
 
 					Log.d(TaskManager.TAG, "Data successfully loaded");
-					result = String.format(ctx.getString(R.string.context_file_loadOk), fileName);
+					result = String.format(ctx.getString(R.string.file_loadOk), fileName);
 				} catch (FileNotFoundException e) {
 					Log.e(TaskManager.TAG, "File " + fileName + " could not be found", e);
 				} catch (IOException e) {
@@ -115,7 +115,7 @@ public class LoadDataFileAsyncTask extends AsyncTask<Object, Integer, String>{
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		progressDialog = ProgressDialog.show(ctx, "", ctx.getString(R.string.context_file_loadingData), true);
+		progressDialog = ProgressDialog.show(ctx, "", ctx.getString(R.string.file_loadingData), true);
 	}
 
 	@Override

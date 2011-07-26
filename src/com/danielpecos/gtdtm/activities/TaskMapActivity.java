@@ -47,7 +47,7 @@ public class TaskMapActivity extends MapActivity {
 		mapView.setBuiltInZoomControls(true);
 		mapView.setHapticFeedbackEnabled(true);
 
-		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this); 
+		SharedPreferences p = TaskManager.getPreferences();
 		String mapType = p.getString("settings_map_type", null);
 		Log.i(TaskManager.TAG, "Using map mode " + mapType);
 

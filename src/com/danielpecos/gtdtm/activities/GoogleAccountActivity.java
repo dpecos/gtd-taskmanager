@@ -76,7 +76,7 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void gotAccount(boolean tokenExpired) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences settings = TaskManager.getPreferences();
 		String accountName = settings.getString(GOOGLE_ACCOUNT_NAME, null);
 		Account account = accountManager.getAccountByName(accountName);
 		
@@ -95,7 +95,7 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void gotAccount(final Account account) {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences settings = TaskManager.getPreferences();
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(GOOGLE_ACCOUNT_NAME, account.name);
 		editor.commit();
@@ -156,7 +156,7 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	private void onAuthToken() {
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences settings = TaskManager.getPreferences();
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(GOOGLE_AUTH_TOKEN, authToken);
 		editor.commit();

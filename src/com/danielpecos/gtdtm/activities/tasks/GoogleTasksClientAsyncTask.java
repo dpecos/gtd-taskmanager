@@ -10,7 +10,7 @@ import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.persistence.GoogleTaskHelper;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
 
-public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boolean>{
+public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, String>{
 
 	private ContextActivity activity;
 	private Context context;
@@ -23,11 +23,11 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 	}
 
 	@Override
-	protected Boolean doInBackground(Object... params) {
-		return GoogleTaskHelper.doInGTasks(activity, GoogleTaskHelper.GTASKS_SYNCHRONIZATION, context, null, null);
+	protected String doInBackground(Object... params) {
+		return GoogleTaskHelper.doInGTasks(activity, GoogleTaskHelper.GTASKS_ACTION_SYNCHRONIZE, context, null, null);
 
 	}
-
+	
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
@@ -35,10 +35,12 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 	}
 
 	@Override
-	protected void onPostExecute(Boolean response) {
+	protected void onPostExecute(String response) {
 		super.onPostExecute(response);
 		progressDialog.dismiss();
-		if (response) {
+		if (response != null) {
+			Toast.makeText(activity, response, Toast.LENGTH_SHORT).show();
+		} else {
 			Toast.makeText(activity, activity.getString(R.string.gtasks_synchronizationFinished), Toast.LENGTH_SHORT).show();
 		} 
 		activity.initializeUI();

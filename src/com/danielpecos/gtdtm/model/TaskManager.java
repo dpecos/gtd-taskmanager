@@ -50,6 +50,7 @@ public class TaskManager {
 	}
 
 	private TaskManager(android.content.Context ctx) {
+		PreferenceManager.setDefaultValues(ctx.getApplicationContext(), R.xml.preferences, false);
 		preferences = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
 
 		this.contexts = new LinkedHashMap<Long, Context>();
@@ -206,7 +207,7 @@ public class TaskManager {
 					oos.writeObject(this.contexts);
 					oos.close();
 					Log.d(TaskManager.TAG, "Data successfully saved");
-					result = String.format(ctx.getString(R.string.context_file_saveOk), fileName);
+					result = String.format(ctx.getString(R.string.file_saveOk), fileName);
 				} catch (FileNotFoundException e) {
 					Log.e(TaskManager.TAG, "File " + fileName + " could not be created", e);
 				} catch (IOException e) {

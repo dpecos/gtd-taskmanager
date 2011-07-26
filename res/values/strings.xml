@@ -60,17 +60,15 @@
     <string name="context_loadDemo_message">You haven\'t created any Context yet. Do you want to load some demo data?</string>
     <string name="context_loadDemo_creating">Creating demo data...</string>
     
-    <string name="context_file_saveOk">File successfully saved in SD card as \"%s\"</string>
-    <string name="context_file_loadOk">Data successfully loaded from file \"%s\"</string>
-    <string name="context_file_loadOptions">Select which file to use:</string>
-    <string name="context_file_loadingData">Loading data...</string>
+    <string name="file_saveOk">File successfully saved in SD card as \"%s\"</string>
+    <string name="file_loadOk">Data successfully loaded from file \"%s\"</string>
+    <string name="file_loadOptions">Select which file to use:</string>
+    <string name="file_loadingData">Loading data...</string>
     
     <string name="context_optionsMenu_addContext">Add new Context</string>
     <string name="context_optionsMenu_reloadData">Refresh data</string>
     <string name="context_optionsMenu_settings">Settings</string>
     <string name="context_optionsMenu_about">About</string>
-    <string name="context_optionsMenu_fileSave">Save to file</string>
-    <string name="context_optionsMenu_fileLoad">Load from file</string>
     
     <string name="context_contextMenu_contextTitle">Context actions</string>
     <string name="context_contextMenu_projectTitle">Project actions</string>
@@ -135,6 +133,7 @@
 	<string name="settings_category_general">General</string>
 	<string name="settings_category_synchronization">Synchronization</string>
 	<string name="settings_category_backup">Backup</string>
+	<string name="settings_category_fullVersion">Full Version</string>
 	
 	<string name="settings_task_order_tittle">Task list order</string>
 	<string name="settings_task_order_summary">Select a criteria to sort tasks\' lists</string>
@@ -167,5 +166,8 @@
     <string name="settings_backup_store_summary">Save a backup file</string>
     <string name="settings_backup_restore_title">Restore data</string>
     <string name="settings_backup_restore_summary">Load a backup file</string>
+    
+    <string name="settings_fullVersion_title">Enable extra capabilities?</string>
+    <string name="settings_fullVersion_summary">GoogleTasks two ways synchronization, banner free, ...</string>
 	
 </resources>

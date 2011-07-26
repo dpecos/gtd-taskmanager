@@ -40,17 +40,15 @@
 	<string name="context_loadDemo_message">Todavía no ha creado ningún Contexto. ¿Quiere cargar algunos datos de prueba?</string>
 	<string name="context_loadDemo_creating">Creando datos de demostración...</string>
 	
-	<string name="context_file_saveOk">Fichero guardado correctamente en SD con nombre \"%s\"</string>
-    <string name="context_file_loadOk">Datos cargados correctamente desde fichero \"%s\"</string>
-    <string name="context_file_loadOptions">Selecciona qué fichero utilizar:</string>
-    <string name="context_file_loadingData">Cargando datos...</string>
+	<string name="file_saveOk">Fichero guardado correctamente en SD con nombre \"%s\"</string>
+    <string name="file_loadOk">Datos cargados correctamente desde fichero \"%s\"</string>
+    <string name="file_loadOptions">Selecciona qué fichero utilizar:</string>
+    <string name="file_loadingData">Cargando datos...</string>
 
 	<string name="context_optionsMenu_addContext">Añadir nuevo Contexto</string>
 	<string name="context_optionsMenu_reloadData">Actualizar</string>
 	<string name="context_optionsMenu_settings">Configuración</string>
 	<string name="context_optionsMenu_about">Acerca de</string>
-    <string name="context_optionsMenu_fileSave">Guardar en fichero</string>
-    <string name="context_optionsMenu_fileLoad">Cargar desde fichero</string>
 	
 	<string name="context_contextMenu_contextTitle">Acciones de Contexto</string>
 	<string name="context_contextMenu_projectTitle">Acciones de Proyecto</string>
@@ -115,6 +113,7 @@
 	<string name="settings_category_general">General</string>
 	<string name="settings_category_synchronization">Sincronización</string>
 	<string name="settings_category_backup">Copia de seguridad</string>
+	<string name="settings_category_fullVersion">Versión completa</string>
 	
 	<string name="settings_task_order_tittle">Orden de la lista de Tareas</string>
 	<string name="settings_task_order_summary">Seleccione un criterio para ordenar la lista de tareas</string>
@@ -137,5 +136,8 @@
 	<string name="settings_backup_store_summary">Guardar un archivo de copia de seguridad</string>
 	<string name="settings_backup_restore_title">Restaurar datos</string>
 	<string name="settings_backup_restore_summary">Cargar un archivo de copia de seguridad</string>
+	
+	<string name="settings_fullVersion_title">¿Habilitar funcionalidades extra?</string>
+    <string name="settings_fullVersion_summary">Sincronización bidireccional en GoogleTasks, sin publicidad, ...</string>
 	
 </resources>

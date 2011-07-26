@@ -222,7 +222,7 @@ public class Task implements Persistable, Cloneable, Serializable {
 
 		if (this.getGoogleId() != null) {
 			TaskManager tm = TaskManager.getInstance(ctx);
-			GoogleTaskHelper.doInGTasks((Activity)ctx, GoogleTaskHelper.GTASKS_DELETE_TASK, tm.findContextContainingTask(this), null, this);
+			GoogleTaskHelper.doInGTasks((Activity)ctx, GoogleTaskHelper.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this), null, this);
 			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
 		}
 
