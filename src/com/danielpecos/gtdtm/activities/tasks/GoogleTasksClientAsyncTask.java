@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.ContextActivity;
-import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
+import com.danielpecos.gtdtm.model.persistence.GoogleTaskHelper;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
 
 public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boolean>{
@@ -24,9 +24,7 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Boole
 
 	@Override
 	protected Boolean doInBackground(Object... params) {
-		final TaskManager taskManager = TaskManager.getInstance(activity);
-		//return taskManager.synchronizeGTasks(activity, context);
-		return taskManager.doInGTasks(activity, TaskManager.GTASKS_SYNCHRONIZATION, context, null, null);
+		return GoogleTaskHelper.doInGTasks(activity, GoogleTaskHelper.GTASKS_SYNCHRONIZATION, context, null, null);
 
 	}
 
