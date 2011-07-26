@@ -191,8 +191,8 @@ public class GoogleTaskHelper {
 
 				if (project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime() || 
 						!TaskManager.isFullVersion(activity) && DateUtils.parseDate(gTask.updated).getTime() > project.getLastTimePersisted().getTime() ||
-						status == Task.Status.Completed && (gTask.containsKey("deleted") && gTask.deleted == true || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
-						status == Task.Status.Active && (gTask.containsKey("deleted") && gTask.deleted == true || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
+						status == Task.Status.Completed && (gTask.containsKey("hidden") && gTask.hidden == true || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
+						status == Task.Status.Active && (gTask.containsKey("hidden") && gTask.hidden == true || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
 					projectId = project.getGoogleId();
 					com.google.api.services.tasks.v1.model.Task tResult = client.updateTask(contextListId, previousProjectId, project.getGoogleId(), project.getName(), project.getDescription(), null, status);
 					projectUpdatedInGTasks = tResult != null;
@@ -291,6 +291,7 @@ public class GoogleTaskHelper {
 		if (project != null) {
 			if (project.getLastTimePersisted() == null || DateUtils.parseDate(gTask.updated).getTime() > project.getLastTimePersisted().getTime()) {
 				// update local existing project
+				// TODO: what to do when deleting remote project
 				project.setName(gTask.title);
 				project.setDescription(gTask.notes);
 				project.store(activity, DateUtils.parseDate(gTask.updated));
@@ -300,10 +301,12 @@ public class GoogleTaskHelper {
 			}
 		} else {
 			// create new project
-			project = context.createProject(activity, gTask.title, gTask.notes);
-			project.setGoogleId(gTask.id);
-			project.store(activity, DateUtils.parseDate(gTask.updated));
-			Log.d(TaskManager.TAG, "GTaks: Created local project " + project.getName());
+			if (!gTask.deleted) {
+				project = context.createProject(activity, gTask.title, gTask.notes);
+				project.setGoogleId(gTask.id);
+				project.store(activity, DateUtils.parseDate(gTask.updated));
+				Log.d(TaskManager.TAG, "GTaks: Created local project " + project.getName());
+			}
 		}
 
 		return project;
@@ -313,7 +316,7 @@ public class GoogleTaskHelper {
 		Task task = container.getTaskByGoogleId(gTask.id);
 		if (task != null) {
 			if (task.getLastTimePersisted() == null || DateUtils.parseDate(gTask.updated).getTime() > task.getLastTimePersisted().getTime()) {
-				updateLocalTask(activity, task, gTask);	
+				updateLocalTask(activity, container, task, gTask);	
 				Log.d(TaskManager.TAG, "GTaks: Updated local task " + task.getName());
 			} else {
 				Log.d(TaskManager.TAG, "GTaks: No need to update local task " + task.getName());
@@ -321,41 +324,52 @@ public class GoogleTaskHelper {
 			}
 		} else {
 			task = createLocalTask(activity, container, gTask);
-			Log.d(TaskManager.TAG, "GTaks: Created local task " + task.getName());
+			if (task != null) {
+				Log.d(TaskManager.TAG, "GTaks: Created local task " + task.getName());
+			}
 		}
 		return task;
 	}
 
 	private static Task createLocalTask(Activity activity, TaskContainer container, com.google.api.services.tasks.v1.model.Task gTask) {
-		Task t = container.createTask(activity, gTask.title, gTask.notes, Task.Priority.Normal);
-		t.setGoogleId(gTask.id);
+		if (!gTask.deleted) {
+			Task t = container.createTask(activity, gTask.title, gTask.notes, Task.Priority.Normal);
+			t.setGoogleId(gTask.id);
 
-		updateLocalTask(activity, t, gTask);
+			updateLocalTask(activity, container, t, gTask);
 
-		return t;
+			return t;
+		} else {
+			return null;
+		}
 	}
 
-	private static void updateLocalTask(Activity activity, Task t, com.google.api.services.tasks.v1.model.Task gTask) {
-		t.setName(gTask.title);
-		t.setDescription(gTask.notes);
-
-		t.setDueDate(DateUtils.parseDate(gTask.due));
-
-		if (gTask.containsKey("deleted") && gTask.deleted) {
-			if (gTask.status.equalsIgnoreCase("completed")) {
-				t.setStatus(Task.Status.Discarded_Completed);
-			} else if (gTask.status.equalsIgnoreCase("needsAction")) {
-				t.setStatus(Task.Status.Discarded);
-			}
+	private static void updateLocalTask(Activity activity, TaskContainer container, Task t, com.google.api.services.tasks.v1.model.Task gTask) {
+		if (gTask.deleted) {
+			container.deleteTask(activity, t);
+			Log.i(TaskManager.TAG, "GTaks: Deleted local task " + t.getName());
 		} else {
-			if (gTask.status.equalsIgnoreCase("completed")) {
-				t.setStatus(Task.Status.Completed);
-			} else if (gTask.status.equalsIgnoreCase("needsAction")) {
-				t.setStatus(Task.Status.Active);
-			}
-		}
+			t.setName(gTask.title);
+			t.setDescription(gTask.notes);
 
-		t.store(activity, DateUtils.parseDate(gTask.updated));
+			t.setDueDate(DateUtils.parseDate(gTask.due));
+
+			if (gTask.containsKey("hidden") && gTask.hidden) {
+				if (gTask.status.equalsIgnoreCase("completed")) {
+					t.setStatus(Task.Status.Discarded_Completed);
+				} else if (gTask.status.equalsIgnoreCase("needsAction")) {
+					t.setStatus(Task.Status.Discarded);
+				}
+			} else {
+				if (gTask.status.equalsIgnoreCase("completed")) {
+					t.setStatus(Task.Status.Completed);
+				} else if (gTask.status.equalsIgnoreCase("needsAction")) {
+					t.setStatus(Task.Status.Active);
+				}
+			}
+
+			t.store(activity, DateUtils.parseDate(gTask.updated));
+		}
 	}
 
 	private static void exportTasks(Activity activity, GoogleTasksClient client, Tasks gTasks, String contextListId, TaskContainer parent, String previousId, boolean forceCreate) throws IOException {

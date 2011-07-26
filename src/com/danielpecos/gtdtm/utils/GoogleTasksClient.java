@@ -225,11 +225,11 @@ public class GoogleTasksClient {
 				task.status = "needsAction";
 			}
 			if (status == Status.Discarded || status == Status.Discarded_Completed) {
-				task.deleted = true;
-//				task.hidden = true;
+//				task.deleted = true;
+				task.hidden = true;
 			} else {
-				task.deleted = false;
-//				task.hidden = false;
+//				task.deleted = false;
+				task.hidden = false;
 			}
 		}
 	}
