@@ -102,6 +102,9 @@
 	<string name="project_optionsMenu_changeDescription">Cambiar la descripción</string>
 	<string name="project_optionsMenu_addTask">Añadir nueva Tarea</string>
 	
+	<string name="gtasks_title">Google Tasks</string>
+	<string name="gtasks_freeVersion_1">¡Sincronización en un único sentido!</string>
+	<string name="gtasks_freeVersion_2">Para conseguir sincronización completa, utiliza la versión FULL</string>
 	<string name="gtasks_selectAccount">Selecciona una cuenta de Google</string>
 	<string name="gtasks_errorInRequest">Google Tasks: Error en la solicitud</string>
 	<string name="gtasks_synchronizing">Sincronizando con Google Tasks...</string>
@@ -133,9 +136,9 @@
 	<string name="settings_clearGoogle_summary">Eliminar la cuenta de Google Tasks autorizada</string>
 	
 	<string name="settings_backup_store_title">Copia de seguridad de datos</string>
-	<string name="settings_backup_store_summary">Guardar un archivo de copia de seguridad</string>
-	<string name="settings_backup_restore_title">Restaurar datos</string>
-	<string name="settings_backup_restore_summary">Cargar un archivo de copia de seguridad</string>
+	<string name="settings_backup_store_summary">Guardar una copia de seguridad</string>
+	<string name="settings_backup_restore_title">Restaurar copia de seguridad</string>
+	<string name="settings_backup_restore_summary">Cargar una copia de seguridad</string>
 	
 	<string name="settings_fullVersion_title">¿Habilitar funcionalidades extra?</string>
     <string name="settings_fullVersion_summary">Sincronización bidireccional en GoogleTasks, sin publicidad, ...</string>

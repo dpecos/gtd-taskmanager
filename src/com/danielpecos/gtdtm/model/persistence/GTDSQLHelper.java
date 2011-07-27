@@ -9,7 +9,7 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 
 public class GTDSQLHelper extends SQLiteOpenHelper {
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	private static final String DATABASE_NAME = "gtd_taskmanager.db";
 
 	// Table name
@@ -108,7 +108,7 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 			db.execSQL(sql);
 
 			db.setTransactionSuccessful();
-			
+
 			Log.i(TaskManager.TAG, "Database initialization successful");
 		} finally {
 			db.endTransaction();
@@ -122,18 +122,24 @@ public class GTDSQLHelper extends SQLiteOpenHelper {
 
 			Log.w(TaskManager.TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
-			StringBuffer sql = new StringBuffer();
-			if (oldVersion == 1) {
-				sql.append("alter table " + TABLE_CONTEXTS + " add " + CONTEXT_LAST_TIME_PERSISTED + " datetime; ");
-				sql.append("alter table " + TABLE_PROJECTS + " add " + PROJECT_LAST_TIME_PERSISTED + " datetime; ");
-				sql.append("alter table " + TABLE_TASKS + " add " + TASK_LAST_TIME_PERSISTED + " datetime; ");
-			} else if (oldVersion == 2) {
+			db.beginTransaction();
+			if (oldVersion == 1 || oldVersion == 2) {
+				// there was a bug here the first time the ddbb was upgrade, that's why this code is so...
+				try {
+					db.execSQL("alter table " + TABLE_CONTEXTS + " add " + CONTEXT_LAST_TIME_PERSISTED + " datetime; ");
+				} catch (Exception e) {
+				}
+				try {
+					db.execSQL("alter table " + TABLE_PROJECTS + " add " + PROJECT_LAST_TIME_PERSISTED + " datetime; ");
+					db.execSQL("alter table " + TABLE_TASKS + " add " + TASK_LAST_TIME_PERSISTED + " datetime; ");
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();	
+				}
+			} else if (oldVersion == 3) {
 			}
 
-			if (sql.length() > 0) {
-				db.execSQL(sql.toString());
-			}
 		}
 	}
-	
+
 }

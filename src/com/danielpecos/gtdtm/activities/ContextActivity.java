@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.tasks.CreateDemoDataAsyncTask;
 import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
-import com.danielpecos.gtdtm.activities.tasks.LoadDataFileAsyncTask;
 import com.danielpecos.gtdtm.activities.tasks.OnFinishedListener;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
@@ -38,7 +36,6 @@ import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
-import com.danielpecos.gtdtm.utils.FileUtils;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
 import com.danielpecos.gtdtm.views.OnCheckedChangeListener;
 import com.danielpecos.gtdtm.views.ProjectViewHolder;
@@ -68,20 +65,22 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 		// Admob banner
 		AdView adView = (AdView)this.findViewById(R.id.adView);
-		if (!TaskManager.isFullVersion(this)) {
-			Log.i(TaskManager.TAG, "Launching ad request");
-			AdRequest adRequest = new AdRequest();
-			adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-			adView.loadAd(adRequest);
-		} else {
-			Log.i(TaskManager.TAG, "Hiding banner in FULL version");
-			adView.setVisibility(View.GONE);
-			
-			// remove previous sibling bottom margin
-			ExpandableListView list = ((ExpandableListView)findViewById(android.R.id.list));
-			final ViewGroup.MarginLayoutParams lpt =(MarginLayoutParams)list.getLayoutParams();
-			lpt.setMargins(lpt.leftMargin,lpt.topMargin,lpt.rightMargin,0);
-			list.setLayoutParams(lpt);
+		if (adView != null) {
+			if (!TaskManager.isFullVersion(this)) {
+				Log.i(TaskManager.TAG, "Launching ad request");
+				AdRequest adRequest = new AdRequest();
+				adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+				adView.loadAd(adRequest);
+			} else {
+				Log.i(TaskManager.TAG, "Hiding banner in FULL version");
+				adView.setVisibility(View.GONE);
+
+				// remove previous sibling bottom margin
+				ExpandableListView list = ((ExpandableListView)findViewById(android.R.id.list));
+				final ViewGroup.MarginLayoutParams lpt =(MarginLayoutParams)list.getLayoutParams();
+				lpt.setMargins(lpt.leftMargin,lpt.topMargin,lpt.rightMargin,0);
+				list.setLayoutParams(lpt);
+			}
 		}
 
 		this.taskManager = TaskManager.getInstance(this);
@@ -511,7 +510,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
+
 		if (requestCode == ActivityUtils.PROJECT_ACTIVITY) {
 			Log.d(TaskManager.TAG, "ContextActivity: Returning from the project activity");
 			if (this.triggerViewHolder != null) {
@@ -569,5 +568,5 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context, this.contextViewHolders.get(context.getId()));
 		googleTasksClientAsyncTask.execute();
 	}
-	
+
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dip"
+    android:gravity="center"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:background="#ffdddddd">
+    
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+    	 <ImageView 
+		    android:id="@+id/imageView1" 
+		    android:src="@drawable/google"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content" 
+		    android:layout_marginRight="10dip"/>
+		    
+	    <TextView 
+		    android:textAppearance="?android:attr/textAppearanceLarge" 
+		    android:layout_height="wrap_content" 
+		    android:text="@string/gtasks_title" 
+		    android:id="@+id/textView1" 
+		    android:layout_width="wrap_content" 
+		    android:textStyle="bold|italic" 
+		    android:textColor="@color/Context_Item_Foreground" 
+		    android:textSize="28dip"/>
+	</LinearLayout>
+	
+    <ImageView 
+	    android:layout_height="wrap_content" 
+	    android:layout_width="wrap_content" 
+	    android:src="@drawable/logo"
+	    android:fadingEdge="horizontal|vertical" android:layout_marginLeft="50dip" android:layout_marginRight="50dip" android:layout_marginTop="20dip" android:layout_marginBottom="50dip"/>
+    
+    <TextView 
+	    android:textAppearance="?android:attr/textAppearanceLarge" 
+	    android:layout_height="wrap_content" 
+	    android:text="@string/gtasks_freeVersion_1" 
+	    android:id="@+id/gtasks_freeVersion_message_1" 
+	    android:textStyle="bold" 
+	    android:layout_width="wrap_content" 
+	    android:textColor="@color/Task_PriorityCritical" 
+	    android:layout_marginBottom="20dip" android:gravity="center_horizontal"/>
+	    
+  	<TextView 
+	  	android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_height="wrap_content" 
+		android:text="@string/gtasks_freeVersion_2"
+		android:id="@+id/gtasks_freeVersion_message_2" 
+		android:textStyle="italic"
+		android:layout_width="wrap_content" 
+		android:textColor="@color/Context_Item_Foreground" android:gravity="center_horizontal"/>
+	    
+</LinearLayout>

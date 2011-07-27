@@ -12,11 +12,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
@@ -30,7 +31,7 @@ import com.google.api.client.http.HttpResponseException;
 public class GoogleAccountActivity extends Activity {
 	public static final String GOOGLE_AUTH_TOKEN = "google_authToken";
 	public static final String GOOGLE_ACCOUNT_NAME = "google_accountName";
-	
+
 	private static final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/tasks";
 	private static final int REQUEST_AUTHENTICATE = 0;
 	private static final int DIALOG_ACCOUNTS = 0;
@@ -38,18 +39,26 @@ public class GoogleAccountActivity extends Activity {
 	// TODO(yanivi): save auth token in preferences
 	public String authToken;
 	public GoogleAccountManager accountManager;
-	
+
 	private Long contextId;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.activity_google_account);
+
+		if (TaskManager.isFullVersion(this)) {
+			findViewById(R.id.gtasks_freeVersion_message_1).setVisibility(View.GONE);
+			findViewById(R.id.gtasks_freeVersion_message_2).setVisibility(View.GONE);
+		}
+
 		accountManager = new GoogleAccountManager(this);
 		Logger.getLogger("com.google.api.client").setLevel(Level.ALL);
-		
+
 		Boolean invalidate = (Boolean)getIntent().getSerializableExtra("invalidate_token");
 		contextId = (Long)getIntent().getSerializableExtra("context_id");
-		
+
 		gotAccount(invalidate);
 	}
 
@@ -60,6 +69,7 @@ public class GoogleAccountActivity extends Activity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.gtasks_selectAccount);
 			final Account[] accounts = accountManager.getAccounts();
+
 			final int size = accounts.length;
 			String[] names = new String[size];
 			for (int i = 0; i < size; i++) {
@@ -68,6 +78,14 @@ public class GoogleAccountActivity extends Activity {
 			builder.setItems(names, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					gotAccount(accounts[which]);
+				}
+			});
+			//builder.setCancelable(false);
+			builder.setOnCancelListener(new OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					GoogleAccountActivity.this.setResult(RESULT_CANCELED);
+					GoogleAccountActivity.this.finish();
 				}
 			});
 			return builder.create();
@@ -79,10 +97,10 @@ public class GoogleAccountActivity extends Activity {
 		SharedPreferences settings = TaskManager.getPreferences();
 		String accountName = settings.getString(GOOGLE_ACCOUNT_NAME, null);
 		Account account = accountManager.getAccountByName(accountName);
-		
+
 		if (account != null) {
 			authToken = settings.getString(GOOGLE_AUTH_TOKEN, null);
-			
+
 			if (tokenExpired) {
 				Log.i(TaskManager.TAG, "GTasks: invalidating authToken: " + authToken);
 				accountManager.invalidateAuthToken(authToken);
@@ -136,7 +154,7 @@ public class GoogleAccountActivity extends Activity {
 	}
 
 	void handleException(Exception e) {
-//		e.printStackTrace();
+		//		e.printStackTrace();
 		Log.e(TaskManager.TAG, e.getMessage(), e);
 		if (e instanceof HttpResponseException) {
 			HttpResponse response = ((HttpResponseException) e).response;
@@ -160,12 +178,12 @@ public class GoogleAccountActivity extends Activity {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(GOOGLE_AUTH_TOKEN, authToken);
 		editor.commit();
-		
+
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("context_id", contextId);
-		
+
 		Log.d(TaskManager.TAG, "GTasks: finishing GoogleAccountActivity");
-		
+
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();
 	}

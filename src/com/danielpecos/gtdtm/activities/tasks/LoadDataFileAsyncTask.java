@@ -9,9 +9,7 @@ import java.util.HashMap;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;

@@ -9,7 +9,7 @@ import android.util.Log;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Task.Status;
-import com.danielpecos.gtdtm.model.persistence.GoogleTaskHelper;
+import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
 import com.google.api.client.http.HttpResponse;
@@ -226,10 +226,10 @@ public class GoogleTasksClient {
 				task.status = "needsAction";
 			}
 			if (status == Status.Discarded || status == Status.Discarded_Completed) {
-				if (!name.toUpperCase().startsWith(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED)) {
-					task.title = GoogleTaskHelper.GTASKS_PREFIX_DISCARDED + " " + name;
+				if (!name.toUpperCase().startsWith(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED)) {
+					task.title = GoogleTasksHelper.GTASKS_PREFIX_DISCARDED + " " + name;
 				} else {
-					task.title = GoogleTaskHelper.GTASKS_PREFIX_DISCARDED + " " + name.substring(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED.length()).trim();
+					task.title = GoogleTasksHelper.GTASKS_PREFIX_DISCARDED + " " + name.substring(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED.length()).trim();
 				}
 			}
 		}

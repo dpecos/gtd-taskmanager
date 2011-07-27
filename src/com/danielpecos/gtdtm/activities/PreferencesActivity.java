@@ -106,7 +106,7 @@ public class PreferencesActivity extends PreferenceActivity {
 					editor.putBoolean("settings_fullVersion", false);
 					editor.commit();
 					
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?com.danielpecos.gtdtm.full"));
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.danielpecos.gtdtm.full"));
 					startActivity(intent);
 					return true;
 				}

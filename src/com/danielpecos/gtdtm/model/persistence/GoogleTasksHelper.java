@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.GoogleAccountActivity;
+import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
@@ -23,7 +24,7 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.services.tasks.v1.model.Tasks;
 
-public class GoogleTaskHelper {
+public class GoogleTasksHelper {
 	public static final String GTASKS_ACTION_SYNCHRONIZE = "gTasks_synchronization";
 	public static final String GTASKS_ACTION_DELETE_TASK = "gTasks_deleteTask";
 	public static final String GTASKS_PREFIX_DISCARDED = "[D]";
@@ -95,13 +96,13 @@ public class GoogleTaskHelper {
 		synchronizeFromLocalToGoole(activity, context, client, gTasks, isNewContextList);
 		Log.i(TaskManager.TAG, "GTasks: Finished synchronization from local to remote");
 
-		return null;
+		return GoogleTasksClientAsyncTask.RESPONSE_OK;
 	}
 
 	private static String gTasksDeleteTask(Activity activity,	GoogleTasksClient client, Context context, Task task) throws IOException {
 		Log.d(TaskManager.TAG, "GTasks: Deleting task \"" +task.getName() + " (" + task.getGoogleId() + ")\"");
 		client.deleteTask(context.getGoogleId(), task.getGoogleId());
-		return null;
+		return GoogleTasksClientAsyncTask.RESPONSE_OK;
 	}
 
 	private static void syncrhonizeFromGoogleToLocal(Activity activity, Context context, GoogleTasksClient client, Tasks tasks) throws IOException {
@@ -194,8 +195,8 @@ public class GoogleTaskHelper {
 
 				if (project.getLastTimePersisted() == null || gTask.updated == null || DateUtils.parseDate(gTask.updated).getTime() < project.getLastTimePersisted().getTime() || 
 						!TaskManager.isFullVersion(activity) && DateUtils.parseDate(gTask.updated).getTime() > project.getLastTimePersisted().getTime() ||
-						status == Task.Status.Completed && (gTask.title.startsWith(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED) || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
-						status == Task.Status.Active && (gTask.title.startsWith(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED) || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
+						status == Task.Status.Completed && (gTask.title.startsWith(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED) || !gTask.containsKey("status") || !gTask.status.equalsIgnoreCase("completed")) ||
+						status == Task.Status.Active && (gTask.title.startsWith(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED) || gTask.containsKey("status") && gTask.status.equalsIgnoreCase("completed"))	) {
 					projectId = project.getGoogleId();
 					com.google.api.services.tasks.v1.model.Task tResult = client.updateTask(contextListId, previousProjectId, project.getGoogleId(), project.getName(), project.getDescription(), null, status);
 					projectUpdatedInGTasks = tResult != null;
@@ -352,8 +353,8 @@ public class GoogleTaskHelper {
 			container.deleteTask(activity, t);
 			Log.i(TaskManager.TAG, "GTaks: Deleted local task " + t.getName());
 		} else {
-			if (gTask.title.toUpperCase().startsWith(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED)) {
-				t.setName(gTask.title.substring(GoogleTaskHelper.GTASKS_PREFIX_DISCARDED.length()).trim());
+			if (gTask.title.toUpperCase().startsWith(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED)) {
+				t.setName(gTask.title.substring(GoogleTasksHelper.GTASKS_PREFIX_DISCARDED.length()).trim());
 			} else {
 				t.setName(gTask.title);
 			}
