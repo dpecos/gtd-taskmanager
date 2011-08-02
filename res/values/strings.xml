@@ -129,6 +129,8 @@
 	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
 	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
 	<string name="gtasks_synchronizationFinished">Synchronization finished</string>
+	<string name="gtasks_noAccountFoundTitle">No account found</string>
+	<string name="gtasks_noAccountFound">It was impossible to find a Google account configured in your system. Please set up one and retry.</string>
 	
 	<string name="notification_title">Task is about to expire</string>
 	<string name="notification_msg"> is about to expire</string>

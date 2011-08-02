@@ -1,18 +1,11 @@
 package com.danielpecos.gtdtm.activities;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,13 +14,12 @@ import android.view.View;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
-import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
+import com.danielpecos.gtdtm.utils.google.AccountChooser;
+import com.danielpecos.gtdtm.utils.google.AuthManager;
+import com.danielpecos.gtdtm.utils.google.AuthManager.AuthCallback;
+import com.danielpecos.gtdtm.utils.google.AuthManagerFactory;
+import com.danielpecos.gtdtm.utils.google.Constants;
 
-/*
- * http://code.google.com/p/google-api-java-client/wiki/AndroidAccountManager
- */
 public class GoogleAccountActivity extends Activity {
 	public static final String GOOGLE_AUTH_TOKEN = "google_authToken";
 	public static final String GOOGLE_ACCOUNT_NAME = "google_accountName";
@@ -36,11 +28,13 @@ public class GoogleAccountActivity extends Activity {
 	private static final int REQUEST_AUTHENTICATE = 0;
 	private static final int DIALOG_ACCOUNTS = 0;
 
-	// TODO(yanivi): save auth token in preferences
-	public String authToken;
-	public GoogleAccountManager accountManager;
-
 	private Long contextId;
+
+	//new
+	private AuthManager lastAuth;
+	private final HashMap<String, AuthManager> authMap = new HashMap<String, AuthManager>();
+	private final AccountChooser accountChooser = new AccountChooser();
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,130 +47,82 @@ public class GoogleAccountActivity extends Activity {
 			findViewById(R.id.gtasks_freeVersion_message_2).setVisibility(View.GONE);
 		}
 
-		accountManager = new GoogleAccountManager(this);
 		Logger.getLogger("com.google.api.client").setLevel(Level.ALL);
 
 		Boolean invalidate = (Boolean)getIntent().getSerializableExtra("invalidate_token");
 		contextId = (Long)getIntent().getSerializableExtra("context_id");
 
-		gotAccount(invalidate);
+		authenticate(AUTH_TOKEN_TYPE);
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DIALOG_ACCOUNTS:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(R.string.gtasks_selectAccount);
-			final Account[] accounts = accountManager.getAccounts();
+	//	@Override
+	//	protected Dialog onCreateDialog(int id) {
+	//		switch (id) {
+	//		case DIALOG_ACCOUNTS:
+	//
+	//		}
+	//		return null;
+	//	}
 
-			final int size = accounts.length;
-			String[] names = new String[size];
-			for (int i = 0; i < size; i++) {
-				names[i] = accounts[i].name;
-			}
-			builder.setItems(names, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					gotAccount(accounts[which]);
-				}
-			});
-			//builder.setCancelable(false);
-			builder.setOnCancelListener(new OnCancelListener() {
+	private void authenticate(final String service) {
+		lastAuth = authMap.get(service);
+		if (lastAuth == null) {
+			Log.i(TaskManager.TAG, "Creating a new authentication for service: " + service);
+			lastAuth = AuthManagerFactory.getAuthManager(this,
+					Constants.GET_LOGIN,
+					null,
+					true,
+					service);
+			authMap.put(service, lastAuth);
+		}
+
+		Log.d(TaskManager.TAG, "Logging in to " + service + "...");
+		if (AuthManagerFactory.useModernAuthManager()) {
+			runOnUiThread(new Runnable() {
 				@Override
-				public void onCancel(DialogInterface dialog) {
-					GoogleAccountActivity.this.setResult(RESULT_CANCELED);
-					GoogleAccountActivity.this.finish();
+				public void run() {
+					chooseAccount(service);
 				}
 			});
-			return builder.create();
-		}
-		return null;
-	}
-
-	void gotAccount(boolean tokenExpired) {
-		SharedPreferences settings = TaskManager.getPreferences();
-		String accountName = settings.getString(GOOGLE_ACCOUNT_NAME, null);
-		Account account = accountManager.getAccountByName(accountName);
-
-		if (account != null) {
-			authToken = settings.getString(GOOGLE_AUTH_TOKEN, null);
-
-			if (tokenExpired) {
-				Log.i(TaskManager.TAG, "GTasks: invalidating authToken: " + authToken);
-				accountManager.invalidateAuthToken(authToken);
-				authToken = null;
-			}
-			gotAccount(account);
-			return;
-		}
-		showDialog(DIALOG_ACCOUNTS);
-	}
-
-	void gotAccount(final Account account) {
-		SharedPreferences settings = TaskManager.getPreferences();
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(GOOGLE_ACCOUNT_NAME, account.name);
-		editor.commit();
-		accountManager.manager.getAuthToken(
-				account, AUTH_TOKEN_TYPE, true, new AccountManagerCallback<Bundle>() {
-
-					public void run(AccountManagerFuture<Bundle> future) {
-						try {
-							Bundle bundle = future.getResult();
-							if (bundle.containsKey(AccountManager.KEY_INTENT)) {
-								Intent intent = bundle.getParcelable(AccountManager.KEY_INTENT);
-								intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_NEW_TASK);
-								startActivityForResult(intent, REQUEST_AUTHENTICATE);
-							} else if (bundle.containsKey(AccountManager.KEY_AUTHTOKEN)) {
-								authToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-								Log.i(TaskManager.TAG, "GTasks: got a new authToken: " + authToken);
-								onAuthToken();
-							}
-						} catch (Exception e) {
-							handleException(e);
-						}
-					}
-				}, null);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case REQUEST_AUTHENTICATE:
-			if (resultCode == RESULT_OK) {
-				gotAccount(false);
-			} else {
-				showDialog(DIALOG_ACCOUNTS);
-			}
-			break;
+		} else {
+			doLogin(service, null);
 		}
 	}
 
-	void handleException(Exception e) {
-		//		e.printStackTrace();
-		Log.e(TaskManager.TAG, e.getMessage(), e);
-		if (e instanceof HttpResponseException) {
-			HttpResponse response = ((HttpResponseException) e).response;
-			int statusCode = response.statusCode;
-			try {
-				response.ignore();
-			} catch (IOException e1) {
-				Log.e(TaskManager.TAG, "GTasks: error", e);
+	private void chooseAccount(final String service) {
+		accountChooser.chooseAccount(GoogleAccountActivity.this, new AccountChooser.AccountHandler() {
+			@Override
+			public void onAccountSelected(Account account) {
+				if (account == null) {
+					finish();
+					return;
+				}
+
+				doLogin(service, account);
 			}
-			// TODO(yanivi): should only try this once to avoid infinite loop
-			if (statusCode == 401) {
-				Log.w(TaskManager.TAG, "GTasks: authToken invalid! " + statusCode);
-				gotAccount(true);
-				return;
-			}
-		}
+		});
 	}
 
-	private void onAuthToken() {
+	private void doLogin(final String service, final Object account) {
+		lastAuth.doLogin(new AuthCallback() {
+			@Override
+			public void onAuthResult(boolean success) {
+				Log.i(TaskManager.TAG, "Login success for " + service + ": " + success);
+				if (!success) {
+					//					executeStateMachine(SendState.SHOW_RESULTS);
+					return;
+				}
+
+				onLoginSuccess(account);
+			}
+		}, account);
+	}
+
+	private void onLoginSuccess(Object account) {
 		SharedPreferences settings = TaskManager.getPreferences();
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(GOOGLE_AUTH_TOKEN, authToken);
+		editor.putString(GOOGLE_ACCOUNT_NAME, ((Account)account).name);
+		editor.putString(GOOGLE_AUTH_TOKEN, lastAuth.getAuthToken());
 		editor.commit();
 
 		Intent resultIntent = new Intent();
@@ -187,4 +133,20 @@ public class GoogleAccountActivity extends Activity {
 		this.setResult(RESULT_OK, resultIntent);
 		this.finish();
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_AUTHENTICATE:
+//			if (resultCode == RESULT_OK) {
+//				gotAccount(false);
+//			} else {
+//				showDialog(DIALOG_ACCOUNTS);
+//			}
+			authenticate(AUTH_TOKEN_TYPE);
+			break;
+		}
+	}
+
 }
