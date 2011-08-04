@@ -79,10 +79,20 @@ public class ModernAuthManager implements AuthManager {
 		// Keep the account in case we need to retry.
 		this.lastAccount = account;
 
-		accountManager.getAuthToken(account, service, true,	new AccountManagerCallback<Bundle>() {
+	    // NOTE: Many Samsung phones have a crashing bug in
+		// AccountManager#getAuthToken(Account, String, boolean, AccountManagerCallback<Bundle>)
+		// so we use the other version of the method.
+		// More details here:
+		// http://forum.xda-developers.com/showthread.php?p=15155487
+		// http://android.git.kernel.org/?p=platform/frameworks/base.git;a=blob;f=core/java/android/accounts/AccountManagerService.java
+		//accountManager.getAuthToken(account, service, true,	new AccountManagerCallback<Bundle>() {
+		accountManager.getAuthToken(account, service, null, activity, new AccountManagerCallback<Bundle>() {
 			public void run(AccountManagerFuture<Bundle> future) {
 				try {
-					Bundle result = future.getResult();
+					authToken = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+					Log.i(TaskManager.TAG, "Got auth token");
+					
+					/*Bundle result = future.getResult();
 
 					// AccountManager needs user to grant permission
 					if (result.containsKey(AccountManager.KEY_INTENT)) {
@@ -93,7 +103,7 @@ public class ModernAuthManager implements AuthManager {
 						authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
 						Log.i(TaskManager.TAG, "Got auth token.");
 						runAuthCallback();
-					}
+					}*/
 				} catch (OperationCanceledException e) {
 					Log.e(TaskManager.TAG, "Operation Canceled", e);
 				} catch (IOException e) {
@@ -101,14 +111,10 @@ public class ModernAuthManager implements AuthManager {
 				} catch (AuthenticatorException e) {
 					Log.e(TaskManager.TAG, "Authentication Failed", e);
 				}
+				
+				runAuthCallback();
 			}
 		}, null /* handler */);
-	}
-
-	private static void clearNewTaskFlag(Intent intent) {
-		int flags = intent.getFlags();
-		flags &= ~Intent.FLAG_ACTIVITY_NEW_TASK;
-		intent.setFlags(flags);
 	}
 
 	/**
