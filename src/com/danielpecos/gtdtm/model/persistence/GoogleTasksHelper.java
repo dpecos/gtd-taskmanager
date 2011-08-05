@@ -273,7 +273,7 @@ public class GoogleTasksHelper {
 
 	}
 
-	private static void resetSynchronizationData(Context context) {
+	public static void resetSynchronizationData(Context context) {
 		for (Project p : context.getProjects()) {
 			resetSynchronizationData(p);
 		}

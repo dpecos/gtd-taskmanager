@@ -13,12 +13,15 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.tasks.LoadDataFileAsyncTask;
 import com.danielpecos.gtdtm.activities.tasks.OnFinishedListener;
 import com.danielpecos.gtdtm.model.TaskManager;
+import com.danielpecos.gtdtm.model.beans.Context;
+import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.FileUtils;
 
@@ -50,6 +53,14 @@ public class PreferencesActivity extends PreferenceActivity {
 						editor.commit();
 
 						clearGooglePreferences.setEnabled(false);
+						
+						TaskManager taskManager = TaskManager.getInstance(PreferencesActivity.this);
+						for (Context ctx : taskManager.getContexts()) {
+							if (ctx.getGoogleId() != null) {
+								Log.d(TaskManager.TAG, "Clearing sync data from context " + ctx.getName());
+								GoogleTasksHelper.resetSynchronizationData(ctx);
+							}
+						}
 					}
 				}).show();
 
