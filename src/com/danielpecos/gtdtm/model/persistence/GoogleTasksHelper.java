@@ -6,78 +6,22 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.danielpecos.gtdtm.R;
-import com.danielpecos.gtdtm.activities.GoogleAccountActivity;
 import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.model.beans.TaskContainer;
-import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.DateUtils;
-import com.danielpecos.gtdtm.utils.GoogleTasksClient;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
+import com.danielpecos.gtdtm.utils.google.GoogleTasksClient;
 import com.google.api.services.tasks.v1.model.Tasks;
 
 public class GoogleTasksHelper {
-	public static final String GTASKS_ACTION_SYNCHRONIZE = "gTasks_synchronization";
-	public static final String GTASKS_ACTION_DELETE_TASK = "gTasks_deleteTask";
 	public static final String GTASKS_PREFIX_DISCARDED = "[D]";
 
-	public static String doInGTasks(Activity activity, String action, Context context, Project project, Task task) {
-		//		TaskManager taskManger = TaskManager.getInstance(activity);
-
-		SharedPreferences settings = TaskManager.getPreferences();
-		String accountName = settings.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, null);
-
-		if (accountName == null) {
-			Log.i(TaskManager.TAG, "GTasks: Google Tasks authorization required");
-			ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.FALSE);
-			return null;
-		} else {
-			Log.i(TaskManager.TAG, "GTasks: Synchronizing with Google Tasks...");
-			String authToken = settings.getString(GoogleAccountActivity.GOOGLE_AUTH_TOKEN, null);
-
-			GoogleTasksClient client = new GoogleTasksClient(activity, context, authToken);
-
-			try {
-				if (action.equalsIgnoreCase(GTASKS_ACTION_SYNCHRONIZE)) {
-					return gTasksSynchronization(activity, client, context);
-				} else if (action.equalsIgnoreCase(GTASKS_ACTION_DELETE_TASK)) {
-					return gTasksDeleteTask(activity, client, context, task);
-				} else {
-					return null;
-				}
-			} catch (Exception e) {
-				String message = null;
-				if (e instanceof HttpResponseException) {
-					HttpResponse response = ((HttpResponseException) e).response;
-					int statusCode = response.statusCode;
-
-					if (statusCode == 400) {
-						Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
-						message = activity.getString(R.string.gtasks_errorInRequest);
-					} else {
-						Log.e(TaskManager.TAG, "GTasks: error in communication (maybe token has expired)", e);
-						ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.TRUE);	
-					}
-				} else {
-					Log.e(TaskManager.TAG, "GTasks: unknown error: " + e.getMessage(), e);
-					message = activity.getString(R.string.error_unknown) + ": " + e.getMessage();
-				}
-				return message;
-			} finally {
-				Log.i(TaskManager.TAG, "Synchronization finished.");
-			}
-		}
-	}
-
-	private static String gTasksSynchronization(Activity activity, GoogleTasksClient client, Context context) throws IOException {
+	public static String gTasksSynchronization(Activity activity, GoogleTasksClient client, Context context) throws IOException {
 		Log.d(TaskManager.TAG, "GTasks: Synchronizing context element");
 		boolean isNewContextList = getOrCcreateGoogleList(activity, context, client);
 
@@ -99,8 +43,9 @@ public class GoogleTasksHelper {
 		return GoogleTasksClientAsyncTask.RESPONSE_OK;
 	}
 
-	private static String gTasksDeleteTask(Activity activity,	GoogleTasksClient client, Context context, Task task) throws IOException {
+	public static String gTasksDeleteTask(Activity activity, GoogleTasksClient client, Task task) throws IOException {
 		Log.d(TaskManager.TAG, "GTasks: Deleting task \"" +task.getName() + " (" + task.getGoogleId() + ")\"");
+		Context context = TaskManager.getInstance(activity).findContextContainingTask(task);
 		client.deleteTask(context.getGoogleId(), task.getGoogleId());
 		return GoogleTasksClientAsyncTask.RESPONSE_OK;
 	}

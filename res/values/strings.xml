@@ -127,6 +127,7 @@
 	<string name="gtasks_freeVersion_2">To get full synchronization, upgrade to FULL version</string>
 	<string name="gtasks_selectAccount">Select a Google account</string>
 	<string name="gtasks_errorInRequest">Google Tasks: error in request</string>
+	<string name="gtasks_errorInCommunication">Google Tasks: error communicating with server</string>
 	<string name="gtasks_synchronizing">Synchronizing with Google Tasks...</string>
 	<string name="gtasks_synchronizationFinished">Synchronization finished</string>
 	<string name="gtasks_noAccountFoundTitle">No account found</string>

@@ -21,6 +21,7 @@ import com.danielpecos.gtdtm.activities.tasks.OnFinishedListener;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.FileUtils;
+import com.danielpecos.gtdtm.utils.google.GoogleClient;
 
 public class PreferencesActivity extends PreferenceActivity {
 
@@ -37,7 +38,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		final SharedPreferences preferences = TaskManager.getPreferences();
 
 		final Preference clearGooglePreferences = (Preference) findPreference("settings_clear_google");
-		clearGooglePreferences.setEnabled(!preferences.getString(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME, "").equalsIgnoreCase(""));
+		clearGooglePreferences.setEnabled(!preferences.getString(GoogleClient.GOOGLE_ACCOUNT_NAME, "").equalsIgnoreCase(""));
 
 		clearGooglePreferences.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
@@ -45,8 +46,7 @@ public class PreferencesActivity extends PreferenceActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						SharedPreferences.Editor editor = preferences.edit();
-						editor.remove(GoogleAccountActivity.GOOGLE_ACCOUNT_NAME);
-						editor.remove(GoogleAccountActivity.GOOGLE_AUTH_TOKEN);
+						editor.remove(GoogleClient.GOOGLE_ACCOUNT_NAME);
 						editor.commit();
 
 						clearGooglePreferences.setEnabled(false);

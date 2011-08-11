@@ -565,8 +565,12 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	}
 
 	private void synchronizeGoogleTasks(final Context context) {
-		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this, context, this.contextViewHolders.get(context.getId()));
-		googleTasksClientAsyncTask.execute();
+//		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this);
+//		ArrayList<Context> contexts = new ArrayList<Context>();
+//		contexts.add(context);
+//		googleTasksClientAsyncTask.execute(GoogleTasksClientAsyncTask.GTASKS_ACTION_SYNCHRONIZE, contexts);
+		
+		ActivityUtils.showGoogleAccountActivity(this, GoogleAccountActivity.GTASKS_ACTION_SYNCHRONIZE, new long[] {context.getId()});
 	}
 
 }

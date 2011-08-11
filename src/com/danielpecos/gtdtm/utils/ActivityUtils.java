@@ -72,10 +72,10 @@ public class ActivityUtils {
 		Log.d(TaskManager.TAG, "Intent for MapActivity");
 	} 
 
-	public static void showGoogleAccountActivity(Activity activity, Context context, Boolean invalidate) {
+	public static void showGoogleAccountActivity(Activity activity, String action, long[] ids) {
 		Intent intent = new Intent(activity.getBaseContext(), GoogleAccountActivity.class);   
-		intent.putExtra("invalidate_token", invalidate);
-		intent.putExtra("context_id", context.getId());
+		intent.putExtra("action", action);
+		intent.putExtra("ids", ids);
 		Log.d(TaskManager.TAG, "GTasks: invoking GoogleAccountActivity");
 		activity.startActivityForResult(intent, GOOGLE_ACCOUNT_ACTIVITY);
 		Log.d(TaskManager.TAG, "Intent for GoogleAccountActivity");

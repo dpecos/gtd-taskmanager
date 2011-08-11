@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
-import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
 import com.danielpecos.gtdtm.utils.DateUtils;
 import com.google.android.maps.GeoPoint;
@@ -222,7 +222,11 @@ public class Task implements Persistable, Cloneable, Serializable {
 
 		if (this.getGoogleId() != null) {
 			TaskManager tm = TaskManager.getInstance(ctx);
-			GoogleTasksHelper.doInGTasks((Activity)ctx, GoogleTasksHelper.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this), null, this);
+			
+//			GoogleTasksHelper.doInGTasks((Activity)ctx, GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this), null, this);
+			GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask((Activity)ctx);
+			googleTasksClientAsyncTask.execute(GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this));
+			
 			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
 		}
 

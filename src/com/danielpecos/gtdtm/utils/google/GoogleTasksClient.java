@@ -1,4 +1,4 @@
-package com.danielpecos.gtdtm.utils;
+package com.danielpecos.gtdtm.utils.google;
 
 import java.io.IOException;
 import java.util.Date;
@@ -10,6 +10,8 @@ import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
+import com.danielpecos.gtdtm.utils.ActivityUtils;
+import com.danielpecos.gtdtm.utils.DateUtils;
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
 import com.google.api.client.http.HttpResponse;
@@ -28,14 +30,14 @@ public class GoogleTasksClient {
 
 	private Tasks service;
 
-	public GoogleTasksClient(final Activity activity, final Context context, String authToken) {
+	public GoogleTasksClient(final Activity activity, String authToken) {
 		Log.d(TaskManager.TAG, "New GoogleTasksClient with authToken " + authToken);
 
 		new GoogleAccessProtectedResource(authToken) {
 			@Override
 			protected void onAccessToken(String accessToken) {
 				Log.w(TaskManager.TAG, "GTasks: onAccessToken");
-				ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.TRUE);
+//				ActivityUtils.showGoogleAccountActivity(activity, context, Boolean.TRUE);
 			}
 		};
 

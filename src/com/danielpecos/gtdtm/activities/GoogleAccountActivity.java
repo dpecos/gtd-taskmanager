@@ -1,44 +1,40 @@
 package com.danielpecos.gtdtm.activities;
 
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.IOException;
 
-import android.accounts.Account;
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
-import com.danielpecos.gtdtm.utils.google.AccountChooser;
-import com.danielpecos.gtdtm.utils.google.AuthManager;
-import com.danielpecos.gtdtm.utils.google.AuthManager.AuthCallback;
-import com.danielpecos.gtdtm.utils.google.AuthManagerFactory;
-import com.danielpecos.gtdtm.utils.google.Constants;
+import com.danielpecos.gtdtm.model.beans.Context;
+import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
+import com.danielpecos.gtdtm.utils.google.GoogleClient;
+import com.danielpecos.gtdtm.utils.google.GoogleClient.AuthCallback;
+import com.danielpecos.gtdtm.utils.google.GoogleTasksClient;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
 
 public class GoogleAccountActivity extends Activity {
-	public static final String GOOGLE_AUTH_TOKEN = "google_authToken";
-	public static final String GOOGLE_ACCOUNT_NAME = "google_accountName";
+	public static final String GTASKS_ACTION_SYNCHRONIZE = "gTasks_synchronization";
+	public static final String GTASKS_ACTION_DELETE_TASK = "gTasks_deleteTask";
 
-	private static final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/tasks";
-	private static final int REQUEST_AUTHENTICATE = 0;
-	private static final int DIALOG_ACCOUNTS = 0;
+	private String action;
+	private long[] ids;
 
-	private Long contextId;
-
-	//new
-	private AuthManager lastAuth;
-	private final HashMap<String, AuthManager> authMap = new HashMap<String, AuthManager>();
-	private final AccountChooser accountChooser = new AccountChooser();
-
+	private TaskManager taskManager;
+	private GoogleClient gClient;
+	private GoogleTasksClient gTasksClient;
+	private int retries = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.action = (String)getIntent().getSerializableExtra("action");
+		this.ids = getIntent().getLongArrayExtra("ids");
 
 		setContentView(R.layout.activity_google_account);
 
@@ -47,106 +43,107 @@ public class GoogleAccountActivity extends Activity {
 			findViewById(R.id.gtasks_freeVersion_message_2).setVisibility(View.GONE);
 		}
 
-		Logger.getLogger("com.google.api.client").setLevel(Level.ALL);
-
-		Boolean invalidate = (Boolean)getIntent().getSerializableExtra("invalidate_token");
-		contextId = (Long)getIntent().getSerializableExtra("context_id");
-
-		authenticate(AUTH_TOKEN_TYPE);
+		gClient = new GoogleClient();
+		taskManager = TaskManager.getInstance(this);
+		
+		doAuth();
 	}
 
-	//	@Override
-	//	protected Dialog onCreateDialog(int id) {
-	//		switch (id) {
-	//		case DIALOG_ACCOUNTS:
-	//
-	//		}
-	//		return null;
-	//	}
 
-	private void authenticate(final String service) {
-		lastAuth = authMap.get(service);
-		if (lastAuth == null) {
-			Log.i(TaskManager.TAG, "Creating a new authentication for service: " + service);
-			lastAuth = AuthManagerFactory.getAuthManager(this,
-					Constants.GET_LOGIN,
-					null,
-					true,
-					service);
-			authMap.put(service, lastAuth);
-		}
-
-		Log.d(TaskManager.TAG, "Logging in to " + service + "...");
-		if (AuthManagerFactory.useModernAuthManager()) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					chooseAccount(service);
-				}
-			});
-		} else {
-			doLogin(service, null);
-		}
-	}
-
-	private void chooseAccount(final String service) {
-		accountChooser.chooseAccount(GoogleAccountActivity.this, new AccountChooser.AccountHandler() {
+	private void doAuth() {
+		gClient.login(this, new AuthCallback() {
 			@Override
-			public void onAccountSelected(Account account) {
-				if (account == null) {
-					finish();
-					return;
-				}
-
-				doLogin(service, account);
+			public void onAuthResult(String authToken) {
+				gTasksClient = new GoogleTasksClient(GoogleAccountActivity.this, authToken);
+				processAction();
 			}
 		});
 	}
+	
+	private String processAction() {
+		Log.i(TaskManager.TAG, "GTasks: Synchronizing with Google Tasks...");
 
-	private void doLogin(final String service, final Object account) {
-		lastAuth.doLogin(new AuthCallback() {
-			@Override
-			public void onAuthResult(boolean success) {
-				Log.i(TaskManager.TAG, "Login success for " + service + ": " + success);
-				if (!success) {
-					//					executeStateMachine(SendState.SHOW_RESULTS);
-					return;
+		try {
+			if (action.equalsIgnoreCase(GTASKS_ACTION_SYNCHRONIZE)) {
+				StringBuilder message = new StringBuilder(); 
+				Context[] contexts = this.getContexts();
+				for (Context context: contexts) {
+					message.append(GoogleTasksHelper.gTasksSynchronization(this, gTasksClient, context));
 				}
-
-				onLoginSuccess(account);
+				return message.toString();
+//			} else if (action.equalsIgnoreCase(GTASKS_ACTION_DELETE_TASK)) {
+//				Task tasks = this.getTasks();
+//				return GoogleTasksHelper.gTasksDeleteTask(this, gTasksClient, task);
+			} else {
+				return null;
 			}
-		}, account);
+		} catch (Exception e) {
+			String message = this.handleException(e);
+			if (message == null && this.retries  > 0) {
+				// it was a 401
+				Log.i(TaskManager.TAG, "GTasks: retrying action...");
+				gClient.invalidateAuthToken();
+				this.retries--;
+				this.doAuth();
+			}
+			return message;
+		}
 	}
 
-	private void onLoginSuccess(Object account) {
-		SharedPreferences settings = TaskManager.getPreferences();
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(GOOGLE_ACCOUNT_NAME, ((Account)account).name);
-		editor.putString(GOOGLE_AUTH_TOKEN, lastAuth.getAuthToken());
-		editor.commit();
+//	private Task getTasks() {
+//		return null;
+//	}
 
-		Intent resultIntent = new Intent();
-		resultIntent.putExtra("context_id", contextId);
 
-		Log.d(TaskManager.TAG, "GTasks: finishing GoogleAccountActivity");
+	private Context[] getContexts() {
+		Context[] contexts = new Context[this.ids.length];
+		int i = 0;
+		for (long id: this.ids) {
+			contexts[i++] = taskManager.getContext(id);
+		}
+		return contexts;
+	}
 
-		this.setResult(RESULT_OK, resultIntent);
-		this.finish();
+
+	private String handleException(Exception e) {
+		Log.e(TaskManager.TAG, e.getMessage(), e);
+		String message = null;
+		if (e instanceof HttpResponseException) {
+			HttpResponse response = ((HttpResponseException) e).response;
+			int statusCode = response.statusCode;
+			try {
+				response.ignore();
+			} catch (IOException ioe) {
+				Log.e(TaskManager.TAG, "GoogleClient: error", ioe);
+			}
+			if (statusCode == 400) {
+				Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
+				message = this.getString(R.string.gtasks_errorInRequest);
+			} else if (statusCode == 401) {
+				Log.w(TaskManager.TAG, "GoogleClient: authToken invalid! " + statusCode);
+			} else {
+				Log.e(TaskManager.TAG, "GTasks: error in communication", e);
+				message = this.getString(R.string.gtasks_errorInCommunication);
+			}
+		} else {
+			Log.e(TaskManager.TAG, "GTasks: unknown error: " + e.getMessage(), e);
+			message = this.getString(R.string.error_unknown) + ": " + e.getMessage();
+		}
+		return message;
 	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case REQUEST_AUTHENTICATE:
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		switch (requestCode) {
+//		case REQUEST_AUTHENTICATE:
 //			if (resultCode == RESULT_OK) {
 //				gotAccount(false);
 //			} else {
 //				showDialog(DIALOG_ACCOUNTS);
 //			}
-			authenticate(AUTH_TOKEN_TYPE);
-			break;
-		}
-	}
+//			break;
+//		}
+//	}
 
 }
