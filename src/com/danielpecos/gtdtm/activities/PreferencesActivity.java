@@ -36,7 +36,7 @@ public class PreferencesActivity extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.preferences);
-		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, false);
+		PreferenceManager.setDefaultValues(this.getApplicationContext(), R.xml.preferences, true);
 
 		final SharedPreferences preferences = TaskManager.getPreferences();
 
