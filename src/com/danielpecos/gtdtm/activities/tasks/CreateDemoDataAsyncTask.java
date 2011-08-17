@@ -64,7 +64,11 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 	protected void onPostExecute(Void response) {
 		super.onPostExecute(response);
 		Log.i(TaskManager.TAG, "Demo data created succesffully");
-		progressDialog.dismiss();
+		try { 
+			progressDialog.dismiss();
+		} catch (Exception e) {
+			Log.w(TaskManager.TAG, "Exception raised dismissing progress dialog");
+		}
 		if (this.onFinishedListener != null) {
 			onFinishedListener.onFinish(null);
 		}

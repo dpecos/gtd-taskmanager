@@ -119,8 +119,11 @@ public class LoadDataFileAsyncTask extends AsyncTask<Object, Integer, String>{
 	@Override
 	protected void onPostExecute(String response) {
 		super.onPostExecute(response);
-		progressDialog.dismiss();
-
+		try { 
+			progressDialog.dismiss();
+		} catch (Exception e) {
+			Log.w(TaskManager.TAG, "Exception raised dismissing progress dialog");
+		}
 		if (this.onFinishedListener != null) {
 			onFinishedListener.onFinish(response);
 		}

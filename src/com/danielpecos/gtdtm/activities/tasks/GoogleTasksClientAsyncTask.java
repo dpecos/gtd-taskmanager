@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.model.TaskManager;
+import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
@@ -137,7 +138,11 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Strin
 	@Override
 	protected void onPostExecute(String response) {
 		super.onPostExecute(response);
-		progressDialog.dismiss();
+		try { 
+			progressDialog.dismiss();
+		} catch (Exception e) {
+			Log.w(TaskManager.TAG, "Exception raised dismissing progress dialog");
+		}
 		if (response != null) {
 			if (response.equalsIgnoreCase(RESPONSE_OK)) {
 				Toast.makeText(activity, activity.getString(R.string.gtasks_synchronizationFinished), Toast.LENGTH_SHORT).show();
