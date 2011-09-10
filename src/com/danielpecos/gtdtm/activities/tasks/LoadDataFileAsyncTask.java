@@ -24,7 +24,7 @@ public class LoadDataFileAsyncTask extends AsyncTask<Object, Integer, String>{
 
 	ProgressDialog progressDialog;
 
-	private OnFinishedListener onFinishedListener;
+	private ProgressHandler onFinishedListener;
 
 	public LoadDataFileAsyncTask(android.content.Context ctx) {
 		this.ctx = ctx;
@@ -129,7 +129,7 @@ public class LoadDataFileAsyncTask extends AsyncTask<Object, Integer, String>{
 		}
 	}
 
-	public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
+	public void setOnFinishedListener(ProgressHandler onFinishedListener) {
 		this.onFinishedListener = onFinishedListener;
 	}
 }

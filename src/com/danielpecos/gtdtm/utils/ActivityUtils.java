@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.AboutActivity;
-import com.danielpecos.gtdtm.activities.GoogleAccountActivity;
 import com.danielpecos.gtdtm.activities.PreferencesActivity;
 import com.danielpecos.gtdtm.activities.ProjectActivity;
 import com.danielpecos.gtdtm.activities.TaskActivity;
@@ -36,8 +35,7 @@ public class ActivityUtils {
 	public static final int TASK_ACTIVITY = 1;
 	public static final int CAMERA_ACTIVITY = 2;
 	public static final int MAP_ACTIVITY = 3;
-	public static final int GOOGLE_ACCOUNT_ACTIVITY = 4;
-	public static final int PREFERENCES_ACTIVITY = 5;
+	public static final int PREFERENCES_ACTIVITY = 4;
 
 	public static void showProjectActivity(Activity activity, Context context, Project project) {
 		Intent intent = new Intent(activity.getBaseContext(), ProjectActivity.class);
@@ -71,15 +69,6 @@ public class ActivityUtils {
 		activity.startActivityForResult(intent, MAP_ACTIVITY);
 		Log.d(TaskManager.TAG, "Intent for MapActivity");
 	} 
-
-	public static void showGoogleAccountActivity(Activity activity, String action, long[] ids) {
-		Intent intent = new Intent(activity.getBaseContext(), GoogleAccountActivity.class);   
-		intent.putExtra("action", action);
-		intent.putExtra("ids", ids);
-		Log.d(TaskManager.TAG, "GTasks: invoking GoogleAccountActivity");
-		activity.startActivityForResult(intent, GOOGLE_ACCOUNT_ACTIVITY);
-		Log.d(TaskManager.TAG, "Intent for GoogleAccountActivity");
-	}	
 
 	public static void showPreferencesActivity(Activity activity) {
 		Intent i = new Intent(activity, PreferencesActivity.class);  

@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -41,8 +42,8 @@ public class AccountChooser {
 	 * @param activity The parent activity
 	 * @param handler The handler to be notified when an account has been selected
 	 */
-	public void chooseAccount(final Activity activity, final AccountHandler handler) {
-		final Account[] accounts = AccountManager.get(activity).getAccountsByType(ACCOUNT_TYPE);
+	public void chooseAccount(final Context ctx, final AccountHandler handler) {
+		final Account[] accounts = AccountManager.get(ctx).getAccountsByType(ACCOUNT_TYPE);
 		SharedPreferences preferences = TaskManager.getPreferences();
 
 		if (preferences.getString(GoogleClient.GOOGLE_ACCOUNT_NAME, null) != null) {
@@ -56,7 +57,7 @@ public class AccountChooser {
 			handler.onAccountSelected(selectedAccount);
 		} else {
 			if (accounts.length < 1) {
-				alertNoAccounts(activity, handler);
+				alertNoAccounts(ctx, handler);
 				return;
 			}
 			if (accounts.length == 1) {
@@ -66,7 +67,7 @@ public class AccountChooser {
 
 			// Let the user choose.
 			Log.e(TaskManager.TAG, "Multiple matching accounts found.");
-			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+			final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 			builder.setTitle(R.string.gtasks_selectAccount);
 			builder.setCancelable(false);
 			builder.setPositiveButton(R.string.ok,
@@ -109,9 +110,9 @@ public class AccountChooser {
 	/**
 	 * Puts up a dialog alerting the user that no suitable account was found.
 	 */
-	private void alertNoAccounts(final Activity activity, final AccountHandler handler) {
+	private void alertNoAccounts(final Context ctx, final AccountHandler handler) {
 		Log.e(TaskManager.TAG, "No matching accounts found.");
-		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 		builder.setTitle(R.string.gtasks_noAccountFoundTitle);
 		builder.setMessage(R.string.gtasks_noAccountFound);
 		builder.setCancelable(true);

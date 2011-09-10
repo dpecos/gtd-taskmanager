@@ -224,10 +224,9 @@ public class Task implements Persistable, Cloneable, Serializable {
 			TaskManager tm = TaskManager.getInstance(ctx);
 			
 //			GoogleTasksHelper.doInGTasks((Activity)ctx, GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this), null, this);
-			GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask((Activity)ctx);
-			googleTasksClientAsyncTask.execute(GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this));
-			
-			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
+//			GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask((Activity)ctx);
+//			googleTasksClientAsyncTask.execute(GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this));
+//			Log.d(TaskManager.TAG, "DDBB: Task successfully removed from GTasks");
 		}
 
 		Log.d(TaskManager.TAG, "DDBB: Task successfully removed");

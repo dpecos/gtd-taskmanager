@@ -1,108 +1,148 @@
 package com.danielpecos.gtdtm.activities.tasks;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
+import com.danielpecos.gtdtm.activities.ContextActivity;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
-import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
+import com.danielpecos.gtdtm.utils.DoubleProgressDialog;
 import com.danielpecos.gtdtm.utils.google.GoogleClient;
-import com.danielpecos.gtdtm.utils.google.GoogleClient.AuthCallback;
 import com.danielpecos.gtdtm.utils.google.GoogleTasksClient;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 
-public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, String> {
-	public static final String GTASKS_ACTION_SYNCHRONIZE = "gTasks_synchronization";
-	public static final String GTASKS_ACTION_DELETE_TASK = "gTasks_deleteTask";
+public class GoogleTasksClientAsyncTask extends AsyncTask<Long, Integer, Void>{
 
-	public static final String RESPONSE_OK = "OK";
+	public static String GTASKS_ACTION_SYNCHRONIZE = "gTasks_synchronize";
+	public static final int PROGRESS_DIALOG_ID = 1;
+	
+	private static Integer PROGRESS_STARTED = 0;
+	private static Integer PROGRESS_PRE_LOGIN = 10;
+	private static Integer PROGRESS_POST_LOGIN = 20;
+	private static Integer PROGRESS_PRE_ACTION = 30;
+	private static Integer PROGRESS_POST_ACTION = 90;
+	private static Integer PROGRESS_FINISHED = 100;
 
 	private Activity activity;
-	private Collection<Context> contexts = null;
-	private Task task = null;
-	private GoogleClient googleClient;
+	private String action;
 
-	ProgressDialog progressDialog;
+	private String resultMessage;
 
-	public GoogleTasksClientAsyncTask(Activity activity) {
+	private TaskManager taskManager;
+	private GoogleClient gClient;
+	private GoogleTasksClient gTasksClient;
+	private int retries = 1;
+
+	private DoubleProgressDialog progressDialog;
+
+	public GoogleTasksClientAsyncTask(Activity activity, String action, DoubleProgressDialog progressDialog) {
 		this.activity = activity;
-		this.googleClient = new GoogleClient();
+		this.action = action;
+		this.progressDialog = progressDialog;
+
+		this.taskManager = TaskManager.getInstance(this.activity);
+		this.gClient = new GoogleClient();
 	}
-	
-	int retries = 1;
+
+
 
 	@Override
-	protected String doInBackground(Object... params) {
-		final String action = (String)params[0];
-
-		if (action.equalsIgnoreCase(GTASKS_ACTION_SYNCHRONIZE)) {
-			this.contexts = (Collection<Context>) params[1];
-		} else if (action.equalsIgnoreCase(GTASKS_ACTION_DELETE_TASK)) {
-			this.task = (Task) params[1];
+	protected void onProgressUpdate(Integer... values) {
+		super.onProgressUpdate(values);
+		if (values[0] != null) {
+			this.progressDialog.setProgress(values[0]);
 		}
-
-		final StringBuilder message = new StringBuilder();
-		
-		googleClient.selectGoogleAccount(activity, new AuthCallback() {
-			@Override
-			public void onAuthResult(final String authToken) {
-				googleClient.login(activity, new AuthCallback() {
-					@Override
-					public void onAuthResult(String authToken) {
-						if (authToken != null) {
-							GoogleTasksClient googleTasksClient = new GoogleTasksClient(activity, authToken);
-
-							message.append(processAction(action, googleTasksClient, contexts, task, this));
-						}
-					}
-				});
-			}
-		});
-
-		return message.toString();
-
-		//return GoogleTasksHelper.doInGTasks(activity, GoogleTasksHelper.GTASKS_ACTION_SYNCHRONIZE, contexts, null, null);
-
+		if (values.length > 1 && values[1] != null) {
+			this.progressDialog.setSecondaryProgress(values[1]);
+		}
 	}
 
-	private String processAction(String action, GoogleTasksClient googleTasksClient, Collection<Context> contexts, Task task, AuthCallback authCallback) {
+	@Override
+	public Void doInBackground(Long...ids) {
+		Log.d(TaskManager.TAG, "GTasks: Started async task");
+		this.publishProgress(PROGRESS_STARTED);
+
+		doAuth(ids);
+
+		return null;
+	}
+	
+	
+
+	private void doAuth(final Long[] ids) {
+		GoogleTasksClientAsyncTask.this.publishProgress(PROGRESS_PRE_LOGIN);
+		String authToken = gClient.login(this.activity);
+		gTasksClient = new GoogleTasksClient(GoogleTasksClientAsyncTask.this.activity, authToken);
+		GoogleTasksClientAsyncTask.this.publishProgress(PROGRESS_POST_LOGIN);
+		processAction(ids);
+	}
+
+	private void processAction(final Long[] ids) {
 		Log.i(TaskManager.TAG, "GTasks: Synchronizing with Google Tasks...");
 
 		try {
-			if (action.equalsIgnoreCase(GTASKS_ACTION_SYNCHRONIZE)) {
-				StringBuilder message = new StringBuilder(); 
-				for (Context context: contexts) {
-					message.append(GoogleTasksHelper.gTasksSynchronization(activity, googleTasksClient, context));
-				}
-				return message.toString();
-			} else if (action.equalsIgnoreCase(GTASKS_ACTION_DELETE_TASK)) {
-				return GoogleTasksHelper.gTasksDeleteTask(activity, googleTasksClient, task);
-			} else {
-				return null;
+			//if (action.equalsIgnoreCase(GTASKS_ACTION_SYNCHRONIZE)) {
+			StringBuilder message = new StringBuilder(); 
+			Context[] contexts = this.getContexts(ids);
+			for (Context context: contexts) {
+				message.append(GoogleTasksHelper.gTasksSynchronization(this.activity, gTasksClient, context, new ProgressHandler(GoogleTasksHelper.TOTAL_STEPS, PROGRESS_PRE_ACTION, PROGRESS_POST_ACTION) {
+					@Override
+					public void onFinish(String response) {
+					}
+					@Override
+					public void updateProgress(Integer progress, Integer secondaryProgress) {
+						if (progress != null) {
+							this.lastStep = progress;
+							GoogleTasksClientAsyncTask.this.publishProgress(this.rangeStart + (this.rangeSize / total) * progress, null);
+						} else {
+							GoogleTasksClientAsyncTask.this.publishProgress(null, secondaryProgress);
+						}
+					}
+				}));
 			}
+			//			return message.toString();
+			//			} else if (action.equalsIgnoreCase(GTASKS_ACTION_DELETE_TASK)) {
+			//				Task tasks = this.getTasks();
+			//				return GoogleTasksHelper.gTasksDeleteTask(this, gTasksClient, task);
+			//			} else {
+			//				return null;
+			//			}
+
+			this.publishProgress(PROGRESS_FINISHED);
+
+			Log.d(TaskManager.TAG, "GTasks: Finished async task");
+
+			//			this.activity.finish();
+
 		} catch (Exception e) {
-			String message = this.handleException(e, activity, authCallback);
-			if (message == null && this.retries > 0) {
+			String message = this.handleException(e);
+			if (message == null && this.retries  > 0) {
 				// it was a 401
 				Log.i(TaskManager.TAG, "GTasks: retrying action...");
+				gClient.invalidateAuthToken();
 				this.retries--;
-				this.googleClient.login(activity, authCallback);
+				this.doAuth(ids);
 			}
-			return message;
 		}
 	}
 
-	private String handleException(Exception e, Activity activity, AuthCallback authCallback) {
+	private Context[] getContexts(final Long[] ids) {
+		Context[] contexts = new Context[ids.length];
+		int i = 0;
+		for (long id: ids) {
+			contexts[i++] = taskManager.getContext(id);
+		}
+		return contexts;
+	}
+
+	private String handleException(Exception e) {
 		Log.e(TaskManager.TAG, e.getMessage(), e);
 		String message = null;
 		if (e instanceof HttpResponseException) {
@@ -115,16 +155,16 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Object, Integer, Strin
 			}
 			if (statusCode == 400) {
 				Log.e(TaskManager.TAG, "GTasks: error in request " + e.getMessage(), e);
-				message = activity.getString(R.string.gtasks_errorInRequest);
+				message = this.activity.getString(R.string.gtasks_errorInRequest);
 			} else if (statusCode == 401) {
 				Log.w(TaskManager.TAG, "GoogleClient: authToken invalid! " + statusCode);
 			} else {
 				Log.e(TaskManager.TAG, "GTasks: error in communication", e);
-				message = activity.getString(R.string.gtasks_errorInCommunication);
+				message = this.activity.getString(R.string.gtasks_errorInCommunication);
 			}
 		} else {
 			Log.e(TaskManager.TAG, "GTasks: unknown error: " + e.getMessage(), e);
-			message = activity.getString(R.string.error_unknown) + ": " + e.getMessage();
+			message = this.activity.getString(R.string.error_unknown) + ": " + e.getMessage();
 		}
 		return message;
 	}

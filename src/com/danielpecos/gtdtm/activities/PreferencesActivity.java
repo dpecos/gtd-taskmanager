@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.tasks.LoadDataFileAsyncTask;
-import com.danielpecos.gtdtm.activities.tasks.OnFinishedListener;
+import com.danielpecos.gtdtm.activities.tasks.ProgressHandler;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
@@ -127,7 +127,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
 	public void loadFromFile(final android.content.Context ctx, String fileName) {
 		LoadDataFileAsyncTask loadDataFileAsyncTask = new LoadDataFileAsyncTask(ctx);
-		loadDataFileAsyncTask.setOnFinishedListener(new OnFinishedListener() {
+		loadDataFileAsyncTask.setOnFinishedListener(new ProgressHandler() {
 			@Override
 			public void onFinish(String response) {
 				if (response != null) {
@@ -137,6 +137,9 @@ public class PreferencesActivity extends PreferenceActivity {
 				} else {
 					Toast.makeText(ctx, R.string.error_unknown, Toast.LENGTH_LONG).show();
 				}
+			}
+			@Override
+			public void updateProgress(Integer progress, Integer secondaryProgress) {
 			}
 		});
 		loadDataFileAsyncTask.execute(fileName);

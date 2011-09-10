@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ExpandableListActivity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -28,12 +31,13 @@ import android.widget.Toast;
 import com.danielpecos.gtdtm.R;
 import com.danielpecos.gtdtm.activities.tasks.CreateDemoDataAsyncTask;
 import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
-import com.danielpecos.gtdtm.activities.tasks.OnFinishedListener;
+import com.danielpecos.gtdtm.activities.tasks.ProgressHandler;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
 import com.danielpecos.gtdtm.model.beans.Task;
 import com.danielpecos.gtdtm.utils.ActivityUtils;
+import com.danielpecos.gtdtm.utils.DoubleProgressDialog;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter;
 import com.danielpecos.gtdtm.utils.ExpandableNestedMixedListAdapter.RowDisplayListener;
 import com.danielpecos.gtdtm.views.ContextViewHolder;
@@ -56,6 +60,8 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 	private HashMap<Long, Boolean> listViewStatus = new HashMap<Long, Boolean>();
 
 	private ExpandableNestedMixedListAdapter mAdapter;
+
+	private DoubleProgressDialog progressDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -532,14 +538,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				TaskViewHolder taskViewHolder = (TaskViewHolder) this.triggerViewHolder;
 				taskViewHolder.updateView(this);
 			}
-		} else if (requestCode == ActivityUtils.GOOGLE_ACCOUNT_ACTIVITY) {
-			Log.d(TaskManager.TAG, "ContextActivity: Returning from the google account activity");
-			if (resultCode == RESULT_OK) {
-				Long contextId = data.getLongExtra("context_id", -1);
-				Context context = taskManager.getContext(contextId);
-
-				synchronizeGoogleTasks(context);
-			}
 		} else if (requestCode == ActivityUtils.PREFERENCES_ACTIVITY) {
 			Log.d(TaskManager.TAG, "ContextActivity: Returning from the preferences activity");
 			if (resultCode == RESULT_OK) {
@@ -555,22 +553,38 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	private void loadDemoData() {
 		CreateDemoDataAsyncTask createDemoDataAsyncTask = new CreateDemoDataAsyncTask(this);
-		createDemoDataAsyncTask.setOnFinishedListener(new OnFinishedListener() {
+		createDemoDataAsyncTask.setOnFinishedListener(new ProgressHandler() {
 			@Override
 			public void onFinish(String response) {
 				ContextActivity.this.initializeUI();
+			}
+			@Override
+			public void updateProgress(Integer progress, Integer secondaryProgress) {
 			}
 		});
 		createDemoDataAsyncTask.execute();
 	}
 
 	private void synchronizeGoogleTasks(final Context context) {
-//		GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask(this);
-//		ArrayList<Context> contexts = new ArrayList<Context>();
-//		contexts.add(context);
-//		googleTasksClientAsyncTask.execute(GoogleTasksClientAsyncTask.GTASKS_ACTION_SYNCHRONIZE, contexts);
+		showDialog(GoogleTasksClientAsyncTask.PROGRESS_DIALOG_ID);
 		
-		ActivityUtils.showGoogleAccountActivity(this, GoogleAccountActivity.GTASKS_ACTION_SYNCHRONIZE, new long[] {context.getId()});
+		GoogleTasksClientAsyncTask task = new GoogleTasksClientAsyncTask(this, GoogleTasksClientAsyncTask.GTASKS_ACTION_SYNCHRONIZE, progressDialog);
+		task.execute(ArrayUtils.toObject(new long[] {context.getId()}));
 	}
-
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case GoogleTasksClientAsyncTask.PROGRESS_DIALOG_ID:
+			progressDialog = new DoubleProgressDialog(this);
+			progressDialog.setMessage("TEST");
+			progressDialog.setMax(100); 
+			progressDialog.setProgress(0);
+			progressDialog.setCancelable(false);
+			break;
+		default:
+			break;
+		}
+		return progressDialog;
+	}
 }

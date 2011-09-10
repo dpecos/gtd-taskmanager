@@ -31,8 +31,6 @@
 
 		<activity android:name=".activities.PreferencesActivity" />
 		
-		<activity android:name=".activities.GoogleAccountActivity" />
-		
 		<activity android:name=".activities.AboutActivity" android:theme="@android:style/Theme.Light"/>
 		
 		 <activity android:name="com.google.ads.AdActivity"

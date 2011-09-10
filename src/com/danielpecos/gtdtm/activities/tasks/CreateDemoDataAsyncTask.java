@@ -18,7 +18,7 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 
 	ProgressDialog progressDialog;
 
-	private OnFinishedListener onFinishedListener;
+	private ProgressHandler onFinishedListener;
 
 	public CreateDemoDataAsyncTask(Activity activity) {
 		this.activity = activity;
@@ -74,7 +74,7 @@ public class CreateDemoDataAsyncTask extends AsyncTask<Object, Integer, Void>{
 		}
 	}
 	
-	public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
+	public void setOnFinishedListener(ProgressHandler onFinishedListener) {
 		this.onFinishedListener = onFinishedListener;
 	}
 }

@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
+import com.danielpecos.gtdtm.activities.tasks.ProgressHandler;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Project;
@@ -20,34 +21,51 @@ import com.google.api.services.tasks.v1.model.Tasks;
 
 public class GoogleTasksHelper {
 	public static final String GTASKS_PREFIX_DISCARDED = "[D]";
+	public static final int TOTAL_STEPS = 5;
+	private static final int STEP_1 = 1;
+	private static final int STEP_2 = 2;
+	private static final int STEP_3 = 3;
+	private static final int STEP_4 = 4;
+	private static final int STEP_5 = 5;
 
-	public static String gTasksSynchronization(Activity activity, GoogleTasksClient client, Context context) throws IOException {
+	public static final String RESPONSE_OK = "OK";
+
+	public static String gTasksSynchronization(Activity activity, GoogleTasksClient client, Context context, ProgressHandler progressHandler) throws IOException {
+		
+		
+		progressHandler.updateProgress(STEP_1, null);
 		Log.d(TaskManager.TAG, "GTasks: Synchronizing context element");
 		boolean isNewContextList = getOrCcreateGoogleList(activity, context, client);
 
+		progressHandler.updateProgress(STEP_2, null);
 		Log.d(TaskManager.TAG, "GTasks: Getting remote list of tasks");
 		Tasks gTasks = client.getTasksFromList(context.getGoogleId());
 
 		if (TaskManager.isFullVersion(activity)) {
+			progressHandler.updateProgress(STEP_3, null);
 			Log.i(TaskManager.TAG, "GTasks: Full version - Synchronizing from remote to local");
 			syncrhonizeFromGoogleToLocal(activity, context, client, gTasks);
+			progressHandler.updateProgress(STEP_3, 0);
 			Log.i(TaskManager.TAG, "GTasks: Full version - Finished synchronization from remote to local");
 			isNewContextList = false;
 		} else {
 		}
 
+		progressHandler.updateProgress(STEP_4, null);
 		Log.i(TaskManager.TAG, "GTasks: Synchronizing from local to remote");
-		synchronizeFromLocalToGoole(activity, context, client, gTasks, isNewContextList);
+		synchronizeFromLocalToGoole(activity, context, client, gTasks, isNewContextList, progressHandler);
+		progressHandler.updateProgress(STEP_4, 0);
 		Log.i(TaskManager.TAG, "GTasks: Finished synchronization from local to remote");
 
-		return GoogleTasksClientAsyncTask.RESPONSE_OK;
+		progressHandler.updateProgress(STEP_5, 0);
+		return RESPONSE_OK;
 	}
 
 	public static String gTasksDeleteTask(Activity activity, GoogleTasksClient client, Task task) throws IOException {
 		Log.d(TaskManager.TAG, "GTasks: Deleting task \"" +task.getName() + " (" + task.getGoogleId() + ")\"");
 		Context context = TaskManager.getInstance(activity).findContextContainingTask(task);
 		client.deleteTask(context.getGoogleId(), task.getGoogleId());
-		return GoogleTasksClientAsyncTask.RESPONSE_OK;
+		return RESPONSE_OK;
 	}
 
 	private static void syncrhonizeFromGoogleToLocal(Activity activity, Context context, GoogleTasksClient client, Tasks tasks) throws IOException {
@@ -123,7 +141,7 @@ public class GoogleTasksHelper {
 		}
 	}
 
-	private static void synchronizeFromLocalToGoole(Activity activity, Context context, GoogleTasksClient client, Tasks gTasks, boolean isNewContextList) throws IOException {
+	private static void synchronizeFromLocalToGoole(Activity activity, Context context, GoogleTasksClient client, Tasks gTasks, boolean isNewContextList, ProgressHandler progressHandler) throws IOException {
 
 		String contextListId = context.getGoogleId();
 
@@ -170,10 +188,10 @@ public class GoogleTasksHelper {
 			}
 			previousProjectId = project.getGoogleId();
 
-			exportTasks(activity, client, gTasks, contextListId, project, null, isNewProject);
+			exportTasks(activity, client, gTasks, contextListId, project, null, isNewProject, progressHandler);
 		}
 
-		exportTasks(activity, client, gTasks, contextListId, context, previousProjectId, isNewContextList);
+		exportTasks(activity, client, gTasks, contextListId, context, previousProjectId, isNewContextList, progressHandler);
 	}
 
 	private static boolean getOrCcreateGoogleList(Activity activity, Context context, GoogleTasksClient client) throws IOException {
@@ -325,7 +343,7 @@ public class GoogleTasksHelper {
 		}
 	}
 
-	private static void exportTasks(Activity activity, GoogleTasksClient client, Tasks gTasks, String contextListId, TaskContainer parent, String previousId, boolean forceCreate) throws IOException {
+	private static void exportTasks(Activity activity, GoogleTasksClient client, Tasks gTasks, String contextListId, TaskContainer parent, String previousId, boolean forceCreate, ProgressHandler progressHandler) throws IOException {
 		String parentId = null;
 		if (parent instanceof Project) {
 			parentId = ((Project) parent).getGoogleId();
@@ -343,7 +361,12 @@ public class GoogleTasksHelper {
 			}
 		}
 
+		
+		int i = 1;
 		for (Task task : parent) {
+			
+			progressHandler.updateProgress(null, (i++ * 100 / parent.getTasksCount()));
+			
 			boolean elementUpdated = false;
 			if (task.getGoogleId() != null) {
 				com.google.api.services.tasks.v1.model.Task gTask = findTask(gTasks, task.getGoogleId());
