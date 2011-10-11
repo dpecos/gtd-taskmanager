@@ -269,8 +269,9 @@ public class TaskViewHolder extends ViewHolder {
 				@Override
 				public void onClick(View v) {
 					Calendar c = Calendar.getInstance();
-					if (task.getDueDate() != null) 
+					if (task.getDueDate() != null) {
 						c.setTime(task.getDueDate());
+					}
 					int mYear = c.get(Calendar.YEAR);
 					int mMonth = c.get(Calendar.MONTH);
 					int mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -510,14 +511,14 @@ public class TaskViewHolder extends ViewHolder {
 					c.setTime(task.getDueDate());
 
 					int mYear = c.get(Calendar.YEAR);
-					int mMonth = c.get(Calendar.MONTH);
+					int mMonth = c.get(Calendar.MONTH) + 1;
 					int mDay = c.get(Calendar.DAY_OF_MONTH);
 					int mHour = c.get(Calendar.HOUR_OF_DAY);
 					int mMinute = c.get(Calendar.MINUTE);
 
 					this.textView_taskDueDate.setText(
 							new StringBuilder()
-							.append(mYear + 1).append("/")
+							.append(mYear).append("/")
 							.append(mMonth <= 9 ? "0" + mMonth : mMonth).append("/")
 							.append(mDay <= 9 ? "0" + mDay : mDay));
 
