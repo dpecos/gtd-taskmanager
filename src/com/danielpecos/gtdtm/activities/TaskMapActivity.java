@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -97,17 +98,23 @@ public class TaskMapActivity extends MapActivity {
 			}
 		});
 
-		final MyLocationOverlay myLocationOverlay = new MyLocationOverlay(this, mapView);
-		myLocationOverlay.enableMyLocation();
+		PackageManager packageManager = this.getPackageManager();
+		if (packageManager.hasSystemFeature("android.hardware.location")) {
+			Log.i(TaskManager.TAG, "Location available, setting up MyLocationOverlay");
+			final MyLocationOverlay myLocationOverlay = new MyLocationOverlay(this, mapView);
+			myLocationOverlay.enableMyLocation();
 
-		myLocationOverlay.runOnFirstFix(new Runnable() {
-			public void run() {
-				mapControl.setZoom(initZoom);
-				mapControl.animateTo(myLocationOverlay.getMyLocation());
-			}
-		});
+			myLocationOverlay.runOnFirstFix(new Runnable() {
+				public void run() {
+					mapControl.setZoom(initZoom);
+					mapControl.animateTo(myLocationOverlay.getMyLocation());
+				}
+			});
 
-		mapOverlays.add(myLocationOverlay);
+			mapOverlays.add(myLocationOverlay);
+		} else {
+			Log.i(TaskManager.TAG, "Location not available");
+		}
 
 	}
 
