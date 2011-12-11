@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.danielpecos.gtdtm.R;
-import com.danielpecos.gtdtm.activities.ContextActivity;
-import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
@@ -33,8 +31,6 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Long, Integer, Void>{
 	private Activity activity;
 	private String action;
 
-	private String resultMessage;
-
 	private TaskManager taskManager;
 	private GoogleClient gClient;
 	private GoogleTasksClient gTasksClient;
@@ -51,7 +47,19 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Long, Integer, Void>{
 		this.gClient = new GoogleClient();
 	}
 
-
+	@Override
+	protected void onPreExecute() {
+		if (this.gClient.getSelectedAccount() == null) {
+			this.gClient.selectGoogleAccount(this.activity);
+		}
+	}
+	
+	@Override
+	protected void onPostExecute(Void result) {
+		this.activity.dismissDialog(PROGRESS_DIALOG_ID);
+		
+		//TODO: update interface
+	}
 
 	@Override
 	protected void onProgressUpdate(Integer... values) {
@@ -169,7 +177,7 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Long, Integer, Void>{
 		return message;
 	}
 
-	@Override
+	/*@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
 		progressDialog = ProgressDialog.show(activity, "", activity.getString(R.string.gtasks_synchronizing), true);
@@ -191,5 +199,5 @@ public class GoogleTasksClientAsyncTask extends AsyncTask<Long, Integer, Void>{
 			}
 		} 
 //		activity.initializeUI();
-	}
+	}*/
 }

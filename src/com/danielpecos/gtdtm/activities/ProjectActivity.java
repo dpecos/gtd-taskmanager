@@ -158,8 +158,7 @@ public class ProjectActivity extends ListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.project_optionsMenu_renameProject: {
+		if (item.getItemId() == R.id.project_optionsMenu_renameProject) {
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_renameProject_title), 
@@ -175,9 +174,8 @@ public class ProjectActivity extends ListActivity {
 							projectViewHolder.updateView(ProjectActivity.this);
 						}
 					});
-			break;
 		}
-		case R.id.project_optionsMenu_changeDescription: {
+		else if (item.getItemId() == R.id.project_optionsMenu_changeDescription) {
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_changeProjectDescription_title), 
@@ -196,9 +194,8 @@ public class ProjectActivity extends ListActivity {
 							projectViewHolder.updateView(ProjectActivity.this);
 						}
 					});
-			break;
 		}
-		case R.id.project_optionsMenu_addTask: {
+	    else if (item.getItemId() == R.id.project_optionsMenu_addTask) {
 
 			ActivityUtils.showTextBoxDialog(
 					this, 
@@ -217,8 +214,6 @@ public class ProjectActivity extends ListActivity {
 							}
 						}
 					});
-			break;
-		}
 		}
 		return true;
 	}
@@ -281,8 +276,7 @@ public class ProjectActivity extends ListActivity {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 		final Task task = project.elementAt(info.position);
 
-		switch (item.getItemId()) {
-		case R.id.context_contextMenu_deleteTask: {
+		if (item.getItemId() == R.id.context_contextMenu_deleteTask) {
 
 			ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_task).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
 				@Override
@@ -296,7 +290,6 @@ public class ProjectActivity extends ListActivity {
 				}
 			}).show();
 			return true;
-		}
 		}
 
 		return false;

@@ -7,10 +7,8 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.danielpecos.gtdtm.model.TaskManager;
-import com.danielpecos.gtdtm.model.beans.Context;
 import com.danielpecos.gtdtm.model.beans.Task.Status;
 import com.danielpecos.gtdtm.model.persistence.GoogleTasksHelper;
-import com.danielpecos.gtdtm.utils.ActivityUtils;
 import com.danielpecos.gtdtm.utils.DateUtils;
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;

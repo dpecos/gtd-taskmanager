@@ -3,14 +3,12 @@ package com.danielpecos.gtdtm.model.beans;
 import java.io.Serializable;
 import java.util.Date;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.persistence.GTDSQLHelper;
 import com.danielpecos.gtdtm.model.persistence.Persistable;
@@ -221,7 +219,7 @@ public class Task implements Persistable, Cloneable, Serializable {
 		}
 
 		if (this.getGoogleId() != null) {
-			TaskManager tm = TaskManager.getInstance(ctx);
+//			TaskManager tm = TaskManager.getInstance(ctx);
 			
 //			GoogleTasksHelper.doInGTasks((Activity)ctx, GoogleTasksClientAsyncTask.GTASKS_ACTION_DELETE_TASK, tm.findContextContainingTask(this), null, this);
 //			GoogleTasksClientAsyncTask googleTasksClientAsyncTask = new GoogleTasksClientAsyncTask((Activity)ctx);

@@ -71,8 +71,7 @@ public class TaskActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
-		switch (item.getItemId()) {
-		case R.id.task_optionsMenu_save: {
+		if (item.getItemId() == R.id.task_optionsMenu_save) {
 			closeSavingChanges();
 			return true;
 		}
@@ -80,10 +79,9 @@ public class TaskActivity extends Activity {
 			closeAndDiscardChanges();
 			return true;
 		}*/
-		case R.id.task_optionsMenu_revert: {
+		else if (item.getItemId() == R.id.task_optionsMenu_revert) {
 			closeAndDiscardChanges();
 			return true;
-		}
 		}
 		return false;
 	}

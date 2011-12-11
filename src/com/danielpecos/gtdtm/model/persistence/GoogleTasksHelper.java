@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import android.app.Activity;
 import android.util.Log;
 
-import com.danielpecos.gtdtm.activities.tasks.GoogleTasksClientAsyncTask;
 import com.danielpecos.gtdtm.activities.tasks.ProgressHandler;
 import com.danielpecos.gtdtm.model.TaskManager;
 import com.danielpecos.gtdtm.model.beans.Context;
@@ -120,7 +119,7 @@ public class GoogleTasksHelper {
 			for (com.google.api.services.tasks.v1.model.Task gTask : tasks.items) {
 				if (gTasksProjects.contains(gTask.id) || context.getProjectByGoogleId(gTask.id) != null) {
 					// it's a project
-					Project p = createOrUpdateLocalProject(activity, context, gTask);
+					createOrUpdateLocalProject(activity, context, gTask);
 				} else {
 					// it's a task
 					Task t = null;

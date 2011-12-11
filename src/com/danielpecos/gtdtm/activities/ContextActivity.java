@@ -9,7 +9,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ExpandableListActivity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -127,8 +126,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.context_optionsMenu_addContext:
+		if (item.getItemId() == R.id.context_optionsMenu_addContext) {
 			ActivityUtils.showTextBoxDialog(
 					this, 
 					this.getResources().getString(R.string.textbox_addContext_title), 
@@ -146,17 +144,16 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 							}
 						}
 					});
-			break;
-		case R.id.context_optionsMenu_reloadData:
+		} else if (item.getItemId() == R.id.context_optionsMenu_reloadData) {
 			taskManager = TaskManager.reset(ContextActivity.this);
 			initializeUI();
-			break;
-		case R.id.context_optionsMenu_preferences:
+
+		} else if (item.getItemId() == R.id.context_optionsMenu_preferences) {
 			ActivityUtils.showPreferencesActivity(this);
-			break;
-		case R.id.context_optionsMenu_about:
+
+		} else if (item.getItemId() == R.id.context_optionsMenu_about) {
 			ActivityUtils.showAboutActivity(this);
-			break;
+
 		}
 		return true;
 	}
@@ -198,8 +195,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 			final Context context = taskManager.elementAt(groupPos);
 			final Object child = context.elementAt(childPos);
 
-			switch (item.getItemId()) {
-			case R.id.context_contextMenu_deleteProject: {
+			if (item.getItemId() == R.id.context_contextMenu_deleteProject) {
 				final Project project = (Project)child;
 				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_project).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
 					@Override
@@ -215,7 +211,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 				return true;
 			}
-			case R.id.context_contextMenu_deleteTask: {
+			else if (item.getItemId() == R.id.context_contextMenu_deleteTask) {
 				final Task task = (Task)child;
 				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_task).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
 					@Override
@@ -232,7 +228,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				return true;
 			}
 
-			case R.id.context_contextMenu_addTask: {
+			else if (item.getItemId() == R.id.context_contextMenu_addTask) {
 				final Project project = (Project)child;
 
 				ActivityUtils.showTextBoxDialog(
@@ -256,7 +252,6 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
-			}
 
 			return false;
 
@@ -266,8 +261,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 			final Context context = taskManager.elementAt(groupPos);
 
-			switch(item.getItemId()) {
-			case R.id.context_contextMenu_renameContext: {
+			if (item.getItemId() == R.id.context_contextMenu_renameContext) {
 				ActivityUtils.showTextBoxDialog(
 						this, 
 						this.getResources().getString(R.string.textbox_renameContext_title), 
@@ -284,7 +278,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
-			case R.id.context_contextMenu_deleteContext: {
+			else if (item.getItemId() == R.id.context_contextMenu_deleteContext) {
 				ActivityUtils.createConfirmDialog(this, R.string.confirm_delete_context).setPositiveButton(R.string.yes, new Dialog.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -301,7 +295,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 				}).show();
 				return true;
 			}
-			case R.id.context_contextMenu_addProject: {
+			else if (item.getItemId() == R.id.context_contextMenu_addProject) {
 				ActivityUtils.showTextBoxDialog(
 						this, 
 						this.getResources().getString(R.string.textbox_addProject_title), 
@@ -321,7 +315,7 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
-			case R.id.context_contextMenu_addTask: {
+			else if (item.getItemId() == R.id.context_contextMenu_addTask) {
 				ActivityUtils.showTextBoxDialog(
 						this, 
 						this.getResources().getString(R.string.textbox_addTask_title), 
@@ -341,12 +335,11 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 						});
 				return true;
 			}
-			case R.id.context_contextMenu_synchronizeGTasks: {
+			else if (item.getItemId() == R.id.context_contextMenu_synchronizeGTasks) {
 				synchronizeGoogleTasks(context);
 
 				return true;
 			}			
-			}
 			return false;
 		}
 
@@ -567,11 +560,11 @@ public class ContextActivity extends ExpandableListActivity implements Expandabl
 
 	private void synchronizeGoogleTasks(final Context context) {
 		showDialog(GoogleTasksClientAsyncTask.PROGRESS_DIALOG_ID);
-		
+
 		GoogleTasksClientAsyncTask task = new GoogleTasksClientAsyncTask(this, GoogleTasksClientAsyncTask.GTASKS_ACTION_SYNCHRONIZE, progressDialog);
 		task.execute(ArrayUtils.toObject(new long[] {context.getId()}));
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
